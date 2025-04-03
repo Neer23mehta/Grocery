@@ -12,14 +12,15 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 
-const Login = () => {
+const Setpassword = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [showPasswords, setShowPasswords] = useState(false);
 
   const route = useRouter();
 
   const initialValues = {
-    email: "",
-    password: ""
+    password: "",
+    confirmpassword: ""
   }
 
   const validationSchema = Yup.object({
@@ -35,6 +36,10 @@ const Login = () => {
     setShowPassword(!showPassword);
   };
 
+  const togglePasswords = () => {
+    setShowPasswords(!showPasswords);
+  };
+
   console.log("pass", showPassword)
 
   const { values, errors, touched, handleBlur, handleChange, handleSubmit } = useFormik({
@@ -46,20 +51,18 @@ const Login = () => {
     }
   })
 
-  const handleSubmits = async (e) => {
+  const handleSubmits = async (e:any) => {
     e.preventDefault();
 
     try {
-      const res = await axios.post("http://192.168.2.181:3000/admin/login", {
-        email: values.email,
+      const res = await axios.post("http://192.168.2.181:3000/admin/reset-password", {
         password: values.password,
+        confirmpassword: values.confirmpassword,
       });
 
       if(res.status == 200){
-        toast.success("Login Successfully")
-        localStorage.setItem("usertoken",res.data.data.refresh_token)
-        localStorage.setItem("token",res.data.data.token)
-        route.push("/admin")
+        toast.success("Password Change Successfully")
+        route.push("/")
       }
       else  {
         toast.error(res.data.message)
@@ -80,41 +83,14 @@ const Login = () => {
         quality={100}
       />
       <form onSubmit={handleSubmits} className='relative flex flex-col justify-center items-center w-[450px] h-[600px] bg-white rounded-lg shadow-lg px-6 py-8'>
+        <div className='mb-15 top-0'>
+        <h1 className='text-3xl'>Set new Password</h1>
+        </div>
         <Image
-          src={assets.logo}
-          alt='Logo'
-          className="mb-7"
-        />
-        <Image
-          src={assets.sym}
-          alt='symb'
+          src={assets.pass}
+          alt='pass'
           className='mt-1 mb-7'
         />
-
-        <div className="w-[335px] mb-5">
-          <div className="relative">
-            <div className="flex items-center rounded-lg p-2 h-[34px]">
-              <Image
-                src={assets.mail}
-                alt='email'
-                width={16}
-                height={16}
-                className='mr-2 mt-4'
-              />
-              <TextField
-                id="email"
-                label="Email"
-                variant="standard"
-                className='ml-5 px-5 w-full'
-                value={values.email}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                error={Boolean(errors.email && touched.email)}
-                helperText={touched.email && errors.email}
-              />
-            </div>
-          </div>
-        </div>
 
         <div className="w-[335px] mb-6">
           <div className="relative">
@@ -153,19 +129,49 @@ const Login = () => {
             </div>
           </div>
         </div>
-
+        <div className="w-[335px] mb-6">
+          <div className="relative">
+            <div className="flex items-center p-2 text-underline-offset:auto h-[34px]">
+              <Image
+                src={assets.lock}
+                alt='password'
+                width={20}
+                height={20}
+                className='mr-2 mt-4'
+              />
+              <TextField
+                id="password"
+                type={showPassword ? "text" : "password"}
+                label="Confirm password"
+                variant="standard"
+                className="w-full"
+                value={values.confirmpassword === values.password}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={Boolean(errors.password && touched.password)}
+                helperText={touched.password && errors.password}
+                InputProps={{
+                  endAdornment: (
+                    <Image
+                      src={showPasswords ? assets.eyeClosed : assets.eye}
+                      alt='hide/show'
+                      height={20}
+                      width={20}
+                      className='cursor-pointer mr-3'
+                      onClick={togglePasswords}
+                    />
+                  ),
+                }}
+              />
+            </div>
+          </div>
+        </div>
         <button
           type="submit"
           className="bg-amber-400 w-[335px] h-[55px] text-lg text-black hover:bg-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-400 mt-4 transition duration-200"
         >
-          Login
+          Submit
         </button>
-
-        <div className="mt-4">
-          <span className="text-sm text-gray-600">
-            <Link href="/forget">Forget Password?</Link>
-          </span>
-        </div>
       </form>
 
       <div className="absolute bottom-0 left-0 ml-15 mb-15">
@@ -187,4 +193,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Setpassword;

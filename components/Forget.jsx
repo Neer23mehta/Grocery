@@ -7,6 +7,8 @@ import { useRouter } from 'next/navigation';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { TextField } from '@mui/material';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const Forget = () => {
 
@@ -31,8 +33,23 @@ const Forget = () => {
         }
     })
 
-    const handlesubmits = (e) => {
+    const handlesubmits = async (e) => {
         e.preventDefault();
+
+        try {
+            const res = await axios.post("http://192.168.2.181:3000/admin/forgot_password",{
+                email:values.email
+            });
+
+            if(res.status == 200){
+                route.push("/verify")
+            }
+            else{
+                toast.error(res.data.message)
+            }
+        } catch (error) {
+            console.log(error)
+        }
     }
     return (
         <div className='relative flex items-center justify-center w-full h-screen bg-black'>

@@ -1,10 +1,20 @@
 'use client'
 import { TextField } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { IoSearchSharp } from "react-icons/io5";
 
 const page = () => {
     const [input,setinput] = useState("")
+    const [adds,setadds] = useState(0)
+
+    useEffect(()=>{
+        for(let i = 0; i <= 10; i++){
+            const add = i;
+            setadds(add)
+            console.log("i",add)
+        }
+    },[])
+
   return (
     <div className=''>
         <div className='flex flex-row justify-between items-center'>
@@ -15,7 +25,7 @@ const page = () => {
         <TextField id="outlined-basic" label="Search Users" variant="outlined" value={input} onChange={(e)=>setinput(e.target.value)} />
         </div>
         <div>
-        <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+        <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden mt-5">
         <thead className="">
         <tr>
                         <th className="py-3 px-4 text-left text-md font-semibold text-black">User ID</th>
@@ -31,6 +41,18 @@ const page = () => {
                     }
                 </tbody>
             </table>
+            <div className='flex justify-end bottom-0 top-100'>
+                    <button>Previous</button>
+                    {/* {
+                        adds.map((curval:any,index:any)=>{
+                            return (
+                                <button key={index}>
+                                    {curval.i}
+                                </button>
+                            )
+                        })
+                    }     */}
+            </div>
         </div>
     </div>
 

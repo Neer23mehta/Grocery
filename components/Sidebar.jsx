@@ -17,7 +17,7 @@ export const Sidebar = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 640) { 
+      if (window.innerWidth < 1024) { 
         setIsSmallScreen(true);
         setIsSidebarVisible(false); 
       } else {
@@ -95,7 +95,7 @@ export const Sidebar = () => {
             href="/admin/products"
             className={`flex items-center gap-3 font-medium p-3 rounded-md transition-all ${isActive('/admin/products') ? 'text-orange-500' : 'text-white'}`}
           >
-            <Image src={assets.products} className={isActive('/admin/products') ? 'text-orange-500' : 'text-white'} alt="products" />
+            <Image src={assets.products} className={isActive('/admin/products') ? 'text-yellow-500' : 'text-white'} alt="products" />
             <p>Products</p>
           </Link>
 

@@ -53,7 +53,8 @@ const Page: React.FC = () => {
 
   return (
     <div className="">
-      <div className="flex flex-row justify-between items-center">
+    <div className={`${addsub ? "opacity-35" : "opacity-100"}`}>
+    <div className={`flex flex-row justify-between items-center ${addsub ? "opacity-25" : "opacity-100" }`}>
         <div className="flex flex-col px-2">
           <h1 className="text-3xl font-bold">Sub Category</h1>
           <p className="text-gray-500 mt-2">Dashboard<span className="text-black ml-5">Sub Category</span></p>
@@ -121,6 +122,7 @@ const Page: React.FC = () => {
           <button className="px-4 py-2 bg-gray-300 rounded-md mr-2">Previous</button>
           <button className="px-4 py-2 bg-gray-300 rounded-md">Next</button>
         </div>
+      </div>
       </div>
       {
         addsub ? (

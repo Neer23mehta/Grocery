@@ -43,7 +43,7 @@ const Layout = ({ children }: LayoutProps) => {
                         </button>
                     )}
                 </div>
-                <div className="p-6 bg-gray-50 flex-1">{children}</div>
+                <div className="p-6 bg-gray-100 flex-1">{children}</div>
             </div>
         </div>
     );

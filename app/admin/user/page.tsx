@@ -41,8 +41,15 @@ const page = () => {
                     }
                 </tbody>
             </table>
-            <div className='flex justify-end bottom-0 top-100'>
-                    <button>Previous</button>
+            <div className='flex justify-end bottom-0 mt-5 h-[20px] items-center'>
+                    <button className='px-2 py-1 bg-gray-50 '>Previous</button>
+                    {
+                        ["1","2","3","4","5","6","7","Next"].map((curval,index) => {
+                            return (
+                                <button key={index} className='px-2 py-1 bg-gray-50'>{curval}</button>
+                            )
+                        })
+                    }
                     {/* {
                         adds.map((curval:any,index:any)=>{
                             return (

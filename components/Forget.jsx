@@ -16,7 +16,7 @@ const Forget = () => {
         email:""
     }
     const route = useRouter();
-    const handleback = () => {
+    const handleBack = () => {
         route.push("/")
     }
 
@@ -33,7 +33,7 @@ const Forget = () => {
         }
     })
 
-    const handlesubmits = async (e) => {
+    const handleSubmits = async (e) => {
         e.preventDefault();
 
         try {
@@ -61,13 +61,13 @@ const Forget = () => {
                 quality={100}
             />
 
-            <form onSubmit={handlesubmits} className='relative flex flex-col justify-center items-center w-[450px] h-[550px] bg-white rounded-lg shadow-lg mb-15'>
+            <form onSubmit={handleSubmits} className='relative flex flex-col justify-center items-center w-[450px] h-[550px] bg-white rounded-lg shadow-lg mb-15'>
                 <div className='flex flex-row justify-center mb-5 '>
                     <Image
                         src={assets.back}
                         alt='Logo'
                         className="flex justify-start mr-22 ml-3  h-[24px] w-[24px]"
-                        onClick={handleback}
+                        onClick={handleBack}
                     />
                     <h1 className='mr-30 text-[24px]    '>Forgot Password?</h1>
                 </div>

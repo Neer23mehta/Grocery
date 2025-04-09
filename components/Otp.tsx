@@ -13,7 +13,7 @@ import { toast } from 'react-toastify';
 
 const Otp = () => {
 
-    const [otp, setotp] = useState("")
+    const [otp, setOtp] = useState("")
 
     const route = useRouter();
 
@@ -24,9 +24,6 @@ const Otp = () => {
             const res = await axios.post("http://192.168.2.181:3000/admin/otp-verify", {
                 otp
             });
-
-
-            console.log("Response: ", res.data);
 
             if (res.status == 200) {
                 toast.success("verification successfull")
@@ -44,7 +41,7 @@ const Otp = () => {
     }
 
     const handleChange = (newValue:any) => {
-        setotp(newValue);
+        setOtp(newValue);
       };
 
     return (

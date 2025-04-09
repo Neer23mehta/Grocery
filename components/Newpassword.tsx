@@ -12,7 +12,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 
-const Setpassword = () => {
+const Newpassword = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswords, setShowPasswords] = useState(false);
 
@@ -170,24 +170,8 @@ const Setpassword = () => {
           Submit
         </button>
       </form>
-
-      <div className="absolute bottom-0 left-0 ml-15 mb-15">
-        <Image
-          src={assets.left}
-          alt="Left Image"
-          className="w-[490px] h-[314px] opacity-70"
-        />
-      </div>
-
-      <div className="absolute bottom-0 right-0 mt-10 mr-2">
-        <Image
-          src={assets.rimg}
-          alt="Right Image"
-          className="w-[605px] h-[438px] opacity-70"
-        />
-      </div>
     </div>
   );
 };
 
-export default Setpassword;
+export default Newpassword;

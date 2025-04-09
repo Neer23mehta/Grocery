@@ -168,19 +168,19 @@ const Login = () => {
         </div>
       </form>
 
-      <div className="absolute bottom-0 left-0 ml-15 mb-15">
+      <div className="absolute bottom-0 left-0 mb-15">
         <Image
           src={assets.left}
           alt="Left Image"
-          className="w-[490px] h-[314px] opacity-70"
+          className="lg:w-auto lg:h-auto opacity-70 sm:h-auto sm:w-auto md:w-auto md:h-auto"
         />
       </div>
 
-      <div className="absolute bottom-0 right-0 mt-10 mr-2">
+      <div className="absolute bottom-0 right-0 mt-10 ml-5">
         <Image
           src={assets.rimg}
           alt="Right Image"
-          className="w-[605px] h-[438px] opacity-70"
+          className="lg:w-[525px] lg:h-[415px] opacity-70 md:w-auto md:h-auto sm:w-auto sm:h-auto ml-10"
         />
       </div>
     </div>

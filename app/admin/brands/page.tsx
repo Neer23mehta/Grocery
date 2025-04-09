@@ -40,6 +40,7 @@ const Page = () => {
         },
       });
       setAdds(res?.data?.data || []);
+      console.log("res",res.data)
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
@@ -73,11 +74,12 @@ const Page = () => {
     const token = localStorage.getItem("token");
     try {
       const res = await axios.get("http://192.168.2.181:3000/admin/add_brand",{
+        method:"POST",
         headers:{
           Authorizations: token,
           language: "en",
           refresh_token: refreshtoken,
-        }
+        },
       })
       console.log("res",res)
       if (res.data.success) {
@@ -161,11 +163,11 @@ const Page = () => {
                       <td className="mt-5 ml-4 left-4 px-2 py-2">{Category_Name}</td>
                       <td className="mt-5 px-2 py-2">{SubCategory_Name}</td>
                       <td>
-                        {Status === 1 ? (
-                          <span className="text-green-500"></span>
+                        {/* {Status === 1 ? (
+                          <Image src={assets.scrollon} alt="Status"/>
                         ) : (
-                          <span className="text-gray-500"></span>
-                        )}
+                          <Image src={assets.scrolloff} alt="Status"/>
+                        )} */}
                       </td>
                       <td>
                         <button className="ml-2 text-gray-600 rounded" onClick={()=>handleEdit(No)}>

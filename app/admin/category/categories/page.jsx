@@ -104,16 +104,14 @@ const Page = () => {
                       </td>
                       <td>{Category_Name}</td>
                       <td>
-                        <button>
                         {/* <Image
-                          src={scroll ? assets.scrolloff : assets.scrollon}
+                          src={Status == "1" ? assets.scrolloff : assets.scrollon}
                           alt="Scroll Status"
                           onClick={(e)=>handleScroll(e)}
                           className="cursor-pointer"
                           height={30}
                           width={30}
                         /> */}
-                        </button>
                       </td>
                       <td>
                         <button  className="ml-2 text-gray-600 rounded"><MdEdit size={18} /></button>

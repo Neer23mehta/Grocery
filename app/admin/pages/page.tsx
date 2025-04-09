@@ -1,8 +1,10 @@
 import { assets } from '@/assests/assets'
+import Newpassword from '../../../components/Newpassword'
 import Image from 'next/image'
 import React from 'react'
 
 const Page = () => {
+  
   return (
     //  <div className='flex flex-col justify-center items-center'>
     //     <form className='flex flex-col bg-white mt-25 py-6 px-15 justify-center items-center' >
@@ -55,40 +57,34 @@ const Page = () => {
     //     </div>
     //   </form>
     // </div>
-       <div className='flex flex-col justify-center items-center'>
-      <form  className='flex flex-col bg-white mt-10 py-6 px-15 justify-center items-center' >
-        <h1 className='text-2xl font-bold mb-1  '>Add Coupon</h1>
-        <div className='flex flex-col justify-start mt-5 space-y-5'>
-          <div className='flex flex-col space-x-5 justify-start '>
-
-            <label className='text-gray-400 mt-6'>Coupon Name</label>
-            <input type='text' name='product' placeholder='Name' className='font-bold border-1 border-gray-200 mt-2 py-2 px-3 text-black' />
-          </div>
-          <div className='flex flex-col space-x-5 justify-start '>
-            <label className='text-gray-400'>Minimum Purchase</label>
-            <input type='text' name='product' placeholder='Minimum Purchase' className='font-bold border-1 border-gray-200 mt-2 py-2 px-3 text-black' />
-          </div>
-          <div className='flex flex-col space-x-5 justify-start '>
-            <label className='text-gray-400'>Discount Price</label>
-            <input type='text' name='product' placeholder='Discount Price' className='font-bold border-1 border-gray-200 mt-2 py-2 px-3 text-black' />
-          </div>
-          <div className='flex flex-col space-x-5 justify-start '>
-
-            <label className='text-gray-400'>Date</label>
-            <input type='date' name='date' placeholder='From - to' className='font-bold border-1 border-gray-200 mt-2 py-2 px-3 text-gray-400' />
-          </div>
-          <div className='flex flex-col space-x-5 justify-start '>
-
-            <label className='text-gray-400'>Coupon Code</label>
-            <input type='text' name='offer' placeholder='Coupon Code' className='font-bold border-1 border-gray-200 mt-2 py-2 px-3 text-black' />
-          </div>
-        </div>
-        <div className='flex justify-center items-center mt-5'>
-          <button className='px-28 py-2 bg-amber-400 font-bold'>Submit</button>
-        </div>
-      </form>
+    //    <div className='flex flex-col justify-center items-center'>
+    //   <form className='flex flex-col bg-white mt-1 py-1 px-4 lg:w-[450px] md:w-auto sm:w-auto justify-center items-center' >
+    //         <div className='flex justify-end items-end '>
+    //           <Image src={assets.can} alt='remove' className='ml-95'/>
+    //         </div>
+    //     <h1 className='text-2xl font-bold mb-1  '>Configration</h1>
+    //     <div className='flex flex-col justify-start mt-5 space-y-5'>
+    //       <div className='flex flex-row space-x-5 justify-between '>
+    //       <button className='px-2 py-3 bg-white shadow-md underline-offset-1'>Manage Delivery</button>
+    //       <button className='px-2 py-3 bg-white shadow-md underline-offset-1'>Manage Tax</button>
+    //       </div>
+    //       <div className='flex flex-col space-x-5 justify-start '>
+    //         <label className='text-gray-400'>Free Delivery Upto</label>
+    //         <input type='text' name='product' placeholder='Free Delivery Upto' className='font-bold border-1 border-gray-200 mt-2 py-2 px-3 text-black' />
+    //       </div>
+    //       <div className='flex flex-col space-x-5 justify-start '>
+    //         <label className='text-gray-400'>Delivery Charge</label>
+    //         <input type='text' name='product' placeholder='Delivery Charge' className='font-bold border-1 border-gray-200 mt-2 py-2 px-3 text-black' />
+    //       </div>
+    //     </div>
+    //     <div className='flex justify-center items-center mt-5'>
+    //       <button className='px-28 py-2 bg-amber-400 font-bold mb-3' type='submit'>Update</button>
+    //     </div>
+    //   </form>
+    // </div>
+    <div>
+      <Newpassword/>
     </div>
- 
   )
 }
 

@@ -27,7 +27,7 @@ const Page = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await axios.get("http://192.168.2.181:3000/admin/getcategories", {
+      const res = await axios.get("http://192.168.2.181:3000/admin/get_subcategories?pageNumber=1&pageLimit=10", {
         headers: {
           Authorizations: token,
           language: "en",
@@ -39,6 +39,25 @@ const Page = () => {
       console.error("Error fetching categories:", error);
     }
   };
+
+  const handleSubCategoryDelete = async (id:Number) => {
+    const refreshtoken = localStorage.getItem("usertoken");
+    const token = localStorage.getItem("token");
+
+    try {
+      const res = await axios.delete(`http://192.168.2.181:3000/admin/delete_subcategory?id=${id}`, {
+        method:"DELETE",
+        headers: {
+          Authorizations: token,
+          language: "en",
+          refresh_token: refreshtoken,
+        },
+      });
+      setAdds(prev => prev.filter(items => items.No !== id));
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  }
 
   useEffect(() => {
     fetchCategories();
@@ -121,7 +140,7 @@ const Page = () => {
                         <button className="ml-2 text-gray-600 rounded">
                           <MdEdit size={18} />
                         </button>
-                        <button className="ml-5 text-gray-600 rounded">
+                        <button className="ml-5 text-gray-600 rounded" onClick={()=>handleSubCategoryDelete(No)}>
                           <RiDeleteBin5Fill size={18} />
                         </button>
                       </td>

@@ -38,9 +38,20 @@ import timer from "../assests/Group 1495/Group 1495.png"
 import done from "../assests/Group 1496/Group 1496.png"
 import upload from "../assests/Group 1678/Group 1678.png"
 import upimg from "../assests/Group 1677/Group 1677.png"
+import basket from "../assests/Group 1449/Group 1449.png"
+import del from "../assests/Group 948/Group 948.png"
+import banner from "../assests/Group 847/Group 847.png"
+import imj from "../assests/7.3_Homepage Module (1)/vegetables.png"
+import edit from "../assests/Group 299/Group 299.png"
+import cancel from "../assests/Group 904/Group 904.png"
+import newimg from "../assests/Group 926/Group 926.png"
+import add from "../assests/Group 929/Group 929.png"
+import simg from "../assests/Group 1632/Group 1632.png"
+import ad from "../assests/7.3_Homepage Module (3)/Layer 2.png"
+import can from "../assests/Group 351/Group 351.png"
 
 export const assets = {
-    bgimg,scrolloff,scrollon,
+    bgimg,
     limg,
     left,
     logo,
@@ -57,5 +68,5 @@ export const assets = {
     hm,
     brands,
     category,products,order,user,dash,coupon,bimg,eyeClosed,use,mails,location,mobile,ud,dp,prepare,ordernew,ready,timer,
-    done,upload,upimg
+    done,upload,upimg,basket,scrolloff,scrollon,del,banner,imj,edit,cancel,newimg,add,simg,ad,can
 };

@@ -7,6 +7,10 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { assets } from "../../assests/assets";
 import { SlArrowDown } from "react-icons/sl";
+import { GrLogout } from "react-icons/gr";
+import { IoSettingsSharp } from "react-icons/io5";
+import { MdLock } from "react-icons/md";
+
 
 interface LayoutProps {
     children: ReactNode;
@@ -14,6 +18,7 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
     const [logout, setLogout] = useState(false);
+    const [config, setConfig] = useState(false)
     const route = useRouter();
 
     const handleClick = () => {
@@ -24,6 +29,13 @@ const Layout = ({ children }: LayoutProps) => {
         route.push("/");
     }
 
+    const handleChangePassword = () => {
+        // route.push("/")
+    }
+
+    const handleConfiguration = () => {
+        // route.push("/admin/user")
+    }
     return (
         <div className="flex min-h-screen bg-gray-100">
             <ToastContainer theme="dark" />
@@ -35,12 +47,32 @@ const Layout = ({ children }: LayoutProps) => {
                 <SlArrowDown size={12} width={9} onClick={handleClick}/>
                 </div>
                     {logout && (
-                        <button 
-                            onClick={handleLogout}
-                            className="mt-0 rounded flex justify-end text-red-700"
+                        <div className="flex justify-start flex-col items-end">
+                        <div className={`flex justify-start items-start w-50 px-3 bg-white shadow py-2 hover:bg-amber-300`}>
+                             <button 
+                            onClick={handleConfiguration}
+                            className={`mt-0 rounded flex justify-start text-black flex-row space-x-2 hover:bg-amber-300 shadow:md`}
                         >
-                            Log-out
+                           <span className="mt-1 mr-2"><IoSettingsSharp /></span> Configuration
                         </button>
+                        </div>
+                        <div className={`flex justify-start items-start w-50 px-3 bg-white shadow py-2 hover:bg-amber-300`}>
+                             <button 
+                            onClick={handleChangePassword}
+                            className={`mt-0 rounded flex justify-start text-black flex-row space-x-2 hover:bg-amber-300 shadow:md`}
+                        >
+                           <span className="mt-1 mr-2"><MdLock /></span> Change Password
+                        </button>
+                        </div>
+                        <div className={`flex justify-start items-start w-50 px-3 bg-white shadow py-2 hover:bg-amber-300`}>
+                             <button 
+                            onClick={handleLogout}
+                            className={`mt-0 rounded flex justify-start text-black flex-row space-x-2 hover:bg-amber-300 shadow:md`}
+                        >
+                           <span className="mt-1 mr-2"><GrLogout /></span> Log-Out
+                        </button>
+                        </div>
+                        </div>
                     )}
                 </div>
                 <div className="p-6 bg-gray-100 flex-1">{children}</div>

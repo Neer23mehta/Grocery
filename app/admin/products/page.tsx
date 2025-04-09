@@ -55,7 +55,7 @@ const Page = () => {
   //   fetchCategories();
   // }, []);
 
-  const handleaddproduct = () => {
+  const handleAddProduct = () => {
       route.push("/admin/products/addproduct")
   }
 
@@ -75,7 +75,7 @@ const Page = () => {
             onChange={(e) => setInput(e.target.value)}
             className="ml-12 bg-white"
           />
-          <button className="px-3 font-bold py-2 bg-amber-300 ml-5 w-auto h-13 " onClick={handleaddproduct}>Add Product</button>
+          <button className="px-3 font-bold py-2 bg-amber-300 ml-5 w-auto h-13 " onClick={handleAddProduct}>Add Product</button>
         </div>
       </div>
 

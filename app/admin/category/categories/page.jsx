@@ -37,12 +37,18 @@ const Page = () => {
     }
   };
 
-  const handledelete = async (No) => {
+  const handleDelete = async (No) => {
+    const refreshtoken = localStorage.getItem("usertoken");
+    const token = localStorage.getItem("token");
     try {
       const res = await axios.delete(`http://192.168.2.181:3000/admin/delete_category?id=${No}`,{
         method:"DELETE",
+        headers:{
+          Authorizations:token,
+          language:"en",
+          refresh_token:refreshtoken
+        }
       })
-      console.log("del",res)
       setAdds(prev => prev.filter(item=>item.No !== No))
     } catch (error) {
       console.log(error)
@@ -111,7 +117,7 @@ const Page = () => {
                       </td>
                       <td>
                         <button  className="ml-2 text-gray-600 rounded"><MdEdit size={18} /></button>
-                        <button onClick={()=>handledelete(No)} className="ml-5 text-gray-600 rounded"><RiDeleteBin5Fill size={18} /></button>
+                        <button onClick={()=>handleDelete(No)} className="ml-5 text-gray-600 rounded"><RiDeleteBin5Fill size={18} /></button>
                       </td>
                     </tr>
                   );

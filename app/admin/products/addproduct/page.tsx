@@ -3,7 +3,7 @@ import { FormControl, InputLabel, Select, TextField } from '@mui/material'
 import Image from 'next/image'
 import React from 'react'
 
-const page = () => {
+const Page = () => {
   return (
     <div className='bg-white shadow-md h-auto w-auto flex flex-col'>
       <div className='mt-7 ml-5 w-full flex flex-row'>
@@ -16,39 +16,21 @@ const page = () => {
         </div>
         <div className='flex flex-col ml-5 mt-3'>
           <p className='text-gray-400 mb-2'>Category</p>
-          <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">Select</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              label="Age"
-            >
-            </Select>
-          </FormControl>
+         <select className='min-w-full py-4 w-[235px] border-1 border-gray-300 rounded-md text-black px-2 focus:outline-none' name='select'>Select
+          <option>Select</option>
+         </select>
         </div>
         <div className='flex flex-col ml-5 mt-3'>
           <p className='text-gray-400 mb-2'>Sub Category</p>
-          <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">Select</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              label="Age"
-            >
-            </Select>
-          </FormControl>
+          <select className='min-w-full py-4 w-[235px] border-1 border-gray-300 rounded-md text-black px-2 focus:scale-none focus:outline-none' name='select'>Select
+          <option className='bg-white'>Select</option>
+         </select>
         </div>
         <div className='flex flex-col ml-5 mt-3'>
           <p className='text-gray-400 mb-2'>Brand</p>
-          <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">Select</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              label="Age"
-            >
-            </Select>
-          </FormControl>
+          <select className='min-w-full py-4 w-[235px] border-1 border-gray-300 rounded-md text-black px-2 focus:outline-none' name='select'>Select
+          <option>Select</option>
+         </select>
         </div>
       </div>
       <div className='mt-10 ml-5 w-full flex flex-row'>
@@ -104,7 +86,7 @@ const page = () => {
                     className="hidden"
                 />
           </div>
-          <div className='flex flex-row justify-center items-center space-x-5 mt-7 mb-5'>
+          <div className='flex flex-row justify-center items-center space-x-5 mt-3 mb-5'>
               <button className='px-15 font-bold py-3 bg-amber-400'>Save</button>
               <button className='px-15 font-bold py-2.5 bg-white border-1'>Cancel</button>
           </div>
@@ -112,4 +94,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page

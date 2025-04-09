@@ -1,55 +1,66 @@
 'use client'
-import { TextField } from '@mui/material'
+import commonGetApis from '@/commonapi/Commonapi';
+import { Pagination, Stack, TextField } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { IoSearchSharp } from "react-icons/io5";
 
-const page = () => {
-    const [input,setinput] = useState("")
-    const [adds,setadds] = useState(0)
+const Page = () => {
+    const [input, setInput] = useState("")
+    const [adds, setAdds] = useState(0)
+    const [users,setUsers] = useState("")
 
-    useEffect(()=>{
-        for(let i = 0; i <= 10; i++){
-            const add = i;
-            setadds(add)
-            console.log("i",add)
+    const fetchGet = async () => {
+        try {
+            const data = await commonGetApis("/")
+            setUsers(data)
+        } catch (error) {
+            console.log("error",error)
         }
-    },[])
+    }
 
-  return (
-    <div className=''>
-        <div className='flex flex-row justify-between items-center'>
-        <div className='flex flex-col px-2'>
-            <h1 className='text-3xl font-bold'>Users</h1>
-            <p className='text-gray-500 mt-2'>Dashboard <span className='text-black ml-5'>Users</span> </p>
-        </div>
-        <TextField id="outlined-basic" label="Search Users" variant="outlined" value={input} onChange={(e)=>setinput(e.target.value)} />
-        </div>
-        <div>
-        <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden mt-5">
-        <thead className="">
-        <tr>
-                        <th className="py-3 px-4 text-left text-md font-semibold text-black">User ID</th>
-                        <th className="py-3 px-4 text-left text-md font-semibold text-black">Name</th>
-                        <th className="py-3 px-4 text-left text-md font-semibold text-black">Mobile Number</th>
-                        <th className="py-3 px-4 text-left text-md font-semibold text-black">Email</th>
-                        <th className="py-3 px-4 text-left text-md font-semibold text-black">Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {
-                        
-                    }
-                </tbody>
-            </table>
-            <div className='flex justify-end bottom-0 mt-5 h-[20px] items-center'>
-                    <button className='px-2 py-1 bg-gray-50 '>Previous</button>
+    useEffect(() => {
+        for (let i = 0; i <= 10; i++) {
+            const add = i;
+            setAdds(add)
+        }
+        fetchGet();
+    }, [])
+
+    return (
+        <div className=''>
+            <div className='flex flex-row justify-between items-center'>
+                <div className='flex flex-col px-2'>
+                    <h1 className='text-3xl font-bold'>Users</h1>
+                    <p className='text-gray-500 mt-2'>Dashboard <span className='text-black ml-5'>Users</span> </p>
+                </div>
+                <TextField id="outlined-basic" label="Search Users" variant="outlined" value={input} onChange={(e) => setInput(e.target.value)} />
+            </div>
+            <div>
+                <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden mt-5">
+                    <thead className="">
+                        <tr>
+                            <th className="py-3 px-4 text-left text-md font-semibold text-black">User ID</th>
+                            <th className="py-3 px-4 text-left text-md font-semibold text-black">Name</th>
+                            <th className="py-3 px-4 text-left text-md font-semibold text-black">Mobile Number</th>
+                            <th className="py-3 px-4 text-left text-md font-semibold text-black">Email</th>
+                            <th className="py-3 px-4 text-left text-md font-semibold text-black">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+
+                        }
+                    </tbody>
+                </table>
+                <div className='flex justify-end bottom-0 mt-5 h-[20px] items-center'>
+                    {/* <button className='px-2 py-1 bg-gray-50 '>Previous</button>
                     {
                         ["1","2","3","4","5","6","7","Next"].map((curval,index) => {
                             return (
                                 <button key={index} className='px-2 py-1 bg-gray-50'>{curval}</button>
                             )
                         })
-                    }
+                    } */}
                     {/* {
                         adds.map((curval:any,index:any)=>{
                             return (
@@ -59,11 +70,14 @@ const page = () => {
                             )
                         })
                     }     */}
+                    <Stack spacing={0}>
+                        <Pagination count={10} variant='outlined' shape='rounded' />
+                    </Stack>
+                </div>
             </div>
         </div>
-    </div>
 
-  )
+    )
 }
 
-export default page
+export default Page

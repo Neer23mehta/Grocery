@@ -1,7 +1,7 @@
 import React from 'react'
 import Forget from '../../components/Forget'
 
-const page = () => {
+const Page = () => {
   return (
     <div>
         <Forget/>
@@ -9,4 +9,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page

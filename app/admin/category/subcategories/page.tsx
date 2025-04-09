@@ -6,6 +6,8 @@ import { IoSearchSharp } from "react-icons/io5";
 import { SlArrowRight } from "react-icons/sl";
 import { MdEdit } from "react-icons/md";
 import { RiDeleteBin5Fill } from "react-icons/ri";
+import Image from 'next/image';
+import { assets } from '../../../../assests/assets';
 
 interface Category {
   No: number;
@@ -14,10 +16,11 @@ interface Category {
   Status: number;
 }
 
-const Page: React.FC = () => {
+const Page = () => {
   const [input, setInput] = useState<string>('');
   const [adds, setAdds] = useState<Category[]>([]);
-  const [addsub, setaddsub] = useState(false)
+  const [addSub, setAddSub] = useState(false)
+  const [status,setStatus] = useState(false)
 
   const fetchCategories = async () => {
     const refreshtoken = localStorage.getItem("usertoken");
@@ -41,8 +44,8 @@ const Page: React.FC = () => {
     fetchCategories();
   }, []);
 
-  const togglebutton = () => {
-    setaddsub(!addsub)
+  const toggleButton = () => {
+    setAddSub(!addSub)
   }
 
   const [age, setAge] = React.useState('');
@@ -51,10 +54,21 @@ const Page: React.FC = () => {
     setAge(event.target.value);
   };
 
+  const handleStatus = () => {
+    setStatus(!status)
+  }
+
+  const handleSubCategoryForm = () => {
+    setAddSub(!addSub)
+  }
+
+  const handleSubCategorySubmit = (e:any) => {
+    e.preventDefault();
+  }
   return (
     <div className="">
-    <div className={`${addsub ? "opacity-35" : "opacity-100"}`}>
-    <div className={`flex flex-row justify-between items-center ${addsub ? "opacity-25" : "opacity-100" }`}>
+    <div className={`${addSub ? "opacity-35" : "opacity-100"}`}>
+    <div className={`flex flex-row justify-between items-center ${addSub ? "opacity-25" : "opacity-100" }`}>
         <div className="flex flex-col px-2">
           <h1 className="text-3xl font-bold">Sub Category</h1>
           <p className="text-gray-500 mt-2">Dashboard<span className="text-black ml-5">Sub Category</span></p>
@@ -68,7 +82,7 @@ const Page: React.FC = () => {
             onChange={(e) => setInput(e.target.value)}
             className="ml-50"
           />
-          <button className="px-2 py-2 bg-amber-300 ml-5 w-40 h-13" onClick={togglebutton}>Add Sub Category</button>
+          <button className="px-2 py-2 bg-amber-300 ml-5 w-40 h-13" onClick={toggleButton}>Add Sub Category</button>
         </div>
       </div>
 
@@ -125,13 +139,13 @@ const Page: React.FC = () => {
       </div>
       </div>
       {
-        addsub ? (
+        addSub ? (
           <div className='flex flex-col justify-center items-center'>
-            <form className='bg-white shadow-md z-[1] w-[465px] h-[525px] mb-350 absolute flex flex-col items-center'>
+            <form onSubmit={handleSubCategorySubmit} className='bg-white shadow-md z-[1] w-[465px] h-[525px] mb-350 absolute flex flex-col items-center'>
              <div className='flex flex-row'>
              <h1 className='items-center text-2xl ml-20 top-5 mt-3'>Add Sub Category</h1>
              <div className='flex justify-end ml-25'>
-             <button className='text-gray-500 h-9 mt-1 text-2xl flex justify-end right-0 left-5'>X</button>
+             <button className='text-gray-500 h-9 mt-1 text-2xl flex justify-end right-0 left-5' onClick={handleSubCategoryForm}>X</button>
              </div>
              </div>
               <TextField id="outlined-basic" label="Sub Category" variant="outlined" className='mt-10 top-8 w-xs' />
@@ -143,7 +157,7 @@ const Page: React.FC = () => {
                 value={age}
                 label="Select Category"
                 onChange={handleChange}
-                className='px-0 mt-25 w-xs'
+                className='px-0 mt-25 w-xs text-black'
               >
                 {/* <MenuItem value="">
                   <em>None</em>
@@ -152,16 +166,28 @@ const Page: React.FC = () => {
                 <MenuItem value={20}>Twenty</MenuItem>
                 <MenuItem value={30}>Thirty</MenuItem> */}
               </Select>
-              <label htmlFor="thumbnail" className="flex items-center justify-center cursor-pointer mb-6">
-                    <div className="w-xs h-28 mt-10 flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-300 transition-all duration-300 ease-in-out hover:border-gray-500 hover:shadow-lg">
+                <div className='flex flex-row mt-7'>
+                    <label htmlFor="thumbnail" className="flex items-center justify-center cursor-pointer mb-6">
+                              <div className="h-[125px] w-[325px] flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-300 transition-all duration-300 ease-in-out hover:border-gray-500 hover:shadow-lg">
+                                  <Image
+                                      src={assets.upimg}
+                                      alt="Upload Thumbnail"
+                                      // width={110}
+                                      // height={100}
+                                      className="object-cover rounded-lg"
+                                  />
+                              </div>
+                          </label>
+          
+                          <input
+                              type="file"
+                              id="thumbnail"
+                              className="hidden"
+                          />
                     </div>
-                </label>
-              <input
-                    type="file"
-                    id="thumbnail"
-                    className="hidden"
-              />
-
+                  <div className='flex flex-row justify-between items-center'>
+                    {/* Status <Image src={ status ? assets.scrolloff : assets.scrollon} onClick={handleStatus}/> */}
+                  </div>
               <button className='bg-amber-300 w-xs h-12'>Save</button>
             </form>
           </div>

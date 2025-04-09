@@ -23,9 +23,24 @@ import nlogo from "../assests/Path 410 (1)/Path 410.png"
 import coupon from "../assests/Icons/Icons.png"
 import bimg from "../assests/back-icon (2)/back-icon.png"
 import eyeClosed from "../assests/Group 334 (1)/Group 334.png"
+import scrollon from "../assests/Group 1655 (1).svg"
+import scrolloff from "../assests/Group 1656.svg"
+import use from "../assests/Group 805/Group 805.png"
+import mails from "../assests/Group 335 (1)/Group 335.png"
+import location from "../assests/Group 335 (2)/Group 335.png"
+import mobile from "../assests/Group 335 (3)/Group 335.png"
+import ud from "../assests/Group 1607/Group 1607.png"
+import dp from "../assests/Group 805 (1)/Group 805.png"
+import prepare from "../assests/Ellipse 56/Ellipse 56.png"
+import ordernew from "../assests/Group 835/Group 835.png"
+import ready from "../assests/Group 1494/Group 1494.png"
+import timer from "../assests/Group 1495/Group 1495.png"
+import done from "../assests/Group 1496/Group 1496.png"
+import upload from "../assests/Group 1678/Group 1678.png"
+import upimg from "../assests/Group 1677/Group 1677.png"
 
 export const assets = {
-    bgimg,
+    bgimg,scrolloff,scrollon,
     limg,
     left,
     logo,
@@ -41,5 +56,6 @@ export const assets = {
     page,
     hm,
     brands,
-    category,products,order,user,dash,coupon,bimg,eyeClosed
+    category,products,order,user,dash,coupon,bimg,eyeClosed,use,mails,location,mobile,ud,dp,prepare,ordernew,ready,timer,
+    done,upload,upimg
 };

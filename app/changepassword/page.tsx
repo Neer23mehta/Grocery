@@ -1,7 +1,7 @@
 import Setpassword from '../../components/Setpassword'
 import React from 'react'
 
-const page = () => {
+const Page = () => {
   return (
     <div>
         <Setpassword/>
@@ -9,4 +9,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page

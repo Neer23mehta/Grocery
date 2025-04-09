@@ -3,15 +3,14 @@ import { TextField } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { IoSearchSharp } from "react-icons/io5";
 
-const page = () => {
-    const [input,setinput] = useState("")
-    const [adds,setadds] = useState(0)
+const Page = () => {
+    const [input,setInput] = useState("")
+    const [adds,setAdds] = useState(0)
 
     useEffect(()=>{
         for(let i = 0; i <= 10; i++){
             const add = i;
-            setadds(add)
-            console.log("i",add)
+            setAdds(add)
         }
     },[])
 
@@ -58,4 +57,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page

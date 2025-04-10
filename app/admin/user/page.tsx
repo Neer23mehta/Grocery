@@ -9,21 +9,21 @@ const Page = () => {
     const [adds, setAdds] = useState(0)
     const [users,setUsers] = useState("")
 
-    const fetchGet = async () => {
-        try {
-            const data = await commonGetApis("/")
-            setUsers(data)
-        } catch (error) {
-            console.log("error",error)
-        }
-    }
+    // const fetchGet = async () => {
+    //     try {
+    //         const data = await commonGetApis("/")
+    //         setUsers(data)
+    //     } catch (error) {
+    //         console.log("error",error)
+    //     }
+    // }
 
     useEffect(() => {
         for (let i = 0; i <= 10; i++) {
             const add = i;
             setAdds(add)
         }
-        fetchGet();
+        // fetchGet();
     }, [])
 
     return (

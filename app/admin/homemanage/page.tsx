@@ -15,6 +15,14 @@ const Page = () => {
     setProduct(!product)
   }
 
+  const fetchGetBanner = async () => {
+    try {
+      
+    } catch (error) {
+      console.log("error",error)
+    }
+  }
+
   const handleNewBanner = () => {
 
   }

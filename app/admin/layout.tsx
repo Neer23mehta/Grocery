@@ -13,6 +13,8 @@ import { MdLock } from "react-icons/md";
 import { useFormik } from "formik";
 import { HandleYupSchema } from "@/Grocery/Yupschema";
 import Setpassword from "@/components/Setpassword";
+import Logout from "@/components/Logout";
+import Newpassword from "@/components/Newpassword";
 
 
 interface LayoutProps {
@@ -21,6 +23,7 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
     const [logout, setLogout] = useState(false);
+    const [logoutPage, setLogoutPage] = useState(false);
     const [config, setConfig] = useState(false);
     const [manageDelivery, setManageDelivery] = useState(false);
     const [manageTax, setManageTax] = useState(false);
@@ -32,20 +35,21 @@ const Layout = ({ children }: LayoutProps) => {
     }
 
     const handleLogout = () => {
-        route.push("/");
+        setLogoutPage(!logoutPage);
+        setConfig(false);
+        setPassword(false);
     }
 
     const handleChangePassword = () => {
-        // route.push("/")
         setPassword(!password)
         setConfig(false)
     }
 
     const handleConfiguration = () => {
-        // route.push("/admin/user")
         setConfig(!config);
         setPassword(false)
         setLogout(!logout);
+        setLogoutPage(false);
     }
 
     const initialValues = {
@@ -78,99 +82,103 @@ const Layout = ({ children }: LayoutProps) => {
 
     const handleCongigurationCancel = () =>{
         setConfig(!config)
-
     }
     return (
         <div className="flex min-h-screen bg-gray-100">
             <ToastContainer theme="dark" />
-            <Sidebar />
+            <div className="flex min-h-screen sticky z-30 top-0">
+            <Sidebar/>
+            </div>
             <div className="flex flex-col w-full">
-                <div className="flex flex-col justify-end space-y-2 bg-white p-5 shadow-md border-b border-gray-200">
-                <div className="flex flex-row items-center justify-end space-x-2 ml-60">
-                <button onClick={handleClick}>Admin</button>
-                <SlArrowDown size={12} width={9} onClick={handleClick}/>
-                </div>
+                <div className="flex flex-col justify-end space-y-2 bg-white p-1 shadow-md border-b border-gray-200 sticky top-0 z-20">
+                    <div className="flex flex-row items-center justify-end space-x-2 ml-50">
+                        <Image src={assets.admin} alt="Admin"/>
+                        <button onClick={handleClick}>Admin</button>
+                        <SlArrowDown size={12} width={9} onClick={handleClick}/>
+                    </div>
                     {logout && (
-                        <div className="flex justify-start flex-col items-end z-100">
-                        <div className={`flex justify-start items-start w-50 px-3 bg-white shadow py-2 hover:bg-amber-300`}>
-                             <button 
-                            onClick={handleConfiguration}
-                            className={`mt-0 rounded flex justify-start text-black flex-row space-x-2 hover:bg-amber-300 shadow:md`}
-                        >
-                           <span className="mt-1 mr-2"><IoSettingsSharp /></span> Configuration
-                        </button>
-                        </div>
-                        <div className={`flex justify-start items-start w-50 px-3 bg-white shadow py-2 hover:bg-amber-300`}>
-                             <button 
-                            onClick={handleChangePassword}
-                            className={`mt-0 rounded flex justify-start text-black flex-row space-x-2 hover:bg-amber-300 shadow:md`}
-                        >
-                           <span className="mt-1 mr-2"><MdLock /></span> Change Password
-                        </button>
-                        </div>
-                        <div className={`flex justify-start items-start w-50 px-3 bg-white shadow py-2 hover:bg-amber-300`}>
-                             <button 
-                            onClick={handleLogout}
-                            className={`mt-0 rounded flex justify-start text-black flex-row space-x-2 hover:bg-amber-300 shadow:md`}
-                        >
-                           <span className="mt-1 mr-2"><GrLogout /></span> Log-Out
-                        </button>
-                        </div>
+                        <div className="flex justify-start flex-col items-end z-50">
+                            <div className={`flex justify-start items-start w-50 px-3 bg-white shadow py-2 hover:bg-amber-300`}>
+                                <button 
+                                    onClick={handleConfiguration}
+                                    className={`mt-0 rounded flex justify-start text-black flex-row space-x-2 hover:bg-amber-300 shadow-md`}
+                                >
+                                    <span className="mt-1 mr-2"><IoSettingsSharp /></span> Configuration
+                                </button>
+                            </div>
+                            <div className={`flex justify-start items-start w-50 px-3 bg-white shadow py-2 hover:bg-amber-300`}>
+                                <button 
+                                    onClick={handleChangePassword}
+                                    className={`mt-0 rounded flex justify-start text-black flex-row space-x-2 hover:bg-amber-300 shadow-md`}
+                                >
+                                    <span className="mt-1 mr-2"><MdLock /></span> Change Password
+                                </button>
+                            </div>
+                            <div className={`flex justify-start items-start w-50 px-3 bg-white shadow py-2 hover:bg-amber-300`}>
+                                <button 
+                                    onClick={handleLogout}
+                                    className={`mt-0 rounded flex justify-start text-black flex-row space-x-2 hover:bg-amber-300 shadow-md`}
+                                >
+                                    <span className="mt-1 mr-2"><GrLogout /></span> Log-Out
+                                </button>
+                            </div>
                         </div>
                     )}
                 </div>
-                <div className="p-6 bg-gray-100 flex-1 z-10">{children}
-                    {
-                        config ? (
-                                 <div className='flex flex-col justify-center items-center'>
-                                 <form onSubmit={handleConfigSubmit} className='flex flex-col bg-white mt-1 py-1 px-4 lg:w-[450px] md:w-auto sm:w-auto justify-center items-center' >
-                                       <div className='flex justify-end items-end '>
-                                         <Image src={assets.can} alt='remove' className='ml-95' onClick={handleCongigurationCancel}/>
-                                       </div>
-                                   <h1 className='text-2xl font-bold mb-1  '>Configration</h1>
-                                   <div className='flex flex-col justify-start mt-5 space-y-5'>
-                                     <div className='flex flex-row space-x-5 justify-between '>
-                                     <button onClick={handleManageDelivery} className='px-2 py-3 bg-white shadow-md underline-offset-1'>Manage Delivery</button>
-                                     <button className='px-2 py-3 bg-white shadow-md underline-offset-1 ' onClick={handleManageTax}>Manage Tax</button>
-                                     </div>
-                                     { manageDelivery ? (
-                                     <div>
-                                     <div className='flex flex-col space-x-5 justify-start '>
-                                       <label className='text-gray-400'>Free Delivery Upto</label>
-                                       <input type='text' required name='product' placeholder='Free Delivery Upto' className='font-bold border-1 border-gray-200 mt-2 py-2 px-3 text-black' />
-                                     </div>
-                                     <div className='flex flex-col space-x-5 justify-start '>
-                                       <label className='text-gray-400'>Delivery Charge</label>
-                                       <input type='text' required name='product' placeholder='Delivery Charge' className='font-bold border-1 border-gray-200 mt-2 py-2 px-3 text-black' />
-                                     </div>
-                                     </div>
-                                         ):null
-                                     }
-                                     {
-                                        manageTax ? (
-                                            <div className='flex flex-col space-x-5 justify-start '>
+
+                <div className="p-6 bg-gray-100 flex-1 z-10">
+                    {children}
+
+                    {config && (
+                        <div className='flex flex-col justify-center items-center'>
+                            <form onSubmit={handleConfigSubmit} className='flex flex-col bg-white mt-1 py-1 px-4 lg:w-[450px] md:w-auto sm:w-auto justify-center items-center'>
+                                <div className='flex justify-end items-end '>
+                                    <Image src={assets.can} alt='remove' className='ml-95' onClick={handleCongigurationCancel}/>
+                                </div>
+                                <h1 className='text-2xl font-bold mb-1'>Configuration</h1>
+                                <div className='flex flex-col justify-start mt-5 space-y-5'>
+                                    <div className='flex flex-row space-x-5 justify-between'>
+                                        <button onClick={handleManageDelivery} className='px-2 py-3 bg-white shadow-md underline-offset-1'>
+                                            Manage Delivery
+                                        </button>
+                                        <button onClick={handleManageTax} className='px-2 py-3 bg-white shadow-md underline-offset-1'>
+                                            Manage Tax
+                                        </button>
+                                    </div>
+                                    {manageDelivery && (
+                                        <div>
+                                            <div className='flex flex-col space-x-5 justify-start'>
+                                                <label className='text-gray-400'>Free Delivery Upto</label>
+                                                <input type='text' required name='product' placeholder='Free Delivery Upto' className='font-bold border-1 border-gray-200 mt-2 py-2 px-3 text-black' />
+                                            </div>
+                                            <div className='flex flex-col space-x-5 justify-start'>
+                                                <label className='text-gray-400'>Delivery Charge</label>
+                                                <input type='text' required name='product' placeholder='Delivery Charge' className='font-bold border-1 border-gray-200 mt-2 py-2 px-3 text-black' />
+                                            </div>
+                                        </div>
+                                    )}
+                                    {manageTax && (
+                                        <div className='flex flex-col space-x-5 justify-start'>
                                             <label className='text-gray-400'>Tax %</label>
                                             <input type='text' required name='product' placeholder='Tax %' className='font-bold border-1 border-gray-200 mt-2 py-2 px-3 text-black' />
-                                          </div>
-     
-                                        ):null
-                                     }
-                                   </div>
-                                 
-                                   <div className='flex justify-center items-center mt-5'>
-                                     <button className='px-28 py-2 bg-amber-400 font-bold mb-3' type='submit'>Update</button>
-                                   </div>
-                                 </form>
-                               </div>
-                        ): null
-                    }
-                    {
-                        password ? (
-                            <div>
-                                
-                            </div>
-                        ):null
-                    }
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className='flex justify-center items-center mt-5'>
+                                    <button className='px-28 py-2 bg-amber-400 font-bold mb-3' type='submit'>Update</button>
+                                </div>
+                            </form>
+                        </div>
+                    )}
+
+                    {password && (
+                        <Newpassword/>
+                    )}
+
+                    {logoutPage && (
+                        <Logout />
+                    )}
                 </div>
             </div>
         </div>

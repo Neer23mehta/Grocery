@@ -1,5 +1,5 @@
 'use client'
-import { TextField } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, TextField } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { IoSearchSharp } from "react-icons/io5";
@@ -13,6 +13,11 @@ const Page = () => {
   const [input, setInput] = useState("");
   const [adds, setAdds] = useState([]);
   const [scroll, setScroll] = useState(false);
+  const [addCategory, setAddCategory] = useState(false);
+  const [image, setImage] = useState("")
+  const [inputs, setInputs] = useState({
+    category:""
+  })
 
   const handleScroll = (e) => {
     e.preventDefault();
@@ -24,7 +29,7 @@ const Page = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await axios.get("http://192.168.2.181:3000/admin/getcategories", {
+      const res = await axios.get("http://192.168.2.181:3000/admin/getcategories?pageNumber=1&pageLimit=10", {
         headers: {
           Authorizations: token,
           language: "en",
@@ -32,27 +37,37 @@ const Page = () => {
         },
       });
       setAdds(res?.data?.data || []);
+      console.log("response", res.data)
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
   };
 
-  const handleDelete = async (No) => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+  }
+
+  const handleDelete = async (id) => {
     const refreshtoken = localStorage.getItem("usertoken");
     const token = localStorage.getItem("token");
     try {
-      const res = await axios.delete(`http://192.168.2.181:3000/admin/delete_category?id=${No}`,{
-        method:"DELETE",
-        headers:{
-          Authorizations:token,
-          language:"en",
-          refresh_token:refreshtoken
+      const res = await axios.delete(`http://192.168.2.181:3000/admin/delete_category?id=${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorizations: token,
+          language: "en",
+          refresh_token: refreshtoken
         }
       })
-      setAdds(prev => prev.filter(item=>item.No !== No))
+      setAdds(prev => prev.filter(item => item.No !== id))
     } catch (error) {
       console.log(error)
     }
+  }
+
+  const handleCategoryPost = (e) => {
+    const {name,value} = e.target;
+    setInputs({...inputs,[name]:value,})
   }
 
   useEffect(() => {
@@ -75,7 +90,7 @@ const Page = () => {
             onChange={(e) => setInput(e.target.value)}
             className="ml-12"
           />
-          <button className="px-2 py-2 bg-amber-300 ml-5 w-40 h-13">Add Category</button>
+          <button className="px-2 py-2 bg-amber-300 ml-5 w-40 h-13" onClick={() => setAddCategory(true)}>Add Category</button>
         </div>
       </div>
 
@@ -114,8 +129,8 @@ const Page = () => {
                         /> */}
                       </td>
                       <td>
-                        <button  className="ml-2 text-gray-600 rounded"><MdEdit size={18} /></button>
-                        <button onClick={()=>handleDelete(No)} className="ml-5 text-gray-600 rounded"><RiDeleteBin5Fill size={18} /></button>
+                        <button className="ml-2 text-gray-600 rounded"><MdEdit size={18} /></button>
+                        <button onClick={() => handleDelete(No)} className="ml-5 text-gray-600 rounded"><RiDeleteBin5Fill size={18} /></button>
                       </td>
                     </tr>
                   );
@@ -129,6 +144,48 @@ const Page = () => {
           <button className="px-4 py-2 bg-gray-300 rounded-md">Next</button>
         </div>
       </div>
+      <Dialog open={addCategory} onClose={() => setAddCategory(false)}>
+        <div className='flex flex-col justify-center bg-white shadow-md'>
+          <DialogContent>
+            <form onSubmit={handleSubmit} className='bg-white z-[1] flex flex-col px-3'>
+              <div className='flex flex-row'>
+                <h1 className='items-center text-2xl ml-20'>Add Category</h1>
+                <div className='flex justify-end ml-25'>
+                  <button className='text-gray-500 h-9 mb-9 text-2xl flex justify-end right-0 left-20 hover:text-red-700' onClick={() => setAddCategory(false)}>X</button>
+                </div>
+              </div>
+              <div className='flex flex-col justify-start items-start mt-10'>
+                <label className='py-2 text-gray-400'>Category Name</label>
+                <input type='text' name='category' onChange={handleCategoryPost} value={inputs.category} placeholder='Category Name' required className='border border-gray-200 px-2.5 py-2 w-full' />
+              </div>
+              <div className='flex flex-row mt-7'>
+                <label htmlFor="thumbnail" className="flex items-center justify-center cursor-pointer mb-6">
+                  <div className="w-[325px] h-[125px] flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-300 transition-all duration-300 ease-in-out hover:border-gray-500 hover:shadow-lg">
+                    <Image
+                      src={image ? URL.createObjectURL(image) : assets.upimg}
+                      alt="Upload Thumbnail"
+                      width={110}
+                      height={100}
+                      className="object-cover rounded-lg"
+                    />
+                  </div>
+                </label>
+
+                <input
+                  type="file"
+                  id="thumbnail"
+                  className="hidden"
+                  onChange={(e) => setImage(e.target.files[0])}
+                />
+              </div>
+
+              <DialogActions>
+                <button type='submit' className='bg-amber-300 w-xs h-12 mb-8'>Save</button>
+              </DialogActions>
+            </form>
+          </DialogContent>
+        </div>
+      </Dialog>
     </div>
   );
 };

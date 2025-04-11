@@ -1,11 +1,49 @@
+'use client'
+import React from 'react'
 import { assets } from '@/assests/assets'
 import { FormControl, InputLabel, Select, TextField } from '@mui/material'
+import { useFormik } from 'formik'
 import Image from 'next/image'
-import React from 'react'
+import * as Yup from 'yup';
 
 const Page = () => {
+
+  const initialValues = {
+    name:"",
+    category:"",
+    subcategory:"",
+    brand:"",
+    variation:"",
+    price:"",
+    discount:"",
+    discountprice:"",
+    title:"",
+    description:""
+  }
+
+  const handleAllSchema = Yup.object({
+    name:Yup.string().min(1).max(25).required("Name Must Required"),
+    category: Yup.string().required("Category Must Required"),
+    
+  })
+  // const {values,touched,handleBlur,handleChange,handleReset,handleSubmit} = useFormik({
+  //   initialValues:initialValues,
+
+  // })
+
+  const handleProductAdd = () => {
+
+  }
+
+  const handleOtherInfoAdd = () => {
+
+  }
+
+  const handleProductsCancel = () => {
+
+  }
   return (
-    <div className='bg-white shadow-md h-auto w-auto flex flex-col'>
+    <div className='bg-white shadow-md h-auto flex flex-col'>
       <div className='mt-7 ml-5 w-full flex flex-row'>
         <h1 className='font-bold h-[28px] text-xl'>Add Product</h1>
       </div>
@@ -33,8 +71,9 @@ const Page = () => {
          </select>
         </div>
       </div>
-      <div className='mt-10 ml-5 w-full flex flex-row'>
+      <div className='mt-10 ml-5 justify-between items-center flex flex-row'>
         <h1 className='font-bold h-[28px] text-xl'>Product Details</h1>
+        <button onClick={handleProductAdd} className='text-3xl mr-20 rounded-full h-5 shadow-md'>+</button>
       </div>
       <div className='flex flex-row space-x-9'>
         <div className='flex flex-col ml-5 mt-3'>
@@ -54,17 +93,18 @@ const Page = () => {
           <TextField id="outlined-basic" label="Price" variant="outlined" className='mt-3' />
           </div>
           </div>
-          <div className='mt-10 ml-5 w-full flex flex-row'>
-        <h1 className='font-bold h-[28px] text-xl'>Product Details</h1>
+          <div className='mt-10 ml-5 flex flex-row justify-between items-center'>
+        <h1 className='font-bold h-[28px] text-xl'>Other Info</h1>
+        <button onClick={handleOtherInfoAdd} className='text-3xl mr-20 rounded-full h-5 shadow-md'>+</button>
       </div>
       <div className='flex flex-row space-x-9'>
-        <div className='flex flex-col ml-5 mt-3'>
-          <p className='text-gray-400 mb-2'>Variation</p>
-          <TextField id="outlined-basic" label="Product qnty." variant="outlined" className='mt-3' />
+        <div className='flex flex-col ml-5 mt-3 w-full'>
+          <p className='text-gray-400 mb-2'>Title Name</p>
+          <TextField id="outlined-basic" label="Title" variant="outlined" className='mt-3 w-full' />
         </div>
-        <div className='flex flex-col ml-5 mt-3'>
+        <div className='flex flex-col mr-19 mt-3 w-full'>
           <p className='text-gray-400 mb-2'>Description</p>
-          <TextField id="outlined-basic" label="Price" variant="outlined" className='mt-3' />
+          <TextField id="outlined-basic" label="Price" variant="outlined" className='mt-3 w-full' />
         </div>
           </div>
           <div className='flex flex-row ml-5 mt-7'>
@@ -79,7 +119,10 @@ const Page = () => {
                         />
                     </div>
                 </label>
-
+          <p className='text-gray-400 ml-3'>Dimension (512x512)
+            <br />
+            Size Upto 2MB
+          </p>
                 <input
                     type="file"
                     id="thumbnail"
@@ -87,8 +130,8 @@ const Page = () => {
                 />
           </div>
           <div className='flex flex-row justify-center items-center space-x-5 mt-3 mb-5'>
-              <button className='px-15 font-bold py-3 bg-amber-400'>Save</button>
-              <button className='px-15 font-bold py-2.5 bg-white border-1'>Cancel</button>
+              <button type='submit' className='px-15 font-bold py-3 bg-amber-400'>Save</button>
+              <button onClick={handleProductsCancel} className='px-15 font-bold py-2.5 bg-white border-1'>Cancel</button>
           </div>
     </div>
   )

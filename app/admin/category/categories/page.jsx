@@ -16,13 +16,18 @@ const Page = () => {
   const [addCategory, setAddCategory] = useState(false);
   const [image, setImage] = useState("")
   const [inputs, setInputs] = useState({
-    category:""
+    category:"",
+    status:"1"
   })
 
   const handleScroll = (e) => {
     e.preventDefault();
     setScroll(!scroll);
   };
+
+  const formdata = new FormData();
+  formdata.append("category_name",inputs.category)
+  formdata.append("status",inputs.status  )
 
   const fetchCategories = async () => {
     const refreshtoken = localStorage.getItem("usertoken");
@@ -43,8 +48,18 @@ const Page = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    const refreshtoken = localStorage.getItem("usertoken");
+    const token = localStorage.getItem("token");
+    try {
+      const res = await axios.post("http://192.168.2.181:3000/admin/add_brand",{
+
+      })
+    } catch (error) {
+      
+    }
+
   }
 
   const handleDelete = async (id) => {

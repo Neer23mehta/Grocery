@@ -86,12 +86,12 @@ const Layout = ({ children }: LayoutProps) => {
     return (
         <div className="flex min-h-screen bg-gray-100">
             <ToastContainer theme="dark" />
-            <div className="flex min-h-screen sticky z-30 top-0">
+            <div className="flex min-h-screen sticky z-40 top-0">
             <Sidebar/>
             </div>
             <div className="flex flex-col w-full">
                 <div className="flex flex-col justify-end space-y-2 bg-white p-1 shadow-md border-b border-gray-200 sticky top-0 z-20">
-                    <div className="flex flex-row items-center justify-end space-x-2 ml-50">
+                    <div className="flex flex-row items-center justify-end space-x-2 w-full">
                         <Image src={assets.admin} alt="Admin"/>
                         <button onClick={handleClick}>Admin</button>
                         <SlArrowDown size={12} width={9} onClick={handleClick}/>

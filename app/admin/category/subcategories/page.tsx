@@ -1,9 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import { InputLabel, MenuItem, Select, SelectChangeEvent, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Button } from '@mui/material';
+import { TextField, Dialog, DialogActions, DialogContent } from '@mui/material';
 import axios from 'axios';
-import { IoSearchSharp } from "react-icons/io5";
-import { SlArrowRight } from "react-icons/sl";
 import { MdEdit } from "react-icons/md";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import Image from 'next/image';
@@ -19,9 +17,14 @@ interface Category {
 const Page = () => {
   const [input, setInput] = useState<string>('');
   const [adds, setAdds] = useState<Category[]>([]);
-  const [openModal, setOpenModal] = useState<boolean>(false); 
-  const [status, setStatus] = useState(false);
-  const [image, setImage] = useState("");
+  const [openModal, setOpenModal] = useState<boolean>(false);
+  const [image, setImage] = useState<File | null>(null);
+  const [brand, setBrand] = useState<Category[]>([]);
+  const [inputs, setInputs] = useState({
+    subcategory: "A",
+    category: "",
+    status:""
+  });
 
   const fetchCategories = async () => {
     const refreshtoken = localStorage.getItem("usertoken");
@@ -36,9 +39,8 @@ const Page = () => {
         },
       });
       setAdds(res?.data?.data || []);
-      console.log("subres",res.data)
     } catch (error) {
-      console.error("Error fetching categories:", error);
+      console.error("Error fetching subcategories:", error);
     }
   };
 
@@ -47,8 +49,7 @@ const Page = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await axios.delete(`http://192.168.2.181:3000/admin/delete_subcategory?id=${id}`, {
-        method: "DELETE",
+      await axios.delete(`http://192.168.2.181:3000/admin/delete_subcategory?id=${id}`, {
         headers: {
           Authorizations: token,
           language: "en",
@@ -57,46 +58,74 @@ const Page = () => {
       });
       setAdds(prev => prev.filter(items => items.No !== id));
     } catch (error) {
-      console.error("Error fetching categories:", error);
+      console.error("Error deleting subcategory:", error);
     }
-  }
-
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
-  const [age, setAge] = React.useState('');
-
-  const handleChange = (event: SelectChangeEvent) => {
-    setAge(event.target.value);
   };
 
-  const handleStatus = () => {
-    setStatus(!status);
-  }
+  const fetchGetCategory = async () => {
+    const refreshtoken = localStorage.getItem('usertoken');
+    const token = localStorage.getItem('token');
 
-  const formdata = new FormData();
-  // formdata.append("SubCategory_Name",in)
+    try {
+      const res = await axios.get('http://192.168.2.181:3000/admin/getcategories?pageNumber=1&pageLimit=10', {
+        headers: {
+          Authorizations: token,
+          language: 'en',
+          refresh_token: refreshtoken,
+        },
+      });
+      setBrand(res.data.data || []);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleSubCategoryChange = (e: any) => {
+    const { name, value } = e.target;
+    setInputs({ ...inputs, [name]: value });
+  };
 
   const handleSubCategorySubmit = async (e: any) => {
     e.preventDefault();
+
     const refreshtoken = localStorage.getItem("usertoken");
     const token = localStorage.getItem("token");
+
+    const formdata = new FormData();
+    formdata.append("SubCategory_Name", inputs.subcategory);
+    formdata.append("fk_category_id", inputs.category);
+    formdata.append('status', inputs.status);
+    if (image) {
+      formdata.append("image", image);
+    }
+
     try {
-      const res = await axios.post("http://192.168.2.181:3000/admin/add_subcategory", {
+      await axios.post("http://192.168.2.181:3000/admin/add_subcategory", formdata, {
+        headers: {
+          Authorizations: token,
+          language: 'en',
+          refresh_token: refreshtoken,
+          'Content-Type': 'multipart/form-data',
+        },
       });
-      setOpenModal(false); 
+      setOpenModal(false);
+      fetchCategories(); // Refresh the list
     } catch (error) {
       console.error("Error submitting subcategory:", error);
     }
-  }
+  };
+
+  useEffect(() => {
+    fetchGetCategory();
+    fetchCategories();
+  }, []);
 
   return (
     <div className="">
       <div className="flex flex-row justify-between items-center">
         <div className="flex flex-col px-2">
           <h1 className="text-3xl font-bold">Sub Category</h1>
-          <p className="text-gray-500 mt-2">Dashboard<span className="text-black ml-5">Sub Category</span></p>
+          <p className="text-gray-500 mt-2">Dashboard <span className="text-black ml-5">Sub Category</span></p>
         </div>
         <div>
           <TextField
@@ -122,37 +151,22 @@ const Page = () => {
               <th className="py-2 px-2 text-left text-md font-semibold text-black">Action</th>
             </tr>
           </thead>
-          <tbody className="space-y-3">
+          <tbody>
             {
               adds
                 .filter(item => input === "" || item.Category_Name.toLowerCase().includes(input.toLowerCase()))
-                .map((curval) => {
-                  const { No, Image, Category_Name, Status } = curval;
-                  return (
-                    <tr key={No} className="mt-5 space-y-3">
-                      <td className="px-2 py-2 ml-4 left-4 mt-5">{No}</td>
-                      <td className="mt-5">
-                        <img src={Image} alt={Category_Name} className="w-14 h-13 object-cover" />
-                      </td>
-                      <td className="mt-5">{Category_Name}</td>
-                      <td>
-                        {Status === 1 ? (
-                          <span className="text-green-500"></span>
-                        ) : (
-                          <span className="text-gray-500"></span>
-                        )}
-                      </td>
-                      <td>
-                        <button className="ml-2 text-gray-600 rounded">
-                          <MdEdit size={18} />
-                        </button>
-                        <button className="ml-5 text-gray-600 rounded" onClick={() => handleSubCategoryDelete(No)}>
-                          <RiDeleteBin5Fill size={18} />
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })
+                .map(({ No, Image: ImgUrl, Category_Name, Status }) => (
+                  <tr key={No}>
+                    <td className="px-2 py-2">{No}</td>
+                    <td><img src={ImgUrl} alt={Category_Name} className="w-14 h-13 object-cover" /></td>
+                    <td>{Category_Name}</td>
+                    <td>{Status === 1 ? <span className="text-green-500">Active</span> : <span className="text-gray-500">Inactive</span>}</td>
+                    <td>
+                      <button className="ml-2 text-gray-600 rounded"><MdEdit size={18} /></button>
+                      <button className="ml-5 text-gray-600 rounded" onClick={() => handleSubCategoryDelete(No)}><RiDeleteBin5Fill size={18} /></button>
+                    </td>
+                  </tr>
+                ))
             }
           </tbody>
         </table>
@@ -163,50 +177,42 @@ const Page = () => {
         </div>
       </div>
 
-      <div className='flex flex-col justify-center items-center px-10'>
       <Dialog open={openModal} onClose={() => setOpenModal(false)} className='flex flex-col justify-center px-4'>
-            <div className='flex justify-end items-end '>
-            <button className='text-xl text-gray-400 mr-3 mt-2' onClick={()=>setOpenModal(false)}>X</button>
-            </div>
-        <div className='flex flex-row justify-center items-center'>
-        <h1 className='text-2xl font-bold'>Add Sub Category</h1>
+        <div className='flex justify-end items-end'>
+          <button className='text-xl text-gray-400 mr-3 mt-2' onClick={() => setOpenModal(false)}>X</button>
+        </div>
+        <div className='flex flex-row justify-center items-center shadow-sm'>
+          <h1 className='text-2xl font-bold mb-3'>Add Sub Category</h1>
         </div>
         <DialogContent>
-          <form onSubmit={handleSubCategorySubmit} className="flex flex-col items-center">
-            <div className='flex flex-col justify-start items-start mt-6'>
-            <p className='mb-2 text-gray-400'>Sub Category</p>
-            <TextField
-              id="subcategory-name"
-              label="Sub Category"
-              variant="outlined"
-              className="mt-4 w-xs"
-            />
-            </div>           
-
-            <div className='flex flex-col justify-start items-start mt-5'>
-            <p className='text-gray-400'>Category</p>
-            <Select
-              labelId="select-category-label"
-              id="select-category"
-              value={age}
-              onChange={handleChange}
-              className="mt-2 w-xs h-[45px] text-black"
-              label="Select Category"
-            >
-              <MenuItem value={1}>Vegetable</MenuItem>
-              <MenuItem value={2}>Fruit</MenuItem>
-              <MenuItem value={3}>Beauty</MenuItem>
-              <MenuItem value={4}>Cold Drinks</MenuItem>
-              <MenuItem value={5}>Personal Care</MenuItem>
-            </Select>
+          <form onSubmit={handleSubCategorySubmit} className="flex flex-col items-center px-5">
+            <div className='flex flex-col justify-start items-start mt-6 w-full'>
+              <p className='mb-2 text-gray-400'>Sub Category</p>
+              <input type='text' name='subcategory' value={inputs.subcategory} placeholder='Sub Category' onChange={(e)=>handleSubCategoryChange(e)} className='text-gray-400 border border-gray-200 py-2 w-full px-2' />
+            </div>
+            <div className="flex flex-col mt-5 justify-start items-start w-full">
+              <label className="text-gray-400">Category</label>
+              <select
+                name="category"
+                value={inputs.category}
+                onChange={handleSubCategoryChange}
+                className="border border-gray-200 mt-1 py-2.5 px-2.5 w-full"
+              >
+                <option value="">Select</option>
+                {brand.map((curval) => (
+                  <option key={curval.No} value={curval.No}>
+                    {curval.Category_Name}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="flex flex-row mt-7">
-              <label htmlFor="thumbnail" className="flex items-center justify-center cursor-pointer mb-6">
-                <div className="h-[125px] w-[325px] flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-300 transition-all duration-300 ease-in-out hover:border-gray-500 hover:shadow-lg">
+              <label htmlFor="thumbnail" className="cursor-pointer">
+                <div className="h-[125px] w-[325px] flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-300 hover:border-gray-500 hover:shadow-lg">
                   <Image
-                      src={image ? URL.createObjectURL(image) : assets.upimg}
-                      alt="Upload Thumbnail"
+                    src={image ? URL.createObjectURL(image) : assets.upimg}
+                    alt="Upload Thumbnail"
                     className="object-cover rounded-lg"
                     width={100}
                     height={50}
@@ -217,19 +223,31 @@ const Page = () => {
                 type="file"
                 id="thumbnail"
                 className="hidden"
-                onChange={(e)=>setImage(e.target.files[0])}
+                onChange={(e) => setImage(e.target.files?.[0] || null)}
               />
             </div>
 
+            <div className="flex flex-col mt-5">
+              <label className="text-gray-400">Status</label>
+              <select
+                name="status"
+                value={inputs.status}
+                onChange={handleSubCategoryChange}
+                className="border border-gray-200 w-full py-2 px-2.5"
+              >
+                <option value="1">Active</option>
+                <option value="0">Inactive</option>
+              </select>
+            </div>
+
             <DialogActions>
-              <button type="submit" className='bg-amber-300 px-35 py-3 text-xl font-bold'>
+              <button type="submit" className='bg-amber-300 px-10 py-3 text-xl font-bold mt-4'>
                 Save
               </button>
             </DialogActions>
           </form>
         </DialogContent>
       </Dialog>
-      </div>
     </div>
   );
 };

@@ -60,8 +60,8 @@ const Page = () => {
       });
       if (res.data) {
         toast.success("Added Successfully");
-        fetchCategories(); // refresh list
-        setAddCategory(false); // close dialog
+        fetchCategories(); 
+        setAddCategory(false); 
         setInputs({ category: "", status: "1" });
         setImage("");
       } else {

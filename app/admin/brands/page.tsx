@@ -63,6 +63,7 @@ const Page = () => {
       console.error('Error fetching categories:', error);
     }
   };
+  console.log("res",adds)
 
   const handleDelete = async (No: number) => {
     const refreshtoken = localStorage.getItem('usertoken');

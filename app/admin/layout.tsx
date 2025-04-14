@@ -91,9 +91,9 @@ const Layout = ({ children }: LayoutProps) => {
             </div>
             <div className="flex flex-col w-full">
                 <div className="flex flex-col justify-end space-y-2 bg-white p-1 shadow-md border-b border-gray-200 sticky top-0 z-20">
-                    <div className="flex flex-row items-center justify-end space-x-2 w-full">
-                        <Image src={assets.admin} alt="Admin"/>
-                        <button onClick={handleClick}>Admin</button>
+                    <div className="flex flex-row items-center justify-end  ">
+                        <Image src={assets.admin} alt="Admin" className="mt-2"/>
+                        <button onClick={handleClick} className="mr-1">Admin</button>
                         <SlArrowDown size={12} width={9} onClick={handleClick}/>
                     </div>
                     {logout && (

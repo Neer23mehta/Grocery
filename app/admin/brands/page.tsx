@@ -58,7 +58,7 @@ const Page = () => {
           },
         }
       );
-      setAdds(res?.data?.data || []);
+      setAdds(res?.data?.data?.result || []);
     } catch (error) {
       console.error('Error fetching categories:', error);
     }
@@ -153,7 +153,7 @@ const Page = () => {
           },
         }
       );
-      setBrand(res.data.data || []);
+      setBrand(res.data.data.result || []);
     } catch (error) {
       console.log(error);
     }
@@ -174,7 +174,7 @@ const Page = () => {
           },
         }
       );
-      setSubCategory(res?.data?.data || []);
+      setSubCategory(res?.data?.data?.result || []);
     } catch (error) {
       console.error('Error fetching subcategories:', error);
     }
@@ -252,7 +252,7 @@ const Page = () => {
                     <td className="px-2 py-2">{Brand_Name}</td>
                     <td className="px-2 py-2">{Category_Name}</td>
                     <td className="px-2 py-2">{SubCategory_Name}</td>
-                    <td>{Status === 1 ? 'Active' : 'Inactive'}</td>
+                    <td>{Status === 1 ? <span><Image src={assets.scrollon} alt='active'/></span>:<span><Image src={assets.scrolloff} alt='Inactive'/></span>}</td>
                     <td>
                       <button
                         className="ml-2 text-gray-600 rounded"

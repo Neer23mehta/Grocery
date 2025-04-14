@@ -2,32 +2,21 @@
 import { Dialog, DialogActions, DialogContent, TextField } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { IoSearchSharp } from "react-icons/io5";
-import { SlArrowRight } from "react-icons/sl";
 import { MdEdit } from "react-icons/md";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import { assets } from '../../../../assests/assets';
 import Image from 'next/image';
+import { toast } from 'react-toastify';
 
 const Page = () => {
   const [input, setInput] = useState("");
   const [adds, setAdds] = useState([]);
-  const [scroll, setScroll] = useState(false);
   const [addCategory, setAddCategory] = useState(false);
-  const [image, setImage] = useState("")
+  const [image, setImage] = useState("");
   const [inputs, setInputs] = useState({
-    category:"",
-    status:"1"
-  })
-
-  const handleScroll = (e) => {
-    e.preventDefault();
-    setScroll(!scroll);
-  };
-
-  const formdata = new FormData();
-  formdata.append("category_name",inputs.category)
-  formdata.append("status",inputs.status  )
+    category: "",
+    status: "1"
+  });
 
   const fetchCategories = async () => {
     const refreshtoken = localStorage.getItem("usertoken");
@@ -41,8 +30,9 @@ const Page = () => {
           refresh_token: refreshtoken,
         },
       });
-      setAdds(res?.data?.data || []);
-      console.log("response", res.data)
+
+      const result = res?.data?.data?.result || [];
+      setAdds(result);
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
@@ -52,38 +42,58 @@ const Page = () => {
     e.preventDefault();
     const refreshtoken = localStorage.getItem("usertoken");
     const token = localStorage.getItem("token");
-    try {
-      const res = await axios.post("http://192.168.2.181:3000/admin/add_brand",{
 
-      })
-    } catch (error) {
-      
+    const formdata = new FormData();
+    formdata.append("category_name", inputs.category);
+    formdata.append("status", inputs.status);
+    if (image) {
+      formdata.append("image", image);
     }
 
+    try {
+      const res = await axios.post("http://192.168.2.181:3000/admin/addcategory", formdata, {
+        headers: {
+          Authorizations: token,
+          language: "en",
+          refresh_token: refreshtoken
+        }
+      });
+      if (res.data) {
+        toast.success("Added Successfully");
+        fetchCategories(); // refresh list
+        setAddCategory(false); // close dialog
+        setInputs({ category: "", status: "1" });
+        setImage("");
+      } else {
+        toast.error("Something went wrong");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   const handleDelete = async (id) => {
     const refreshtoken = localStorage.getItem("usertoken");
     const token = localStorage.getItem("token");
     try {
-      const res = await axios.delete(`http://192.168.2.181:3000/admin/delete_category?id=${id}`, {
-        method: "DELETE",
+      await axios.delete(`http://192.168.2.181:3000/admin/deletecategory?id=${id}`, {
         headers: {
           Authorizations: token,
           language: "en",
           refresh_token: refreshtoken
         }
-      })
-      setAdds(prev => prev.filter(item => item.No !== id))
+      });
+      setAdds(prev => prev.filter(item => item.No !== id));
+      toast.success("Deleted Successfully");
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   }
 
   const handleCategoryPost = (e) => {
-    const {name,value} = e.target;
-    setInputs({...inputs,[name]:value,})
-  }
+    const { name, value } = e.target;
+    setInputs({ ...inputs, [name]: value });
+  };
 
   useEffect(() => {
     fetchCategories();
@@ -123,26 +133,19 @@ const Page = () => {
           <tbody className="space-y-5">
             {
               adds
-                .filter(item => input === "" || item.Category_Name.toLowerCase().includes(input.toLowerCase()))
+                .filter(item =>
+                  input === "" || (item?.Category_Name?.toLowerCase().includes(input.toLowerCase()))
+                )
                 .map((curval) => {
-                  const { No, Image, Category_Name, Status } = curval;
+                  const { No, Image: Img, Category_Name, Status } = curval;
                   return (
                     <tr key={No} className="space-y-5">
                       <td className='px-2 py-3'>{No}</td>
                       <td>
-                        <img src={Image} alt={Category_Name} className="w-14 h-13 object-cover" />
+                        <img src={Img} alt={Category_Name} className="w-14 h-13 object-cover" />
                       </td>
                       <td>{Category_Name}</td>
-                      <td>
-                        {/* <Image
-                          src={Status == "1" ? assets.scrolloff : assets.scrollon}
-                          alt="Scroll Status"
-                          onClick={(e)=>handleScroll(e)}
-                          className="cursor-pointer"
-                          height={30}
-                          width={30}
-                        /> */}
-                      </td>
+                      <td className='px-2 py-2'>{Status === 1 ? <span><Image src={assets.scrollon} alt='Active'/></span> : <span><Image src={assets.scrolloff} alt='Inactive'/></span>}</td>
                       <td>
                         <button className="ml-2 text-gray-600 rounded"><MdEdit size={18} /></button>
                         <button onClick={() => handleDelete(No)} className="ml-5 text-gray-600 rounded"><RiDeleteBin5Fill size={18} /></button>
@@ -159,6 +162,8 @@ const Page = () => {
           <button className="px-4 py-2 bg-gray-300 rounded-md">Next</button>
         </div>
       </div>
+
+      {/* Add Category Dialog */}
       <Dialog open={addCategory} onClose={() => setAddCategory(false)}>
         <div className='flex flex-col justify-center bg-white shadow-md'>
           <DialogContent>
@@ -166,13 +171,41 @@ const Page = () => {
               <div className='flex flex-row'>
                 <h1 className='items-center text-2xl ml-20'>Add Category</h1>
                 <div className='flex justify-end ml-25'>
-                  <button className='text-gray-500 h-9 mb-9 text-2xl flex justify-end right-0 left-20 hover:text-red-700' onClick={() => setAddCategory(false)}>X</button>
+                  <button
+                    type="button"
+                    className='text-gray-500 h-9 mb-9 text-2xl flex justify-end right-0 left-20 hover:text-red-700'
+                    onClick={() => setAddCategory(false)}
+                  >
+                    X
+                  </button>
                 </div>
               </div>
               <div className='flex flex-col justify-start items-start mt-10'>
                 <label className='py-2 text-gray-400'>Category Name</label>
-                <input type='text' name='category' onChange={handleCategoryPost} value={inputs.category} placeholder='Category Name' required className='border border-gray-200 px-2.5 py-2 w-full' />
+                <input
+                  type='text'
+                  name='category'
+                  onChange={handleCategoryPost}
+                  value={inputs.category}
+                  placeholder='Category Name'
+                  required
+                  className='border border-gray-200 px-2.5 py-2 w-full'
+                />
               </div>
+
+              <div className="flex flex-col mt-5">
+                <label className="text-gray-400">Status</label>
+                <select
+                  name="status"
+                  value={inputs.status}
+                  onChange={handleCategoryPost}
+                  className="border border-gray-200 w-full py-2 px-2.5"
+                >
+                  <option value="1">Active</option>
+                  <option value="0">Inactive</option>
+                </select>
+              </div>
+
               <div className='flex flex-row mt-7'>
                 <label htmlFor="thumbnail" className="flex items-center justify-center cursor-pointer mb-6">
                   <div className="w-[325px] h-[125px] flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-300 transition-all duration-300 ease-in-out hover:border-gray-500 hover:shadow-lg">

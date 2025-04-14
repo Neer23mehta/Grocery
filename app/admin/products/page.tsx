@@ -6,58 +6,53 @@ import { IoSearchSharp } from "react-icons/io5";
 import { SlArrowRight } from "react-icons/sl";
 import { MdEdit } from "react-icons/md";
 import { RiDeleteBin5Fill } from "react-icons/ri";
-// import { assets } from '../../../../assests/assets';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { assets } from '@/assests/assets';
+import commonGetApis from '@/commonapi/Commonapi';
+
+interface Product {
+  Product_Name: string;
+  Description: string;
+  Image: string;
+  Price: string;
+  Stock_Status: number;
+  Variation: string;
+  Category_Name: string;
+}
+
+interface ApiResponse {
+  data: Product[];
+}
 
 const Page = () => {
-  const [input, setInput] = useState("");
-  const [adds, setAdds] = useState([]);
-  const [scroll, setScroll] = useState(false);
+  const [input, setInput] = useState<string>(""); 
+  const [adds, setAdds] = useState<Product[]>([]); 
+  const [scroll, setScroll] = useState<boolean>(false);
   const route = useRouter();
 
-  const handleScroll = (e:any) => {
+  const handleScroll = (e: React.WheelEvent) => {
     e.preventDefault();
     setScroll(!scroll);
   };
 
-  // const fetchCategories = async () => {
-  //   const refreshtoken = localStorage.getItem("usertoken");
-  //   const token = localStorage.getItem("token");
+  const fetchCategories = async () => {
 
-  //   try {
-  //     const res = await axios.get("http://192.168.2.181:3000/admin/getcategories", {
-  //       headers: {
-  //         Authorizations: token,
-  //         language: "en",
-  //         refresh_token: refreshtoken,
-  //       },
-  //     });
-  //     setAdds(res?.data?.data || []);
-  //   } catch (error) {
-  //     console.error("Error fetching categories:", error);
-  //   }
-  // };
-
-  // const handledelete = async (No:any) => {
-  //   try {
-  //     const res = await axios.delete(`http://192.168.2.181:3000/admin/delete_category?id=${No}`,{
-  //       method:"DELETE",
-  //     })
-  //     console.log("del",res)
-  //     // setAdds(prev => prev.filter(item=>item.No !== No))
-  //   } catch (error) {
-  //     console.log(error)
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   fetchCategories();
-  // }, []);
+    try {
+      const res = await commonGetApis("get_products?pageNumber=1&pageLimit=10");
+      setAdds(res?.data.result || []);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+  console.log("res",adds)
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
   const handleAddProduct = () => {
-      route.push("/admin/products/addproduct")
-  }
+    route.push("/admin/products/addproduct");
+  };
 
   return (
     <div className="">
@@ -93,61 +88,40 @@ const Page = () => {
               <th className="py-2 px-2 text-left text-md font-semibold text-black">Action</th>
             </tr>
           </thead>
-          <tbody className="space-y-5">
-            {/* {
-              adds
-                // .filter(item => input === "" || item.Category_Name.toLowerCase().includes(input.toLowerCase()))
-                .map((curval) => {
-                  const { No, Image, Category_Name, Status } = curval;
-                  return (
-                    <tr key={No} className="space-y-5">
-                      <td className='px-2 py-3'>{No}</td>
-                      <td>
-                        <img src={Image} alt={Category_Name} className="w-14 h-13 object-cover" />
-                      </td>
-                      <td>{Category_Name}</td>
-                      <td>
-                        <button> */}
-                        {/* <Image
-                          src={scroll ? assets.scrolloff : assets.scrollon}
-                          alt="Scroll Status"
-                          onClick={(e)=>handleScroll(e)}
-                          className="cursor-pointer"
-                          height={30}
-                          width={30}
-            //             /> */}
-            {/* //             </button>
-            //           </td>
-            //           <td>
-            //             <button  className="ml-2 text-gray-600 rounded"><MdEdit size={18} /></button>
-            //             <button  className="ml-5 text-gray-600 rounded"><RiDeleteBin5Fill size={18} /></button>
-            //           </td>
-            //         </tr>
-            //       );
-            //     })
-            // } */}
+          <tbody className="">
+            {adds
+              .filter((item) => input === "" || item.Product_Name.toLowerCase().includes(input.toLowerCase()))
+              .map((curval, index) => {
+                const { Product_Name, Description, Price, Stock_Status, Variation, Category_Name } = curval;
+                return (
+                  <tr key={index} className=''>
+                    <td className='px-2 py-2'>{curval.Image && <img src={curval.Image} alt={Product_Name} width={50} height={50} />}</td>
+                    <td className='px-2 py-2'>{Product_Name}</td>
+                    <td className='px-2 py-2'>{Category_Name}</td>
+                    <td className='px-2 py-2'>{Description}</td>
+                    <td className='px-2 py-2'>{Variation}</td>
+                    <td className='px-2 py-2'>{Price}</td>
+                    <td><div>{Stock_Status === 1 ? <Image src={assets.scrollon} alt='In-Stock'/> : <Image src={assets.scrolloff} alt='Out-of-Stock'/>}</div></td>
+                    <td>
+                      <button className='ml-2 text-gray-500'><MdEdit/></button>
+                      <button className='ml-3 text-gray-500'><RiDeleteBin5Fill/></button>
+                    </td>
+                  </tr>
+                );
+              })}
           </tbody>
         </table>
 
-        <div className='flex justify-end bottom-0 mt-5 h-[20px] items-center'>
-                    <button className='px-2 py-1 bg-gray-50 '>Previous</button>
-                    {
-                        ["1","2","3","4","5","6","7","Next"].map((curval,index) => {
-                            return (
-                                <button key={index} className='px-2 py-1 bg-gray-50'>{curval}</button>
-                            )
-                        })
-                    }
-                    {/* {
-                        adds.map((curval:any,index:any)=>{
-                            return (
-                                <button key={index}>
-                                    {curval.i}
-                                </button>
-                            )
-                        })
-                    }     */}
-            </div>
+        <div className="flex justify-end bottom-0 mt-5 h-[20px] items-center">
+          <button className="px-2 py-1 bg-gray-50">Previous</button>
+          {["1", "2", "3", "4", "5", "6", "7", "Next"].map((curval, index) => {
+            return (
+              <button key={index} className="px-2 py-1 bg-gray-50">
+                {curval}
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

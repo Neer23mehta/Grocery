@@ -6,6 +6,7 @@ import { MdEdit } from "react-icons/md";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import Image from 'next/image';
 import { assets } from '../../../../assests/assets';
+import { toast } from 'react-toastify';
 
 interface Category {
   No: number;
@@ -21,9 +22,9 @@ const Page = () => {
   const [image, setImage] = useState<File | null>(null);
   const [brand, setBrand] = useState<Category[]>([]);
   const [inputs, setInputs] = useState({
-    subcategory: "A",
+    subcategory: "",
     category: "",
-    status:""
+    status:"1"
   });
 
   const fetchCategories = async () => {
@@ -38,11 +39,12 @@ const Page = () => {
           refresh_token: refreshtoken,
         },
       });
-      setAdds(res?.data?.data || []);
+      setAdds(res?.data?.data?.result || []);
     } catch (error) {
       console.error("Error fetching subcategories:", error);
     }
   };
+  console.log("subcategory",adds)
 
   const handleSubCategoryDelete = async (id: number) => {
     const refreshtoken = localStorage.getItem("usertoken");
@@ -74,12 +76,11 @@ const Page = () => {
           refresh_token: refreshtoken,
         },
       });
-      setBrand(res.data.data || []);
+      setBrand(res.data.data[0] || []);
     } catch (error) {
       console.log(error);
     }
   };
-
   const handleSubCategoryChange = (e: any) => {
     const { name, value } = e.target;
     setInputs({ ...inputs, [name]: value });
@@ -92,7 +93,7 @@ const Page = () => {
     const token = localStorage.getItem("token");
 
     const formdata = new FormData();
-    formdata.append("SubCategory_Name", inputs.subcategory);
+    formdata.append("subcategory_name", inputs.subcategory);
     formdata.append("fk_category_id", inputs.category);
     formdata.append('status', inputs.status);
     if (image) {
@@ -100,7 +101,7 @@ const Page = () => {
     }
 
     try {
-      await axios.post("http://192.168.2.181:3000/admin/add_subcategory", formdata, {
+    const res = await axios.post("http://192.168.2.181:3000/admin/add_subCategory", formdata, {
         headers: {
           Authorizations: token,
           language: 'en',
@@ -108,6 +109,13 @@ const Page = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
+      if(res.data){
+        toast.success("Successfully Added")
+      }
+      else {
+        toast.error("Failed To Add")
+      }
+
       setOpenModal(false);
       fetchCategories(); // Refresh the list
     } catch (error) {
@@ -160,7 +168,7 @@ const Page = () => {
                     <td className="px-2 py-2">{No}</td>
                     <td><img src={ImgUrl} alt={Category_Name} className="w-14 h-13 object-cover" /></td>
                     <td>{Category_Name}</td>
-                    <td>{Status === 1 ? <span className="text-green-500">Active</span> : <span className="text-gray-500">Inactive</span>}</td>
+                    <td>{Status === 1 ? <span className="text-green-500"><Image src={assets.scrollon} alt='active'/></span> : <span className="text-gray-500"><Image src={assets.scrolloff} alt='inactive'/></span>}</td>
                     <td>
                       <button className="ml-2 text-gray-600 rounded"><MdEdit size={18} /></button>
                       <button className="ml-5 text-gray-600 rounded" onClick={() => handleSubCategoryDelete(No)}><RiDeleteBin5Fill size={18} /></button>
@@ -195,7 +203,7 @@ const Page = () => {
               <select
                 name="category"
                 value={inputs.category}
-                onChange={handleSubCategoryChange}
+                onChange={(e)=>handleSubCategoryChange(e)}
                 className="border border-gray-200 mt-1 py-2.5 px-2.5 w-full"
               >
                 <option value="">Select</option>
@@ -232,7 +240,7 @@ const Page = () => {
               <select
                 name="status"
                 value={inputs.status}
-                onChange={handleSubCategoryChange}
+                onChange={(e)=>handleSubCategoryChange(e)}
                 className="border border-gray-200 w-full py-2 px-2.5"
               >
                 <option value="1">Active</option>

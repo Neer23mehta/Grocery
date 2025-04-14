@@ -1,139 +1,336 @@
 'use client'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { assets } from '@/assests/assets'
-import { FormControl, InputLabel, Select, TextField } from '@mui/material'
+import { TextField } from '@mui/material'
 import { useFormik } from 'formik'
 import Image from 'next/image'
-import * as Yup from 'yup';
+import * as Yup from 'yup'
+import axios from 'axios'
+import commonGetApis from '@/commonapi/Commonapi'
+import { toast } from 'react-toastify'
+
+interface ProductFormValues {
+  name: string;
+  category: string;
+  subcategory: string;
+  brand: string;
+  variation: string;
+  price: string;
+  discount: string;
+  discountprice: string;
+  title: string;
+  description: string;
+}
+
+interface Category {
+  Category_Name: string;
+  No: number;
+}
+
+interface Subcategory {
+  SubCategory_Name: string;
+  No: number;
+}
+
+interface Brand {
+  Brand_Name: string;
+  No: number;
+}
 
 const Page = () => {
-
-  const initialValues = {
-    name:"",
-    category:"",
-    subcategory:"",
-    brand:"",
-    variation:"",
-    price:"",
-    discount:"",
-    discountprice:"",
-    title:"",
-    description:""
+  const initialValues: ProductFormValues = {
+    name: "",
+    category: "",
+    subcategory: "",
+    brand: "",
+    variation: "",
+    price: "",
+    discount: "",
+    discountprice: "",
+    title: "",
+    description: ""
   }
 
-  const handleAllSchema = Yup.object({
-    name:Yup.string().min(1).max(25).required("Name Must Required"),
-    category: Yup.string().required("Category Must Required"),
-    
-  })
-  // const {values,touched,handleBlur,handleChange,handleReset,handleSubmit} = useFormik({
-  //   initialValues:initialValues,
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [subCategories, setSubCategories] = useState<Subcategory[]>([]);
+  const [brands, setBrands] = useState<Brand[]>([]);
+  const [image, setImage] = useState<File | null>(null);
 
-  // })
+  useEffect(() => {
+    fetchCategories();
+    fetchSubCategories();
+    fetchBrands();
+  }, []);
 
-  const handleProductAdd = () => {
-
+  const fetchCategories = async () => {
+    try {
+      const res = await commonGetApis('getcategories?pageNumber=1&pageLimit=10');
+      setCategories(res.data.result);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
   }
 
-  const handleOtherInfoAdd = () => {
-
+  const fetchSubCategories = async () => {
+    try {
+      const res = await commonGetApis('get_subcategories?pageNumber=1&pageLimit=10');
+      setSubCategories(res.data.result);
+    } catch (error) {
+      console.error("Error fetching subcategories:", error);
+    }
   }
 
-  const handleProductsCancel = () => {
-
+  const fetchBrands = async () => {
+    try {
+      const res = await commonGetApis('get_brands?pageNumber=1&pageLimit=10');
+      setBrands(res.data.result);
+    } catch (error) {
+      console.error("Error fetching brands:", error);
+    }
   }
+
+  const validationSchema = Yup.object().shape({
+    name: Yup.string().min(1).max(25).required("Name is required"),
+    category: Yup.string().required("Category is required"),
+    subcategory: Yup.string().required("Subcategory is required"),
+    brand: Yup.string().required("Brand is required"),
+    variation: Yup.string().required("Variation is required"),
+    price: Yup.number().typeError("Price must be a number").required("Price is required"),
+    discount: Yup.number().typeError("Discount must be a number").min(0).max(100, "Must be between 0 and 100"),
+    discountprice: Yup.number().typeError("Discount price must be a number").required("Discounted price is required"),
+    title: Yup.string().required("Title is required"),
+    description: Yup.string().required("Description is required"),
+  });
+
+  const formik = useFormik<ProductFormValues>({
+    initialValues,
+    validationSchema,
+    onSubmit: () => handlePostProducts()
+  });
+
+  const {
+    values,
+    errors,
+    touched,
+    handleBlur,
+    handleChange,
+    handleSubmit,
+    resetForm
+  } = formik;
+
+  const handlePostProducts = async () => {
+    if (!image) {
+      toast.error("Please select an image.");
+      return;
+    }
+
+    const formdata = new FormData();
+    formdata.append("fk_category_id", values.category);
+    formdata.append("fk_subcategory_id", values.subcategory);
+    formdata.append("fk_brand_id", values.brand);
+    formdata.append("product_name", values.name);
+    formdata.append("product_price", values.price);
+    formdata.append("variation", values.variation);
+    formdata.append("discount", values.discount);
+    formdata.append("discount_price", values.discountprice);
+    formdata.append("title", values.title);
+    formdata.append("description", values.description);
+    formdata.append("stock_status","1")
+    formdata.append("image", image);
+
+    const token = localStorage.getItem('token');
+    const refreshToken = localStorage.getItem('usertoken');
+
+    try {
+      const res = await axios.post('http://192.168.2.181:3000/admin/add_product', formdata, {
+        headers: {
+          Authorizations: token,
+          language: "en",
+          refresh_token: refreshToken
+        }
+      });
+
+      if (res.data) {
+        toast.success("Product Added Successfully");
+        resetForm();
+      } else {
+        toast.error("Failed to add product.");
+      }
+    } catch (error) {
+      console.error("Error posting product:", error);
+      toast.error("An error occurred while adding the product.");
+    }
+  }
+
+  const handleCancel = () => {
+    resetForm();
+    setImage(null);
+  }
+
   return (
-    <div className='bg-white shadow-md h-auto flex flex-col'>
-      <div className='mt-7 ml-5 w-full flex flex-row'>
-        <h1 className='font-bold h-[28px] text-xl'>Add Product</h1>
-      </div>
-      <div className='flex flex-row space-x-9'>
-        <div className='flex flex-col ml-5 mt-3'>
+    <form onSubmit={handleSubmit} className='bg-white shadow-md p-5 flex flex-col space-y-8'>
+      <h1 className='font-bold text-xl'>Add Product</h1>
+
+      <div className='flex flex-col md:flex-row md:flex-wrap gap-5'>
+        <div className='flex flex-col w-full md:w-[48%] lg:w-[23%]'>
           <p className='text-gray-400 mb-2'>Item Name</p>
-          <TextField id="outlined-basic" label="Name" variant="outlined" className='mt-3' />
+          <TextField
+            name="name"
+            value={values.name}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            label="Name"
+            variant="outlined"
+            error={touched.name && Boolean(errors.name)}
+            helperText={touched.name && errors.name}
+          />
         </div>
-        <div className='flex flex-col ml-5 mt-3'>
+
+        <div className='flex flex-col w-full md:w-[48%] lg:w-[23%]'>
           <p className='text-gray-400 mb-2'>Category</p>
-         <select className='min-w-full py-4 w-[235px] border-1 border-gray-300 rounded-md text-black px-2 focus:outline-none' name='select'>Select
-          <option>Select</option>
-         </select>
+          <select
+            name="category"
+            value={values.category}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            className='py-3 px-2 border border-gray-300 rounded-md'
+          >
+            <option value="">Select</option>
+            {categories.map((item) => (
+              <option key={item.No} value={item.No}>{item.Category_Name}</option>
+            ))}
+          </select>
+          {touched.category && errors.category && (
+            <span className="text-sm text-red-500">{errors.category}</span>
+          )}
         </div>
-        <div className='flex flex-col ml-5 mt-3'>
-          <p className='text-gray-400 mb-2'>Sub Category</p>
-          <select className='min-w-full py-4 w-[235px] border-1 border-gray-300 rounded-md text-black px-2 focus:scale-none focus:outline-none' name='select'>Select
-          <option className='bg-white'>Select</option>
-         </select>
+
+        <div className='flex flex-col w-full md:w-[48%] lg:w-[23%]'>
+          <p className='text-gray-400 mb-2'>Subcategory</p>
+          <select
+            name="subcategory"
+            value={values.subcategory}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            className='py-3 px-2 border border-gray-300 rounded-md'
+          >
+            <option value="">Select</option>
+            {subCategories.map((item) => (
+              <option key={item.No} value={item.No}>{item.SubCategory_Name}</option>
+            ))}
+          </select>
+          {touched.subcategory && errors.subcategory && (
+            <span className="text-sm text-red-500">{errors.subcategory}</span>
+          )}
         </div>
-        <div className='flex flex-col ml-5 mt-3'>
+
+        <div className='flex flex-col w-full md:w-[48%] lg:w-[23%]'>
           <p className='text-gray-400 mb-2'>Brand</p>
-          <select className='min-w-full py-4 w-[235px] border-1 border-gray-300 rounded-md text-black px-2 focus:outline-none' name='select'>Select
-          <option>Select</option>
-         </select>
+          <select
+            name="brand"
+            value={values.brand}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            className='py-3 px-2 border border-gray-300 rounded-md'
+          >
+            <option value="">Select</option>
+            {brands.map((item) => (
+              <option key={item.No} value={item.No}>{item.Brand_Name}</option>
+            ))}
+          </select>
+          {touched.brand && errors.brand && (
+            <span className="text-sm text-red-500">{errors.brand}</span>
+          )}
         </div>
       </div>
-      <div className='mt-10 ml-5 justify-between items-center flex flex-row'>
-        <h1 className='font-bold h-[28px] text-xl'>Product Details</h1>
-        <button onClick={handleProductAdd} className='text-3xl mr-20 rounded-full h-5 shadow-md'>+</button>
-      </div>
-      <div className='flex flex-row space-x-9'>
-        <div className='flex flex-col ml-5 mt-3'>
-          <p className='text-gray-400 mb-2'>Variation</p>
-          <TextField id="outlined-basic" label="Product qnty." variant="outlined" className='mt-3' />
-        </div>
-        <div className='flex flex-col ml-5 mt-3'>
-          <p className='text-gray-400 mb-2'>Product Price</p>
-          <TextField id="outlined-basic" label="Price" variant="outlined" className='mt-3' />
-        </div>
-        <div className='flex flex-col ml-5 mt-3'>
-          <p className='text-gray-400 mb-2'>discount (%)</p>
-          <TextField id="outlined-basic" label="Discount" variant="outlined" className='mt-3' />
-        </div>
-        <div className='flex flex-col ml-5 mt-3'>
-          <p className='text-gray-400 mb-2'>Discount Price</p>
-          <TextField id="outlined-basic" label="Price" variant="outlined" className='mt-3' />
+
+      <div className='flex flex-wrap gap-5'>
+        {[
+          { name: 'variation', label: 'Product qnty.' },
+          { name: 'price', label: 'Price' },
+          { name: 'discount', label: 'Discount (%)' },
+          { name: 'discountprice', label: 'Discount Price' }
+        ].map(({ name, label }) => (
+          <div key={name} className='flex flex-col w-full md:w-[48%] lg:w-[23%]'>
+            <p className='text-gray-400 mb-2'>{label}</p>
+            <TextField
+              name={name}
+              value={values[name as keyof ProductFormValues]}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              label={label}
+              variant="outlined"
+              error={touched[name as keyof ProductFormValues] && Boolean(errors[name as keyof ProductFormValues])}
+              helperText={touched[name as keyof ProductFormValues] && errors[name as keyof ProductFormValues]}
+            />
           </div>
-          </div>
-          <div className='mt-10 ml-5 flex flex-row justify-between items-center'>
-        <h1 className='font-bold h-[28px] text-xl'>Other Info</h1>
-        <button onClick={handleOtherInfoAdd} className='text-3xl mr-20 rounded-full h-5 shadow-md'>+</button>
+        ))}
       </div>
-      <div className='flex flex-row space-x-9'>
-        <div className='flex flex-col ml-5 mt-3 w-full'>
+
+      <div className='flex flex-col md:flex-row gap-5'>
+        <div className='flex flex-col w-full'>
           <p className='text-gray-400 mb-2'>Title Name</p>
-          <TextField id="outlined-basic" label="Title" variant="outlined" className='mt-3 w-full' />
+          <TextField
+            name="title"
+            value={values.title}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            label="Title"
+            variant="outlined"
+            error={touched.title && Boolean(errors.title)}
+            helperText={touched.title && errors.title}
+          />
         </div>
-        <div className='flex flex-col mr-19 mt-3 w-full'>
+        <div className='flex flex-col w-full'>
           <p className='text-gray-400 mb-2'>Description</p>
-          <TextField id="outlined-basic" label="Price" variant="outlined" className='mt-3 w-full' />
+          <TextField
+            name="description"
+            value={values.description}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            label="Description"
+            variant="outlined"
+            error={touched.description && Boolean(errors.description)}
+            helperText={touched.description && errors.description}
+          />
         </div>
+      </div>
+
+      <div className='flex flex-col sm:flex-row items-start sm:items-center gap-4'>
+        <label htmlFor="thumbnail" className="cursor-pointer">
+          <div className="w-[310px] h-[140px] flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-300 hover:border-gray-500 hover:shadow-lg">
+            {image ? (
+              <p>{image.name}</p>
+            ) : (
+              <Image
+                src={assets.upimg}
+                alt="Upload Thumbnail"
+                className="object-cover rounded-lg"
+                width={310}
+                height={140}
+              />
+            )}
+            <input
+              id="thumbnail"
+              className="hidden"
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                if (e.target.files && e.target.files[0]) {
+                  setImage(e.target.files[0]);
+                }
+              }}
+            />
           </div>
-          <div className='flex flex-row ml-5 mt-7'>
-          <label htmlFor="thumbnail" className="flex items-center justify-center cursor-pointer mb-6">
-                    <div className="w-auto h-auto flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-300 transition-all duration-300 ease-in-out hover:border-gray-500 hover:shadow-lg">
-                        <Image
-                            src={assets.upimg}
-                            alt="Upload Thumbnail"
-                            // width={110}
-                            // height={100}
-                            className="object-cover rounded-lg"
-                        />
-                    </div>
-                </label>
-          <p className='text-gray-400 ml-3'>Dimension (512x512)
-            <br />
-            Size Upto 2MB
-          </p>
-                <input
-                    type="file"
-                    id="thumbnail"
-                    className="hidden"
-                />
-          </div>
-          <div className='flex flex-row justify-center items-center space-x-5 mt-3 mb-5'>
-              <button type='submit' className='px-15 font-bold py-3 bg-amber-400'>Save</button>
-              <button onClick={handleProductsCancel} className='px-15 font-bold py-2.5 bg-white border-1'>Cancel</button>
-          </div>
-    </div>
+        </label>
+        <p className='text-gray-400'>Dimension (512x512)<br />Size up to 2MB</p>
+      </div>
+
+      <div className='flex flex-col sm:flex-row justify-center items-center space-y-3 sm:space-y-0 sm:space-x-5'>
+        <button type='submit' className='px-6 py-3 font-bold bg-amber-400 text-white rounded-md'>Save</button>
+        <button type='button' onClick={handleCancel} className='px-6 py-3 font-bold border border-gray-300 bg-white rounded-md'>Cancel</button>
+      </div>
+    </form>
   )
 }
 

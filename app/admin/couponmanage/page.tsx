@@ -6,16 +6,26 @@ import Image from 'next/image';
 import React, { useEffect, useState } from 'react'
 import { IoSearchSharp } from "react-icons/io5";
 
+interface Users {
+  No:number; 
+  Coupon_Name:string 
+  Min_Purchase:number
+  Discount_Price:number
+  Coupon_Code:string
+  Date:string
+  Status:number
+}
+
 const Page = () => {
     const [input, setInput] = useState("")
     const [adds, setAdds] = useState(0)
-    const [users,setUsers] = useState("")
+    const [users,setUsers] = useState<Users[]>([])
     const [submit, setSubmit] = useState(false)
 
     const fetchGet = async () => {
         try {
-            const data = await commonGetApis("/")
-            setUsers(data)
+            const res = await commonGetApis("get_coupons?pageNumber=1&pageLimit=1")
+            setUsers(res.data.result || [])
         } catch (error) {
             console.log("error",error)
         }
@@ -57,7 +67,21 @@ const Page = () => {
                     </thead>
                     <tbody>
                         {
-
+                          users.map((curval) => {
+                            const {No, Coupon_Name, Min_Purchase,Discount_Price,Coupon_Code,Date,Status} = curval;
+                            return (
+                              <tr key={No}>
+                                <td className='px-4 py-2'>{No}</td>
+                                <td className='px-4'>{Coupon_Name}</td>
+                                <td className='px-4'>{Min_Purchase}</td>
+                                <td className='px-4'>{Discount_Price}</td>
+                                <td className='px-4'>{Coupon_Code}</td>
+                                <td className='px-4'>{Date}</td>
+                                <td>{}</td>
+                                <td>{}</td>
+                              </tr>
+                            )
+                          })
                         }
                     </tbody>
                 </table>

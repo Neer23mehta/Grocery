@@ -18,6 +18,7 @@ import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { assets } from '../../../assests/assets';
+import commonGetApis from '@/commonapi/Commonapi';
 
 interface Category {
   No: number;
@@ -34,6 +35,8 @@ const Page = () => {
   const [addSub, setAddSub] = useState(false);
   const [brand, setBrand] = useState([]);
   const [subCategory, setSubCategory] = useState([]);
+  const [brandId, setBrandId] = useState("");
+  const [toggleBrand, setToggleBrand] = useState(false)
   const [inputs, setInputs] = useState({
     brand: '',
     category: '',
@@ -63,7 +66,7 @@ const Page = () => {
       console.error('Error fetching categories:', error);
     }
   };
-  console.log("res",adds)
+  console.log("res", adds)
 
   const handleDelete = async (No: number) => {
     const refreshtoken = localStorage.getItem('usertoken');
@@ -85,10 +88,20 @@ const Page = () => {
     }
   };
 
-  const handleEdit = (No: number) => {
-    route.push(`/admin/brands/${No}`);
+  const handleEdit = async (No: number) => {
+    // route.push(`/admin/brands/${No}`);
+    try {
+      const res = await commonGetApis(`get_brand?id=${No}`)
+      setBrandId(res.data)
+      if (brandId) {
+        setToggleBrand(true)
+      }
+    } catch (error) {
+      console.log(error)
+    }
   };
 
+  console.log("brandid123", brandId)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const refreshtoken = localStorage.getItem('usertoken');
@@ -116,7 +129,7 @@ const Page = () => {
         }
       );
 
-      if (res.data) {
+      if (res.data.status == 200) {
         toast.success("Successfully Added");
         setAddSub(false);
         fetchCategories();
@@ -180,6 +193,49 @@ const Page = () => {
       console.error('Error fetching subcategories:', error);
     }
   };
+
+  const handleStatusChange = async (id: number, currentStatus: number) => {
+    const refreshtoken = localStorage.getItem('usertoken');
+    const token = localStorage.getItem('token');
+
+    const newStatus = currentStatus === 1 ? 0 : 1;
+
+    const formData = new FormData();
+    formData.append('id', String(id));
+    formData.append('status', String(newStatus));
+
+    try {
+      const res = await axios.post(
+        'http://192.168.2.181:3000/admin/status_change3',
+        formData,
+        {
+          headers: {
+            Authorization: token,
+            language: 'en',
+            refresh_token: refreshtoken,
+          },
+        }
+      );
+
+      console.log('Status Change Response:', res.data);
+
+      if (res.data) {
+        toast.success('Status updated successfully');
+        fetchCategories(); 
+      } else {
+        toast.error('Failed to update status');
+      }
+    } catch (error: any) {
+      console.error('Full Error:', error);
+      if (error.response) {
+        console.error('Response Error:', error.response);
+        console.error('Response Data:', error.response.data);
+      }
+      toast.error('Something went wrong while updating status');
+    }
+    
+  };
+
 
   useEffect(() => {
     fetchCategories();
@@ -253,7 +309,20 @@ const Page = () => {
                     <td className="px-2 py-2">{Brand_Name}</td>
                     <td className="px-2 py-2">{Category_Name}</td>
                     <td className="px-2 py-2">{SubCategory_Name}</td>
-                    <td>{Status === 1 ? <span><Image src={assets.scrollon} alt='active'/></span>:<span><Image src={assets.scrolloff} alt='Inactive'/></span>}</td>
+                    <td
+                      className="cursor-pointer"
+                      onClick={() => handleStatusChange(No, Status)}
+                    >
+                      {Status === 1 ? (
+                        <span title="Click to deactivate">
+                          <Image src={assets.scrollon} alt="Active" />
+                        </span>
+                      ) : (
+                        <span title="Click to activate">
+                          <Image src={assets.scrolloff} alt="Inactive" />
+                        </span>
+                      )}
+                    </td>
                     <td>
                       <button
                         className="ml-2 text-gray-600 rounded"
@@ -384,6 +453,16 @@ const Page = () => {
             </DialogActions>
           </form>
         </DialogContent>
+      </Dialog>
+
+      <Dialog open={toggleBrand} onClose={() => setToggleBrand(false)}>
+        <div>
+          <DialogContent>
+            <form>
+              <h1>hello</h1>
+            </form>
+          </DialogContent>
+        </div>
       </Dialog>
     </div>
   );

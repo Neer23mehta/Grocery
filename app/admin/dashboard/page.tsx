@@ -1,6 +1,20 @@
-'use client'
+'use client';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import {
+  Card,
+  CardContent,
+  Typography,
+  TextField,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Grid,
+} from '@mui/material';
 
 interface Category {
   No: number;
@@ -24,40 +38,51 @@ const Dashboard = () => {
   const [brands, setBrands] = useState<Brand[]>([]);
 
   const handleEdit = (
-    categoryId: number, 
-    productId: number, 
-    brandId: number, 
-    value: string, 
+    categoryId: number,
+    productId: number,
+    brandId: number,
+    value: string,
     type: string
   ) => {
-    if (type === "category") {
-      setCategories((prev) => 
-        prev.map(category => category.No === categoryId ? { ...category, Category_Name: value } : category)
+    if (type === 'category') {
+      setCategories((prev) =>
+        prev.map((category) =>
+          category.No === categoryId ? { ...category, Category_Name: value } : category
+        )
       );
-    } else if (type === "product") {
-      setProducts((prev) => 
-        prev.map(product => product.No === productId ? { ...product, Product_Name: value } : product)
+    } else if (type === 'product') {
+      setProducts((prev) =>
+        prev.map((product) =>
+          product.No === productId
+            ? { ...product, Product_Name: value }
+            : product
+        )
       );
-    } else if (type === "brand") {
-      setBrands((prev) => 
-        prev.map(brand => brand.No === brandId ? { ...brand, Brand_Name: value } : brand)
+    } else if (type === 'brand') {
+      setBrands((prev) =>
+        prev.map((brand) =>
+          brand.No === brandId ? { ...brand, Brand_Name: value } : brand
+        )
       );
     }
   };
 
-  // Fetch Data from APIs
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Uncomment below lines and remove mock data when the API is ready
-        // const categoryRes = await axios.get('http://192.168.2.181:3000/admin/getcategories?pageNumber=1&pageLimit=10');
-        // const productRes = await axios.get('http://192.168.2.181:3000/admin/get_products?pageNumber=1&pageLimit=10');
-        // const brandRes = await axios.get('http://192.168.2.181:3000/admin/get_brands?pageNumber=1&pageLimit=10');
-
-        // Mock data for testing
-        const categoryRes = { data: { data: { result: [{ No: 1, Category_Name: 'Category 1' }] } } };
-        const productRes = { data: { data: { result: [{ No: 1, Product_Name: 'Product 1', Category_Name: 'Category 1' }] } } };
-        const brandRes = { data: { data: { result: [{ No: 1, Brand_Name: 'Brand 1' }] } } };
+        const categoryRes = {
+          data: { data: { result: [{ No: 1, Category_Name: 'Category 1' }] } },
+        };
+        const productRes = {
+          data: {
+            data: {
+              result: [{ No: 1, Product_Name: 'Product 1', Category_Name: 'Category 1' }],
+            },
+          },
+        };
+        const brandRes = {
+          data: { data: { result: [{ No: 1, Brand_Name: 'Brand 1' }] } },
+        };
 
         setCategories(categoryRes.data.data.result);
         setProducts(productRes.data.data.result);
@@ -75,95 +100,137 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div>
-      <h1>Dashboard</h1>
-      
-      <section>
-        <h2>Categories</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>No</th>
-              <th>Name</th>
-            </tr>
-          </thead>
-          <tbody>
-            {categories.map(category => (
-              <tr key={category.No}>
-                <td>{category.No}</td>
-                <td>
-                  <input
-                    type="text"
-                    value={category.Category_Name}
-                    onChange={(e) => handleEdit(category.No, 0, 0, e.target.value, 'category')}
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
+    <Grid container spacing={3} padding={3}>
+      <Grid item xs={12}>
+        <Typography variant="h4">
+          Dashboard
+        </Typography>
+      </Grid>
 
-      <section>
-        <h2>Products</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Category</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map(product => (
-              <tr key={product.No}>
-                <td>{product.No}</td>
-                <td>
-                  <input
-                    type="text"
-                    value={product.Product_Name}
-                    onChange={(e) => handleEdit(0, product.No, 0, e.target.value, 'product')}
-                  />
-                </td>
-                <td>
-                  <input
-                    type="text"
-                    value={product.Category_Name}
-                    onChange={(e) => handleEdit(0, product.No, 0, e.target.value, 'product')}
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
+      {/* Categories */}
+      <Grid item xs={12} md={4}>
+        <Card>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              Categories
+            </Typography>
+            <TableContainer component={Paper}>
+              <Table size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>No</TableCell>
+                    <TableCell>Name</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {categories.map((category) => (
+                    <TableRow key={category.No}>
+                      <TableCell>{category.No}</TableCell>
+                      <TableCell>
+                        <TextField
+                          variant="standard"
+                          fullWidth
+                          value={category.Category_Name}
+                          onChange={(e) =>
+                            handleEdit(category.No, 0, 0, e.target.value, 'category')
+                          }
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </CardContent>
+        </Card>
+      </Grid>
 
-      <section>
-        <h2>Brands</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-            </tr>
-          </thead>
-          <tbody>
-            {brands.map(brand => (
-              <tr key={brand.No}>
-                <td>{brand.No}</td>
-                <td>
-                  <input
-                    type="text"
-                    value={brand.Brand_Name}
-                    onChange={(e) => handleEdit(0, 0, brand.No, e.target.value, 'brand')}
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
-    </div>
+      {/* Products */}
+      <Grid item xs={12} md={4}>
+        <Card>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              Products
+            </Typography>
+            <TableContainer component={Paper}>
+              <Table size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>ID</TableCell>
+                    <TableCell>Name</TableCell>
+                    <TableCell>Category</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {products.map((product) => (
+                    <TableRow key={product.No}>
+                      <TableCell>{product.No}</TableCell>
+                      <TableCell>
+                        <TextField
+                          variant="standard"
+                          fullWidth
+                          value={product.Product_Name}
+                          onChange={(e) =>
+                            handleEdit(0, product.No, 0, e.target.value, 'product')
+                          }
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <TextField
+                          variant="standard"
+                          fullWidth
+                          value={product.Category_Name}
+                          onChange={(e) =>
+                            handleEdit(0, product.No, 0, e.target.value, 'product')
+                          }
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </CardContent>
+        </Card>
+      </Grid>
+
+      <Grid item xs={12} md={4}>
+        <Card>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              Brands
+            </Typography>
+            <TableContainer component={Paper}>
+              <Table size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>ID</TableCell>
+                    <TableCell>Name</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {brands.map((brand) => (
+                    <TableRow key={brand.No}>
+                      <TableCell>{brand.No}</TableCell>
+                      <TableCell>
+                        <TextField
+                          variant="standard"
+                          fullWidth
+                          value={brand.Brand_Name}
+                          onChange={(e) =>
+                            handleEdit(0, 0, brand.No, e.target.value, 'brand')
+                          }
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </CardContent>
+        </Card>
+      </Grid>
+    </Grid>
   );
 };
 

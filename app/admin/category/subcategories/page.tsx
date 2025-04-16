@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import { TextField, Dialog, DialogActions, DialogContent } from '@mui/material';
+import { TextField, Dialog, DialogActions, DialogContent, Stack, Pagination } from '@mui/material';
 import axios from 'axios';
 import { MdEdit } from "react-icons/md";
 import { RiDeleteBin5Fill } from "react-icons/ri";
@@ -27,11 +27,6 @@ const Page = () => {
   const [editSubcategory, setEditSubcategory] = useState<Category | null>(null);
   const [editSub, setEditSub] = useState(false);
   const [status, setStatus] = useState(false);
-  const [inputss, setInputss] = useState({
-    subcategory:"",
-    category:"",
-    status:""
-  })
   const [inputs, setInputs] = useState({
     subcategory: "",
     category: "",
@@ -133,47 +128,47 @@ const Page = () => {
     }
   };
 
-  const handleSubCategoryChanges = (e:any) => {
-    const {name,value} = e.target;
-    setInputss({...inputss,[name]:value})
-  }
+  // const handleSubCategoryChanges = (e:any) => {
+  //   const {name,value} = e.target;
+  //   setInputss({...inputss,[name]:value})
+  // }
 
-  // const handleStatusChange = async (id: number, currentStatus: number) => {
-  //   const refreshtoken = localStorage.getItem("usertoken");
-  //   const token = localStorage.getItem("token");
+  const handleStatusChange = async (id: number, currentStatus: number) => {
+    const refreshtoken = localStorage.getItem("usertoken");
+    const token = localStorage.getItem("token");
 
-  //   const newStatus = currentStatus === 1 ? 0 : 1; 
+    const newStatus = currentStatus === 1 ? 0 : 1; 
 
-  //   const formData = new URLSearchParams();
-  //   formData.append("id", String(id));
-  //   formData.append("status", String(newStatus));
+    const formData = new URLSearchParams();
+    formData.append("id", String(id));
+    formData.append("status", String(newStatus));
 
-  //   try {
-  //     const res = await axios.post(
-  //       "http://192.168.2.181:3000/admin/status_change2",
-  //       formData,
-  //       {
-  //         headers: {
-  //           Authorizations: token,
-  //           language: "en",
-  //           refresh_token: refreshtoken,
-  //         },
-  //       }
-  //     );
+    try {
+      const res = await axios.post(
+        "http://192.168.2.181:3000/admin/status_change2",
+        formData,
+        {
+          headers: {
+            Authorizations: token,
+            language: "en",
+            refresh_token: refreshtoken,
+          },
+        }
+      );
 
-  //     console.log("Status Change Response:", res.data);
+      console.log("Status Change Response:", res.data);
 
-  //     if (res.data) {
-  //       toast.success("Status updated successfully");
-  //       fetchCategories();
-  //     } else {
-  //       toast.error("Failed to update status");
-  //     }
-  //   } catch (error: any) {
-  //     console.error("Error updating status:", error.response?.data || error.message);
-  //     toast.error("Something went wrong");
-  //   }
-  // };
+      if (res.data) {
+        toast.success("Status updated successfully");
+        fetchCategories();
+      } else {
+        toast.error("Failed to update status");
+      }
+    } catch (error: any) {
+      console.error("Error updating status:", error.response?.data || error.message);
+      toast.error("Something went wrong");
+    }
+  };
 
 
 
@@ -240,7 +235,7 @@ const Page = () => {
                   <td><img src={ImgUrl} alt={Category_Name} className="w-14 h-13 object-cover" /></td>
                   <td>{SubCategory_Name}</td>
                   <td>{Category_Name}</td>
-                  {/* <td onClick={() => handleStatusChange(No, Status)} className='px-2 py-2'>
+                  <td onClick={() => handleStatusChange(No, Status)} className='px-2 py-2'>
                     <div>
                       {Status === 1 ? (
                         <Image src={assets.scrollon} alt='In-Stock' />
@@ -248,8 +243,7 @@ const Page = () => {
                         <Image src={assets.scrolloff} alt='Out-of-Stock' />
                       )}
                     </div>
-                  </td> */}
-                  <td>{}</td>
+                  </td>
                   <td>
                     <button onClick={() => handleEditButton(No)}><MdEdit size={18} /></button>
                     <button className="ml-5" onClick={() => handleSubCategoryDelete(No)}><RiDeleteBin5Fill size={18} /></button>
@@ -259,8 +253,6 @@ const Page = () => {
           }
         </tbody>
       </table>
-
-      {/* Add Subcategory Dialog */}
       <Dialog open={openModal} onClose={() => setOpenModal(false)}>
         <DialogContent>
           <form onSubmit={handleSubCategorySubmit} className="flex flex-col items-center px-5">
@@ -329,6 +321,7 @@ const Page = () => {
       <Dialog open={editSub} onClose={() => setEditSub(false)}>
         <DialogContent>
           {editSubcategory && (
+            <form onSubmit={handleSubCategorySubmit}>
             <div className="flex flex-col items-center">
               <h1 className="text-2xl font-bold mb-3">Subcategory Details</h1>
               <div className="flex flex-row mt-7">
@@ -352,14 +345,14 @@ const Page = () => {
             </div>
             <div className='flex flex-col justify-start items-start mt-6 w-full'>
               <p className='mb-2 text-gray-400'>Sub Category</p>
-              <input type='text' name='subcategory' value={inputss.subcategory} placeholder={editSubcategory.SubCategory_Name} onChange={(e) => handleSubCategoryChanges(e)} className='text-gray-400 border border-gray-200 py-2 w-full px-2' />
+              <input type='text' name='subcategory' value={inputs.subcategory} placeholder={editSubcategory.SubCategory_Name} onChange={(e) => handleSubCategoryChange(e)} className='text-gray-400 border border-gray-200 py-2 w-full px-2' />
             </div>
             <div className="flex flex-col mt-5 justify-start items-start w-full">
               <label className="text-gray-400">Category</label>
               <select
                 name="category"
-                value={inputss.category}
-                onChange={(e) => handleSubCategoryChanges(e)}
+                value={inputs.category}
+                onChange={(e) => handleSubCategoryChange(e)}
                 className="border border-gray-200 mt-1 py-2.5 px-2.5 w-full"
               >
                 <option value="">{editSubcategory.Category_name}</option>
@@ -370,17 +363,27 @@ const Page = () => {
                 ))}
               </select>
             </div>
-            <div className="flex flex-row justify-between mt-5">
+            <div className="flex flex-row gap-50 justify-between items-stretch mt-9">
               <label className="text-gray-400">Status</label>
               <button onClick={toggleStatus}>{status ? <span><Image src={assets.scrollon} alt='Active'/></span> : <span><Image src={assets.scrolloff} alt='Inactive'/></span>}</button>
             </div>
+            <DialogActions>
+                  <div className='flex justify-center items-center w-full'>
+                    <button type='submit' className='bg-amber-400 px-15 py-2 mt-2 font-bold'>Save</button>
+                  </div>
+                </DialogActions>
           </div>
+          </form>
           )}
         </DialogContent>
-        <DialogActions>
-          <button onClick={() => setEditSub(false)} className="bg-amber-300 px-4 py-2">Close</button>
-        </DialogActions>
       </Dialog>
+
+      <div className="flex justify-end bottom-0 mt-5 h-[20px] items-center">
+          <Stack spacing={2}>
+            <Pagination count={10} variant='outlined' shape='rounded' />
+          </Stack>
+        </div>
+
     </div>
   );
 };

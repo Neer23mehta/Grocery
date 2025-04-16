@@ -1,5 +1,5 @@
 'use client'
-import { Dialog, DialogActions, DialogContent, TextField } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, Pagination, Stack, TextField } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { IoSearchSharp } from "react-icons/io5";
@@ -247,14 +247,9 @@ const Page = () => {
           </div>
         </Dialog>
         <div className="flex justify-end bottom-0 mt-5 h-[20px] items-center">
-          <button className="px-2 py-1 bg-gray-50">Previous</button>
-          {["1", "2", "3", "4", "5", "6", "7", "Next"].map((curval, index) => {
-            return (
-              <button key={index} className="px-2 py-1 bg-gray-50">
-                {curval}
-              </button>
-            );
-          })}
+          <Stack spacing={2}>
+            <Pagination count={10} variant='outlined' shape='rounded' />
+          </Stack>
         </div>
       </div>
     </div>

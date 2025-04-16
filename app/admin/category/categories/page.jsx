@@ -1,5 +1,5 @@
 'use client'
-import { Dialog, DialogActions, DialogContent, TextField } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, Pagination, Stack, TextField } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { MdEdit } from "react-icons/md";
@@ -262,11 +262,6 @@ const Page = () => {
             }
           </tbody>
         </table>
-
-        <div className="flex justify-end mt-4">
-          <button className="px-4 py-2 bg-gray-300 rounded-md mr-2">Previous</button>
-          <button className="px-4 py-2 bg-gray-300 rounded-md">Next</button>
-        </div>
       </div>
 
       {/* Add Category Dialog */}
@@ -393,6 +388,13 @@ const Page = () => {
           </DialogContent>
         </div>
       </Dialog>
+
+      <div className="flex justify-end bottom-0 mt-5 h-[20px] items-center">
+          <Stack spacing={2}>
+            <Pagination count={10} variant='outlined' shape='rounded' />
+          </Stack>
+        </div>
+
     </div>
   );
 };

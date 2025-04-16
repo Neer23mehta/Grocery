@@ -35,7 +35,7 @@ const Page = () => {
   const [addSub, setAddSub] = useState(false);
   const [brand, setBrand] = useState([]);
   const [subCategory, setSubCategory] = useState([]);
-  const [brandId, setBrandId] = useState("");
+  const [brandId, setBrandId] = useState<Category[]>([]);
   const [toggleBrand, setToggleBrand] = useState(false)
   const [inputs, setInputs] = useState({
     brand: '',
@@ -92,7 +92,7 @@ const Page = () => {
     // route.push(`/admin/brands/${No}`);
     try {
       const res = await commonGetApis(`get_brand?id=${No}`)
-      setBrandId(res.data)
+      setBrandId(res.data.DATA)
       if (brandId) {
         setToggleBrand(true)
       }
@@ -129,7 +129,7 @@ const Page = () => {
         }
       );
 
-      if (res.data.status == 200) {
+      if (res.data) {
         toast.success("Successfully Added");
         setAddSub(false);
         fetchCategories();
@@ -200,7 +200,7 @@ const Page = () => {
 
     const newStatus = currentStatus === 1 ? 0 : 1;
 
-    const formData = new FormData();
+    const formData = new URLSearchParams();
     formData.append('id', String(id));
     formData.append('status', String(newStatus));
 
@@ -210,8 +210,8 @@ const Page = () => {
         formData,
         {
           headers: {
-            Authorization: token,
-            language: 'en',
+            Authorizations: token,
+            Language: 'en',
             refresh_token: refreshtoken,
           },
         }
@@ -454,15 +454,112 @@ const Page = () => {
           </form>
         </DialogContent>
       </Dialog>
-
+      
       <Dialog open={toggleBrand} onClose={() => setToggleBrand(false)}>
-        <div>
-          <DialogContent>
-            <form>
-              <h1>hello</h1>
-            </form>
-          </DialogContent>
-        </div>
+        <DialogContent>
+          { brandId && (
+          <form
+            onSubmit={handleSubmit}
+            className="bg-white z-[1] flex flex-col px-5"
+          >
+            <h1 className="text-2xl ml-20 mt-3">Add Brand</h1>
+            <button
+              className="text-gray-500 h-9 mt-1 text-2xl flex justify-end"
+              onClick={() => setToggleBrand(false)}
+            >
+              X
+            </button>
+
+            <div className="flex flex-col mt-10">
+              <label className="py-2 text-gray-400">Brand Name</label>
+              <input
+                type="text"
+                name="brand"
+                onChange={handleBrandPost}
+                value={inputs.brand}
+                placeholder={brandId.Brand_Name}
+                required
+                className="border border-gray-200 px-2.5 py-2 w-full"
+              />
+            </div>
+
+            <div className="flex flex-col mt-5">
+              <label className="text-gray-400">Category</label>
+              <select
+                name="category"
+                value={inputs.category}
+                onChange={handleBrandPost}
+                className="border border-gray-200 w-full py-2 px-2"
+              >
+                <option value="">{brandId.Category_name}</option>
+                {brand.map((curval) => (
+                  <option key={curval.No} value={curval.No}>
+                    {curval.Category_Name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex flex-col mt-5">
+              <label className="text-gray-400">Sub-Category</label>
+              <select
+                name="subcategory"
+                value={inputs.subcategory}
+                onChange={handleBrandPost}
+                className="border border-gray-200 w-full py-2 px-2.5"
+              >
+                <option value="">{brandId.SubCategory_name}</option>
+                {subCategory.map((curval) => (
+                  <option key={curval.No} value={curval.No}>
+                    {curval.SubCategory_Name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex flex-col mt-5">
+              <label className="text-gray-400">Status</label>
+              <select
+                name="status"
+                value={inputs.status}
+                onChange={handleBrandPost}
+                className="border border-gray-200 w-full py-2 px-2.5"
+              >
+                <option value="1">Active</option>
+                <option value="0">Inactive</option>
+              </select>
+            </div>
+
+            <div className="flex flex-row mt-7">
+              <label htmlFor="thumbnail" className="cursor-pointer">
+                <div className="w-[325px] h-[125px] flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-300 hover:border-gray-500 hover:shadow-lg">
+                  <img
+                    src={image ? URL.createObjectURL(image) : brandId.Image}
+                    alt="Upload Thumbnail"
+                    width={110}
+                    height={100}
+                    className="object-cover rounded-lg"
+                  />
+                </div>
+              </label>
+              <input
+                type="file"
+                id="thumbnail"
+                className="hidden"
+                onChange={(e) =>
+                  setImage(e.target.files ? e.target.files[0] : null)
+                }
+              />
+            </div>
+
+            <DialogActions>
+              <button type="submit" className="bg-amber-300 w-xs h-12 mb-8">
+                Save
+              </button>
+            </DialogActions>
+          </form>
+          )}
+        </DialogContent>
       </Dialog>
     </div>
   );

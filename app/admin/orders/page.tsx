@@ -1,5 +1,5 @@
 'use client'
-import { TextField } from '@mui/material'
+import { Pagination, Stack, TextField } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { IoSearchSharp } from "react-icons/io5";
 
@@ -40,17 +40,11 @@ const Page = () => {
                     }
                 </tbody>
             </table>
-            <div className='flex justify-end bottom-0 top-100'>
-                    {/* {
-                        adds.map((curval:any,index:any)=>{
-                            return (
-                                <button key={index}>
-                                    {curval.i}
-                                </button>
-                            )
-                        })
-                    }     */}
-            </div>
+            <div className="flex justify-end mt-4">
+          <Stack spacing={0}>
+            <Pagination count={10} variant="outlined" shape="rounded" />
+          </Stack>
+        </div>
         </div>
     </div>
 

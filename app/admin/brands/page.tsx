@@ -29,14 +29,23 @@ interface Category {
   SubCategory_Name: string;
 }
 
+interface SUBCATEGORY {
+  No:Number,
+  SubCategory_Name:string,
+  Category_Name:string,
+  SubCategory_name:string
+}
+
 const Page = () => {
   const [input, setInput] = useState<string>('');
   const [adds, setAdds] = useState<Category[]>([]);
   const [addSub, setAddSub] = useState(false);
   const [brand, setBrand] = useState([]);
-  const [subCategory, setSubCategory] = useState([]);
+  const [subCategory, setSubCategory] = useState<SUBCATEGORY[]>([]);
   const [brandId, setBrandId] = useState<Category[]>([]);
   const [toggleBrand, setToggleBrand] = useState(false)
+  const [page, setPage] = useState(1);
+  const [totalCount, setTotalCount] = useState("");
   const [inputs, setInputs] = useState({
     brand: '',
     category: '',
@@ -52,7 +61,7 @@ const Page = () => {
     const token = localStorage.getItem('token');
     try {
       const res = await axios.get(
-        'http://192.168.2.181:3000/admin/get_brands?pageNumber=1&pageLimit=10',
+        `http://192.168.2.181:3000/admin/get_brands?pageNumber=${page}&pageLimit=10`,
         {
           headers: {
             Authorizations: token,
@@ -62,6 +71,7 @@ const Page = () => {
         }
       );
       setAdds(res?.data?.data?.result || []);
+      setTotalCount(res?.data?.data?.Total_Count);
     } catch (error) {
       console.error('Error fetching categories:', error);
     }
@@ -188,6 +198,7 @@ const Page = () => {
           },
         }
       );
+      // console.log("total123",res?.data?.data)
       setSubCategory(res?.data?.data?.result || []);
     } catch (error) {
       console.error('Error fetching subcategories:', error);
@@ -241,10 +252,11 @@ const Page = () => {
     fetchCategories();
     fetchGetCategory();
     fetchSubCategories();
-  }, []);
+  }, [page]);
 
+  const count = Math.ceil(Number(totalCount)/1)
   return (
-    <div>
+    <div className="">
       <div className="flex flex-row justify-between items-center">
         <div className="flex flex-col px-2">
           <h1 className="text-3xl font-bold">Brands</h1>
@@ -344,8 +356,8 @@ const Page = () => {
         </table>
 
         <div className="flex justify-end mt-4">
-          <Stack spacing={0}>
-            <Pagination count={10} variant="outlined" shape="rounded" />
+          <Stack spacing={2}>
+            <Pagination count={count} page={page} onChange={(e,page) => setPage(page)} variant="outlined" shape="rounded" />
           </Stack>
         </div>
       </div>

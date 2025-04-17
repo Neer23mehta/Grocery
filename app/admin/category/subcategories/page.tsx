@@ -27,6 +27,8 @@ const Page = () => {
   const [editSubcategory, setEditSubcategory] = useState<Category | null>(null);
   const [editSub, setEditSub] = useState(false);
   const [status, setStatus] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0)
   const [inputs, setInputs] = useState({
     subcategory: "",
     category: "",
@@ -38,13 +40,14 @@ const Page = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await axios.get("http://192.168.2.181:3000/admin/get_subcategories?pageNumber=1&pageLimit=10", {
+      const res = await axios.get(`http://192.168.2.181:3000/admin/get_subcategories?pageNumber=${page}&pageLimit=10`, {
         headers: {
           Authorizations: token,
           language: "en",
           refresh_token: refreshtoken,
         },
       });
+      setTotalCount(res?.data?.data?.Total_Count);
       setAdds(res?.data?.data?.result || []);
     } catch (error) {
       console.error("Error fetching subcategories:", error);
@@ -192,8 +195,11 @@ const Page = () => {
   useEffect(() => {
     fetchGetCategory();
     fetchCategories();
-  }, []);
+  }, [page]);
 
+  console.log("adds123",adds)
+  const count=Math.ceil(Number(totalCount) / 1)
+  console.log("count123",count)
   return (
     <div>
       <div className="flex flex-row justify-between items-center">
@@ -380,7 +386,9 @@ const Page = () => {
 
       <div className="flex justify-end bottom-0 mt-5 h-[20px] items-center">
           <Stack spacing={2}>
-            <Pagination count={10} variant='outlined' shape='rounded' />
+            <Pagination variant='outlined' shape='rounded' page={page}
+            onChange={(e, page) => setPage(page)}
+            count ={count}/>
           </Stack>
         </div>
 

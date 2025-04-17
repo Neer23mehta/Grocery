@@ -33,6 +33,8 @@ const Page = () => {
   const [scroll, setScroll] = useState<boolean>(false);
   const [product, setProduct] = useState(false);
   const [productIdData, setProductIdData] = useState("");
+  const [page, setPage] = useState(1);
+  const [totalCount, setTotalCount] = useState("");
   const [inputss, setInputss] = useState({
     name: "",
     category: "",
@@ -52,17 +54,19 @@ const Page = () => {
   const fetchCategories = async () => {
 
     try {
-      const res = await commonGetApis("get_products?pageNumber=1&pageLimit=10");
+      const res = await commonGetApis(`get_products?pageNumber=${page}&pageLimit=10`);
+      setTotalCount(res.data.Total_Count)
       setAdds(res?.data.result || []);
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
   };
 
-  console.log("res", adds)
+  const count = Math.ceil(Number(totalCount)/1)
+
   useEffect(() => {
     fetchCategories();
-  }, []);
+  }, [page]);
 
   const handleAddProduct = () => {
     route.push("/admin/products/addproduct");
@@ -248,7 +252,11 @@ const Page = () => {
         </Dialog>
         <div className="flex justify-end bottom-0 mt-5 h-[20px] items-center">
           <Stack spacing={2}>
-            <Pagination count={10} variant='outlined' shape='rounded' />
+            <Pagination variant='outlined' shape='rounded' 
+            count={count}
+            page={page}
+            onChange={(e,page)=>setPage(page)}
+            />
           </Stack>
         </div>
       </div>

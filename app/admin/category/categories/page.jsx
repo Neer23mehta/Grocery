@@ -16,6 +16,8 @@ const Page = () => {
   const [image, setImage] = useState("");
   const [categoryId, setCategoryId] = useState("")
   const [toggleCategory, setToggleCategory] = useState(false)
+  const [page, setPage] = useState(1);
+  const [totalCount , setTotalCount] = useState(0);
   const [inputss, setInputss] = useState({
     category: "",
     status: "1"
@@ -30,20 +32,23 @@ const Page = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await axios.get("http://192.168.2.181:3000/admin/getcategories?pageNumber=1&pageLimit=10", {
+      const res = await axios.get(`http://192.168.2.181:3000/admin/getcategories?pageNumber=${page}&pageLimit=10`, {
         headers: {
           Authorizations: token,
           language: "en",
           refresh_token: refreshtoken,
         },
       });
-
+      setTotalCount(res?.data?.data?.Total_Count)
       const result = res?.data?.data?.result || [];
       setAdds(result);
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
   };
+
+  const count = Math.ceil(Number(totalCount)/1)
+  console.log("counts",count)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -191,10 +196,9 @@ const Page = () => {
     }
   }
 
-  console.log("categoryid123", categoryId)
   useEffect(() => {
     fetchCategories();
-  }, []);
+  }, [page]);
 
   return (
     <div className="">
@@ -337,63 +341,85 @@ const Page = () => {
       </Dialog>
 
       <Dialog open={toggleCategory} onClose={() => setToggleCategory(false)}>
-        <div className='flex flex-col justify-center items-center'>
+        <div className='flex flex-col justify-center bg-white shadow-md'>
           <DialogContent>
-            {categoryId && (
-              <div className="flex flex-col items-center px-5 justify-center">
-                <form onSubmit={handleIdDataSubmit} className='flex flex-col justify-center items-center'>
-                  <h1 className="text-2xl font-bold mb-3">Category Details</h1>
-                  <div className='flex flex-row mt-7'>
-                    <label htmlFor="thumbnail" className="flex items-center justify-center cursor-pointer mb-6">
-                      <div className="w-[325px] h-[125px] flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-300 transition-all duration-300 ease-in-out hover:border-gray-500 hover:shadow-lg">
-                        <img
-                          src={image ? URL.createObjectURL(image) : categoryId.image}
-                          alt="Upload Thumbnail"
-                          width={110}
-                          height={100}
-                          className="object-cover rounded-lg"
-                        />
-                      </div>
-                    </label>
-                    <input
-                      type="file"
-                      id="thumbnail"
-                      className="hidden"
-                      onChange={(e) => setImage(e.target.files[0])}
+            { categoryId && (
+            <form onSubmit={handleIdDataSubmit} className='bg-white z-[1] flex flex-col px-3'>
+              <div className='flex flex-row'>
+                <h1 className='items-center text-2xl ml-20'>Add Category</h1>
+                <div className='flex justify-end ml-25'>
+                  <button
+                    type="button"
+                    className='text-gray-500 h-9 mb-9 text-2xl flex justify-end right-0 left-20 hover:text-red-700'
+                    onClick={() => setToggleCategory(false)}
+                  >
+                    X
+                  </button>
+                </div>
+              </div>
+              <div className='flex flex-col justify-start items-start mt-10'>
+                <label className='py-2 text-gray-400'>Category Name</label>
+                <input
+                  type='text'
+                  name='category'
+                  onChange={handleCategoryPost}
+                  value={inputs.category}
+                  placeholder={categoryId.category}
+                  required
+                  className='border border-gray-200 px-2.5 py-2 w-full'
+                />
+              </div>
+
+              <div className="flex flex-col mt-5">
+                <label className="text-gray-400">Status</label>
+                <select
+                  name="status"
+                  value={inputs.status}
+                  onChange={handleCategoryPost}
+                  className="border border-gray-200 w-full py-2 px-2.5"
+                >
+                  <option value="1">Active</option>
+                  <option value="0">Inactive</option>
+                </select>
+              </div>
+
+              <div className='flex flex-row mt-7'>
+                <label htmlFor="thumbnail" className="flex items-center justify-center cursor-pointer mb-6">
+                  <div className="w-[355px] h-[125px] flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-300 transition-all duration-300 ease-in-out hover:border-gray-500 hover:shadow-lg">
+                    <img
+                      src={image ? URL.createObjectURL(image) : categoryId.image}
+                      alt="Upload Thumbnail"
+                      width={110}
+                      height={100}
+                      className="object-cover rounded-lg"
                     />
                   </div>
-                  <div className='border border-gray-400 h-[30px] flex justify-center'>
-                    <input className='focus:outline-none px-3' type='text' value={inputss.category} placeholder={categoryId.category} name='category' onChange={handleCategoryPosts} />
-                  </div>
-                  <div className="flex flex-col mt-5">
-                    <label className="text-gray-400">Status</label>
-                    <select
-                      name="status"
-                      value={inputss.status}
-                      onChange={handleCategoryPosts}
-                      className="border border-gray-200 w-full py-2 px-2.5"
-                    >
-                      <option value="1">Active</option>
-                      <option value="0">Inactive</option>
-                    </select>
-                  </div>
-                  <DialogActions>
-                    <div className='flex flex-row justify-center items-center'>
-                      <button type="submit" className="bg-amber-300 px-4 py-2 items-center flex">Save</button>
-                    </div>
-                  </DialogActions>
-                </form>
+                </label>
+
+                <input
+                  type="file"
+                  id="thumbnail"
+                  className="hidden"
+                  onChange={(e) => setImage(e.target.files[0])}
+                />
               </div>
+
+              <DialogActions>
+                <button type='submit' className='bg-amber-300 w-xs h-12 mb-8 mr-2.5'>Save</button>
+              </DialogActions>
+            </form>
             )}
           </DialogContent>
         </div>
       </Dialog>
 
       <div className="flex justify-end bottom-0 mt-5 h-[20px] items-center">
-          <Stack spacing={2}>
-            <Pagination count={10} variant='outlined' shape='rounded' />
-          </Stack>
-        </div>
+                <Stack spacing={2}>
+                  <Pagination variant='outlined' shape='rounded' page={page}
+                  onChange={(e, page) => setPage(page)}
+                  count ={count}/>
+                </Stack>
+              </div>
 
     </div>
   );

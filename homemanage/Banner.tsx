@@ -7,9 +7,9 @@ import axios from 'axios'
 import { Dialog, DialogActions } from '@mui/material'
 
 interface Banners {
-  Image: string,
+  image: string,
   Section_Name: string,
-  Id: number,
+  id: number,
 }
 
 const Banner = () => {
@@ -20,12 +20,13 @@ const Banner = () => {
   const fetchGetBanner = async () => {
     try {
       const res = await commonGetApis("get_slider_with_banner")
-      setBanner(res?.data?.result)
+      setBanner(res?.data?.banner)
     } catch (error) {
       console.log("error", error)
     }
   }
 
+  console.log("banner123",banner)
   useEffect(() => {
     fetchGetBanner()
   }, [])
@@ -49,7 +50,8 @@ const Banner = () => {
       })
       if (res.data) {
         toast.success("Banner Added Successfully")
-        fetchGetBanner() // Refresh the list after adding
+        fetchGetBanner() 
+        setImage(null)
         setBannerOpen(false)
       }
     } catch (error) {
@@ -107,9 +109,9 @@ const Banner = () => {
 
         <div className="w-full overflow-x-auto ">
           <div className="flex gap-5 items-center w-max">
-            {banner.map((curval, index) => (
+            {banner?.map((curval, index) => (
               <div key={index} className='relative'>
-                <button onClick={() => handleRemoveBanner(curval.Id)}>
+                <button onClick={() => handleRemoveBanner(curval.id)}>
                   <Image
                     src={assets.cancel}
                     alt='remove'
@@ -119,7 +121,7 @@ const Banner = () => {
                   />
                 </button>
                 <img
-                  src={curval.Image}
+                  src={curval.image}
                   alt='banner'
                   className='h-[170px] w-[310px] object-cover rounded-md shadow-sm hover:shadow-md transition-shadow duration-200'
                 />

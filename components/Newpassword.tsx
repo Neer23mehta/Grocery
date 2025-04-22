@@ -2,12 +2,10 @@
 import React, { useState } from 'react';
 import { assets } from "../assests/assets";
 import Image from 'next/image';
-import Link from 'next/link';
-import { ErrorMessage, useFormik } from 'formik';
+import {useFormik } from 'formik';
 import * as Yup from 'yup';
 import { FaRegEyeSlash } from "react-icons/fa6";
 import { FaRegEye } from "react-icons/fa";
-import { TextField } from '@mui/material';
 import axios from 'axios'; 
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
@@ -55,13 +53,28 @@ const Newpassword = () => {
     validationSchema: validationSchema,
     onSubmit: async (values, action) => {
       action.resetForm();
-      try {
-        const res = await axios.post("http://192.168.2.181:3000/admin/reset-password", {
-          password: values.password,
-          confirmpassword: values.confirmpassword,
-        });
 
-        if (res.status === 200) {
+      const formdata = new URLSearchParams();
+      formdata.append("id","1");
+      formdata.append("old_password",values.oldpassword);
+      formdata.append("new_password",values.password);
+      formdata.append("confirm_password",values.confirmpassword);
+
+      const refreshtoken = localStorage.getItem('usertoken');
+      const token = localStorage.getItem('token');
+      try {
+        const res = await axios.post("http://192.168.2.181:3000/admin/change_password", 
+          formdata, {
+            headers : {
+              Authorizations: token,
+              language: 'en',
+              refresh_token: refreshtoken,
+              'Content-Type': 'application/x-www-form-urlencoded',
+            }
+          }
+        );
+
+        if (res.data) {
           toast.success("Password Changed Successfully");
           route.push("/");
         } else {
@@ -75,13 +88,12 @@ const Newpassword = () => {
   });
 
   return (
-    <div className='flex items-center justify-center w-full h-screen'>
-      <form onSubmit={handleSubmit} className='relative flex flex-col justify-center items-center w-[450px] h-auto bg-white rounded-lg shadow-lg px-6 py-4'>
+    <div className='flex items-center justify-center w-full h-auto py-10'>
+      <form onSubmit={handleSubmit} className='relative flex flex-col justify-center items-center w-auto bg-white rounded-lg px-10 py-5 '>
         <div className='mb-10 top-0'>
           <h1 className='text-3xl'>Change Password</h1>
         </div>
 
-        {/* Old Password Input */}
         <div className="w-[335px] mb-6">
           <div className="relative">
             <label className='text-gray-400 py-2 mb-2'>Old Password</label>
@@ -113,7 +125,6 @@ const Newpassword = () => {
           </div>
         </div>
 
-        {/* New Password Input */}
         <div className="w-[335px] mb-6">
           <div className="relative">
             <label className='text-gray-400 py-2 mb-2'>New Password</label>
@@ -145,7 +156,6 @@ const Newpassword = () => {
           </div>
         </div>
 
-        {/* Confirm New Password Input */}
         <div className="w-[335px] mb-6">
           <div className="relative">
             <label className='text-gray-400 py-2 mb-2'>Confirm New Password</label>
@@ -176,7 +186,7 @@ const Newpassword = () => {
 
         <button
           type="submit"
-          className="bg-amber-400 w-[335px] h-[55px] text-lg text-black hover:bg-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-400 mt-4 transition duration-200 mb-5"
+          className="bg-amber-400 w-[335px] h-[55px] text-lg text-black hover:bg-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-400 mt-4 transition duration-200"
         >
           Update
         </button>

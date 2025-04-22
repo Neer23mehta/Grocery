@@ -57,7 +57,7 @@ export const Sidebar = () => {
 
 
   return (
-    <div>
+    <div className="sticky z-20">
       <button
         onClick={toggleSidebar}
         className="lg:hidden text-white bg-black mt-0  fixed top-4 left-0 rounded-full z-20 w-6  h-6 flex items-center justify-center"
@@ -77,8 +77,8 @@ export const Sidebar = () => {
         </div>
         <nav className="flex flex-col space-y-2 px-4">
           <Link
-            href="/admin"
-            className={`flex items-center gap-3 font-medium p-3 rounded-md transition-all ${isActive('/admin') ? 'text-amber-300' : 'text-white'}`
+            href="/admin/dashboard"
+            className={`flex items-center gap-3 font-medium p-3 rounded-md transition-all ${isActive('/admin/dashboard') ? 'text-amber-300' : 'text-white'}`
           }
           
           >
@@ -88,7 +88,7 @@ export const Sidebar = () => {
 
           <Link
             href="/admin/user"
-            className={`flex items-center gap-3 font-medium p-3 rounded-md transition-all ${isActive('/admin/user') ? 'text-amber-300' : 'text-white'}`}
+            className={`flex items-center gap-3 font-medium p-3 rounded-md transition-all ${isActive('/admin/user' || `/admin/user/${id}`) ? 'text-amber-300' : 'text-white'}`}
           >
             <Image src={assets.user} className={isActive('/admin/user') ? 'text-amber-300' : 'text-white'} alt="user" />
             <p>Users</p>
@@ -96,7 +96,7 @@ export const Sidebar = () => {
 
           <Link
             href="/admin/products"
-            className={`flex items-center gap-3 font-medium p-3 rounded-md transition-all ${isActive('/admin/products') ? 'text-amber-300' : 'text-white'}`}
+            className={`flex items-center gap-3 font-medium p-3 rounded-md transition-all ${isActive('/admin/products' || '/admin/products/addproduct') ? 'text-amber-300' : 'text-white'}`}
           >
             <Image src={assets.products} className={isActive('/admin/products') ? 'text-amber-300' : 'text-white'} alt="products" />
             <p>Products</p>

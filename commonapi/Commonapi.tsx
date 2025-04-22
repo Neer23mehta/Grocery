@@ -40,12 +40,12 @@ export const deleteApi = async (params: string) => {
   }
 }
 
-export const commonPostApis = async (params:string) => {
+export const commonPostApis = async (params:string,formdata:any) => {
   const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
   const refreshtoken = typeof window !== "undefined" ? localStorage.getItem("usertoken") : null;
 
   try {
-    const res = await axios.post(`http://192.168.2.181:3000/admin/${params}`,{
+    const res = await axios.post(`http://192.168.2.181:3000/admin/${params}`,formdata,{
       headers: {
         Authorization: token,
         language: "en",

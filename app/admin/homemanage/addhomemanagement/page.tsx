@@ -1,32 +1,57 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Dialog, DialogActions, DialogContent } from '@mui/material';
 import Banner from '@/homemanage/Banner';
 import Shopbycategory from '@/homemanage/Shopbycategory';
 import Advertise from '@/homemanage/Advertise';
 import Shopbybrand from '@/homemanage/Shopbybrand';
+import axios from 'axios';
+import commonGetApis, { commonPostApis } from '@/commonapi/Commonapi';
 
 const Page = () => {
   const [section, setSection] = useState(false);
   const [selectedSection, setSelectedSection] = useState('');
   const [renderedSections, setRenderedSections] = useState<string[]>([]);
+  const [temp, setTemp] = useState("")
 
   const toggleSection = () => {
     setSection(!section);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name } = e.target;
+    const { name,id } = e.target;
     setSelectedSection(name);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedSection && !renderedSections.includes(selectedSection)) {
       setRenderedSections(prev => [...prev, selectedSection]);
     }
     setSection(false); 
+
+    // const formdata = new FormData();
+    // formdata.append("id","1")
+    // try {
+    //   const res = await commonPostApis("get_section","id");
+    //   setTemp(res?.data?.result);
+    // } catch (error) {
+    //   console.log(error)
+    // }
+
+    // console.log("temporary",temp)
   };
+
+  useEffect(() => {
+    const savedSections = localStorage.getItem("renderedSections");
+    if (savedSections) {
+      setRenderedSections(JSON.parse(savedSections));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("renderedSections", JSON.stringify(renderedSections));
+  }, [renderedSections]);
 
   const renderComponent = (section: string) => {
     switch (section) {
@@ -42,6 +67,7 @@ const Page = () => {
         return null;
     }
   };
+
 
   return (
     <div className=''>
@@ -66,19 +92,19 @@ const Page = () => {
               <h1 className='text-2xl font-bold'>Add Section</h1>
               <div className='flex flex-col justify-start mt-5 space-y-5'>
                 <div className='flex flex-row space-x-5 justify-start'>
-                  <input type='radio' name='banner' value='banner' onChange={handleChange} />
+                  <input type='radio' name='banner' id='1' value='banner' onChange={handleChange} />
                   <label>Slider with Banner</label>
                 </div>
                 <div className='flex flex-row space-x-5 justify-start'>
-                  <input type='radio' name='category' value='category' onChange={handleChange} />
+                  <input type='radio' name='category' id='2' value='category' onChange={handleChange} />
                   <label>Slider with Category</label>
                 </div>
                 <div className='flex flex-row space-x-5 justify-start'>
-                  <input type='radio' name='advertise' value='advertise' onChange={handleChange} />
+                  <input type='radio' name='advertise' id='3' value='advertise' onChange={handleChange} />
                   <label>Slider with Advertisement</label>
                 </div>
                 <div className='flex flex-row space-x-5 justify-start'>
-                  <input type='radio' name='brand' value='brand' onChange={handleChange} />
+                  <input type='radio' name='brand' id='4' value='brand' onChange={handleChange} />
                   <label>Slider with Brand</label>
                 </div>
               </div>

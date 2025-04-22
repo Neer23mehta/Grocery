@@ -1,21 +1,8 @@
 'use client'
-import React, { useEffect } from 'react'
-import axios from 'axios'
+import React from 'react'
+import MyEditor from '@/components/Myeditor'
 
 const Page = () => {
-
-    const fetchTandC = async () => {
-        try {
-            // const res = axios.get("http://192.168.2.181:3000/admin/terms_and_condition")
-            // console.log("res123",res)
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-    useEffect(() => {
-        fetchTandC();
-    },[])
   return (
     <div>
         <div className="flex flex-row justify-between items-center">
@@ -27,7 +14,10 @@ const Page = () => {
                 <div>
                   <button className="px-3 font-bold py-2 bg-amber-300 ml-5 w-auto h-13 ">Add Pages</button>
                 </div>
-              </div>
+        </div>
+        <div className='px-2 py-5'>
+          <MyEditor/>
+        </div>
     </div>
   )
 }

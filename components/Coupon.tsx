@@ -40,32 +40,37 @@ const initialValues: ProductFormValues = {
 };
 
 interface Coupon {
-  Coupon_Code:String;
-  Coupon_Name:String;
-  Date:String;
-  Discount_Price:Number
-  Min_Purchase:Number;
-  No:Number;
-  Status:Number;
+  Coupon_Code:string;
+  Coupon_Name:string;
+  Date:string;
+  Discount_Price:number
+  Min_Purchase:number;
+  No:number;
+  Status:number;
 }
 const Coupons = () => {
   const [submit, setSubmit] = useState(false);
   const [users, setUsers] = useState<Users[]>([]);
-  const [coupon, setCoupon] = useState<Coupon[]>([]);
+  const [coupon, setCoupon] = useState<Coupon | null>(null);
   const [openCoupon, setOpenCoupon] = useState(false)
+  const [page, setPage] = useState(1)
+  const [totalCount, setTotalCount] = useState('')
 
   const fetchGet = async () => {
     try {
-      const res = await commonGetApis("get_coupons?pageNumber=1&pageLimit=10");
+      const res = await commonGetApis(`get_coupons?pageNumber=${page}&pageLimit=10`);
+      setTotalCount(res?.data?.Total_Count || []);
       setUsers(res.data.result || []);
     } catch (error) {
       console.log("error", error);
     }
   };
 
+  const count = Math.ceil(Number(totalCount) / 1)
+
   useEffect(() => {
     fetchGet();
-  }, []);
+  }, [page]);
 
   const handleStatusChange = async (id: number, currentStatus: number) => {
     const token = localStorage.getItem("token");
@@ -241,7 +246,7 @@ const Coupons = () => {
       </table>
 
       <div className='flex justify-end mt-5'>
-        <Stack spacing={0}><Pagination count={10} variant='outlined' shape='rounded' /></Stack>
+        <Stack spacing={0}><Pagination count={count} page={page} onChange={(e,page) => setPage(page)} variant='outlined' shape='rounded' /></Stack>
       </div>
 
       <Dialog open={submit} onClose={handleSubmitRemove}>
@@ -395,7 +400,7 @@ const Coupons = () => {
                 name='minpurchase'
                 type='number'
                 value={formik.values.minpurchase}
-                placeholder={coupon.Min_Purchase}
+                // placeholder={coupon.Min_Purchase}
                 onChange={formik.handleChange}
                 className='border border-gray-300 px-2 py-2'
               />
@@ -410,7 +415,7 @@ const Coupons = () => {
                 type='number'
                 value={formik.values.disprice}
                 onChange={formik.handleChange}
-                placeholder={coupon.Discount_Price}
+                // placeholder={coupon.Discount_Price}
                 className='border border-gray-300 px-2 py-2'
               />
                 {touched.disprice && errors.disprice && (
@@ -450,7 +455,7 @@ const Coupons = () => {
                 type='text'
                 value={formik.values.code}
                 onChange={formik.handleChange}
-                placeholder={coupon.Coupon_Code}
+                // placeholder={coupon.Coupon_Code}
                 className='border border-gray-300 px-2 py-2'
               />
                 {touched.code && errors.code && (

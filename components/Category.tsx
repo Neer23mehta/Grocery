@@ -20,14 +20,14 @@ interface Categoryid {
     category:string;
     id:number;
     image:string;
-    status:number
+    status:number;
 }
 const Category = () => {
   const [input, setInput] = useState("");
   const [adds, setAdds] = useState<Category []>([]);
   const [addCategory, setAddCategory] = useState(false);
   const [image, setImage] = useState<File | null>(null);
-  const [categoryId, setCategoryId] = useState<Categoryid []>([])
+  const [categoryId, setCategoryId] = useState<Categoryid | null>(null);
   const [toggleCategory, setToggleCategory] = useState(false)
   const [page, setPage] = useState(1);
   const [totalCount , setTotalCount] = useState(0);

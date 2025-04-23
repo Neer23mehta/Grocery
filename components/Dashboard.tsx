@@ -1,236 +1,131 @@
-// 'use client';
-// import React, { useEffect, useState } from 'react';
-// import axios from 'axios';
-// import {
-//   Card,
-//   CardContent,
-//   Typography,
-//   TextField,
-//   Table,
-//   TableBody,
-//   TableCell,
-//   TableContainer,
-//   TableHead,
-//   TableRow,
-//   Paper,
-//   Grid,
-// } from '@mui/material';
+'use client'
+import React, { useEffect, useState } from 'react'
+import commonGetApis from '@/commonapi/Commonapi'
+import { toast } from 'react-toastify'
 
-// interface Category {
-//   No: number;
-//   Category_Name: string;
-// }
+const Dashboard = () => {
+    const [brands, setBrands] = useState([]);
+    const [orders, setOrders] = useState([]);
+    const [products, setProducts] = useState([]);
+    const [category, setCategory] = useState([]);
+    const [subCategory, setSubCategory] = useState([]);
+    const [users, setUsers] = useState([]);
+    const [coupons, setCoupons] = useState([]);
+    const fetchOrderApis = async () => {
+        try {
+            const res = await commonGetApis("")
+        } catch (error) {
+            console.log(error)
+            toast.error("Something went Wrong")
+        }
+    }
 
-// interface Product {
-//   No: number;
-//   Product_Name: string;
-//   Category_Name: string;
-// }
+    const fetchUserApis = async () => {
+        try {
+            const res = await commonGetApis("getusers?pageNumber=1&pageLimit=5")
 
-// interface Brand {
-//   No: number;
-//   Brand_Name: string;
-// }
+            if(res?.data){
+                setUsers(res?.data?.Total_Count)
+            }
+        } catch (error) {
+            console.log(error)
+            toast.error("Something went Wrong")
+        }
+    }
+    const fetchProductApis = async () => {
+        try {
+            const res = await commonGetApis("get_products?pageNumber=1&pageLimit=10")
 
-// const Dashboard = () => {
-//   const [categories, setCategories] = useState<Category[]>([]);
-//   const [products, setProducts] = useState<Product[]>([]);
-//   const [brands, setBrands] = useState<Brand[]>([]);
+            if(res?.data){
+                setProducts(res?.data?.Total_Count)
+            }
+        } catch (error) {
+            console.log(error)
+            toast.error("Something went Wrong")
+        }
+    }
+    const fetchCategoryApis = async () => {
+        try {
+            const res = await commonGetApis("getcategories?pageNumber=1&pageLimit=10")
 
-//   const handleEdit = (
-//     categoryId: number,
-//     productId: number,
-//     brandId: number,
-//     value: string,
-//     type: string
-//   ) => {
-//     if (type === 'category') {
-//       setCategories((prev) =>
-//         prev.map((category) =>
-//           category.No === categoryId ? { ...category, Category_Name: value } : category
-//         )
-//       );
-//     } else if (type === 'product') {
-//       setProducts((prev) =>
-//         prev.map((product) =>
-//           product.No === productId
-//             ? { ...product, Product_Name: value }
-//             : product
-//         )
-//       );
-//     } else if (type === 'brand') {
-//       setBrands((prev) =>
-//         prev.map((brand) =>
-//           brand.No === brandId ? { ...brand, Brand_Name: value } : brand
-//         )
-//       );
-//     }
-//   };
+            if(res?.data){
+                setCategory(res?.data?.Total_Count)
+            }
+        } catch (error) {
+            console.log(error)
+            toast.error("Something went Wrong")
+        }
+    }
+    const fetchSubCategoryApis = async () => {
+        try {
+            const res = await commonGetApis("get_subcategories?pageNumber=1&pageLimit=10")
 
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       try {
-//         const categoryRes = {
-//           data: { data: { result: [{ No: 1, Category_Name: 'Category 1' }] } },
-//         };
-//         const productRes = {
-//           data: {
-//             data: {
-//               result: [{ No: 1, Product_Name: 'Product 1', Category_Name: 'Category 1' }],
-//             },
-//           },
-//         };
-//         const brandRes = {
-//           data: { data: { result: [{ No: 1, Brand_Name: 'Brand 1' }] } },
-//         };
+            if(res?.data){
+                setSubCategory(res?.data?.Total_Count)
+            }
+        } catch (error) {
+            console.log(error)
+            toast.error("Something went Wrong")
+        }
+    }
+    const fetchBrandApis = async () => {
+        try {
+            const res = await commonGetApis("get_brands?pageNumber=1&pageLimit=10")  
+            
+            if(res?.data){
+                setBrands(res?.data?.Total_Count)
+            }
+        } catch (error) {
+            console.log(error)
+            toast.error("Something went Wrong")
+        }
+    }
+    const fetchCouponApi = async () => {
+        try {
+            const res = await commonGetApis("get_coupons?pageNumber=1&pageLimit=10");
 
-//         setCategories(categoryRes.data.data.result);
-//         setProducts(productRes.data.data.result);
-//         setBrands(brandRes.data.data.result);
-//       } catch (error) {
-//         if (axios.isAxiosError(error)) {
-//           console.error('Axios error:', error.response?.data || error.message);
-//         } else {
-//           console.error('Unexpected error:', error);
-//         }
-//       }
-//     };
+            if(res?.data){
+                setCoupons(res?.data?.Total_Count);
+            }
+        } catch (error) {
+            console.log(error);
+            toast.error("Something went Wrong")
+        }
+    }
 
-//     fetchData();
-//   }, []);
+    useEffect(() => {
+        fetchUserApis();
+        fetchProductApis();
+        fetchCategoryApis();
+        fetchSubCategoryApis();
+        fetchBrandApis();
+        fetchCouponApi();
+    },[])
+  return (
+<div className="flex flex-col items-center px-4 py-8">
+  <h1 className="text-4xl font-bold mb-10 text-center">Dashboard</h1>
 
-//   return (
-//     // <Grid container spacing={3} padding={3}>
-//       {/* <Grid item xs={12}> */}
-//         <Typography variant="h4">
-//           Dashboard
-//         </Typography>
-//       {/* </Grid> */}
+  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 w-full max-w-7xl">
+    {[
+      { title: 'Users', value: users },
+      { title: 'Brands', value: brands },
+      { title: 'Products', value: products },
+      { title: 'Categories', value: category },
+      { title: 'Sub-Categories', value: subCategory },
+      { title: 'Orders', value: orders },
+      { title: 'Coupon', value: coupons},
+    ].map((item, index) => (
+      <div
+        key={index}
+        className="bg-amber-500 text-white shadow-lg rounded-lg p-6 flex flex-col items-center justify-center hover:scale-105 transition-transform duration-300"
+      >
+        <h2 className="text-2xl font-semibold">{item.title}</h2>
+        <p className="mt-2 text-lg font-bold">Total: ({item.value})</p>
+      </div>
+    ))}
+  </div>
+</div>
+  )
+}
 
-//       {/* Categories */}
-//       {/* <Grid item xs={12} md={4}> */}
-//         <Card>
-//           <CardContent>
-//             <Typography variant="h6" gutterBottom>
-//               Categories
-//             </Typography>
-//             <TableContainer component={Paper}>
-//               <Table size="small">
-//                 <TableHead>
-//                   <TableRow>
-//                     <TableCell>No</TableCell>
-//                     <TableCell>Name</TableCell>
-//                   </TableRow>
-//                 </TableHead>
-//                 <TableBody>
-//                   {categories.map((category) => (
-//                     <TableRow key={category.No}>
-//                       <TableCell>{category.No}</TableCell>
-//                       <TableCell>
-//                         <TextField
-//                           variant="standard"
-//                           fullWidth
-//                           value={category.Category_Name}
-//                           onChange={(e) =>
-//                             handleEdit(category.No, 0, 0, e.target.value, 'category')
-//                           }
-//                         />
-//                       </TableCell>
-//                     </TableRow>
-//                   ))}
-//                 </TableBody>
-//               </Table>
-//             </TableContainer>
-//           </CardContent>
-//         </Card>
-//       {/* </Grid> */}
-
-//       {/* <Grid item xs={12} md={4}> */}
-//         <Card>
-//           <CardContent>
-//             <Typography variant="h6" gutterBottom>
-//               Products
-//             </Typography>
-//             <TableContainer component={Paper}>
-//               <Table size="small">
-//                 <TableHead>
-//                   <TableRow>
-//                     <TableCell>ID</TableCell>
-//                     <TableCell>Name</TableCell>
-//                     <TableCell>Category</TableCell>
-//                   </TableRow>
-//                 </TableHead>
-//                 <TableBody>
-//                   {products.map((product) => (
-//                     <TableRow key={product.No}>
-//                       <TableCell>{product.No}</TableCell>
-//                       <TableCell>
-//                         <TextField
-//                           variant="standard"
-//                           fullWidth
-//                           value={product.Product_Name}
-//                           onChange={(e) =>
-//                             handleEdit(0, product.No, 0, e.target.value, 'product')
-//                           }
-//                         />
-//                       </TableCell>
-//                       <TableCell>
-//                         <TextField
-//                           variant="standard"
-//                           fullWidth
-//                           value={product.Category_Name}
-//                           onChange={(e) =>
-//                             handleEdit(0, product.No, 0, e.target.value, 'product')
-//                           }
-//                         />
-//                       </TableCell>
-//                     </TableRow>
-//                   ))}
-//                 </TableBody>
-//               </Table>
-//             </TableContainer>
-//           </CardContent>
-//         </Card>
-//       {/* </Grid> */}
-
-//       {/* <Grid item xs={12} md={4}> */}
-//         <Card>
-//           <CardContent>
-//             <Typography variant="h6" gutterBottom>
-//               Brands
-//             </Typography>
-//             <TableContainer component={Paper}>
-//               <Table size="small">
-//                 <TableHead>
-//                   <TableRow>
-//                     <TableCell>ID</TableCell>
-//                     <TableCell>Name</TableCell>
-//                   </TableRow>
-//                 </TableHead>
-//                 <TableBody>
-//                   {brands.map((brand) => (
-//                     <TableRow key={brand.No}>
-//                       <TableCell>{brand.No}</TableCell>
-//                       <TableCell>
-//                         <TextField
-//                           variant="standard"
-//                           fullWidth
-//                           value={brand.Brand_Name}
-//                           onChange={(e) =>
-//                             handleEdit(0, 0, brand.No, e.target.value, 'brand')
-//                           }
-//                         />
-//                       </TableCell>
-//                     </TableRow>
-//                   ))}
-//                 </TableBody>
-//               </Table>
-//             </TableContainer>
-//           </CardContent>
-//         </Card>
-//       {/* </Grid> */}
-//     {/* </Grid> */}
-//   );
-// };
-
-// export default Dashboard;
+export default Dashboard

@@ -1,5 +1,5 @@
 'use client';
-import {Dialog,DialogActions,DialogContent,InputLabel,MenuItem,Pagination,Select,Stack,TextField,} from '@mui/material';
+import { Dialog, DialogActions, DialogContent, InputLabel, MenuItem, Pagination, Select, Stack, TextField, } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { MdEdit } from 'react-icons/md';
@@ -16,13 +16,15 @@ interface Category {
   Status: number;
   Brand_Name: string;
   SubCategory_Name: string;
+  Category_name:string;
+  SubCategory_name:string;
 }
 
 interface SUBCATEGORY {
-  No:Number,
-  SubCategory_Name:string,
-  Category_Name:string,
-  SubCategory_name:string
+  No: number;
+  SubCategory_Name: string;
+  Category_Name: string;
+  SubCategory_name: string;
 }
 
 const Brand = () => {
@@ -31,17 +33,24 @@ const Brand = () => {
   const [addSub, setAddSub] = useState(false);
   const [brand, setBrand] = useState<Category[]>([]);
   const [subCategory, setSubCategory] = useState<SUBCATEGORY[]>([]);
-  const [brandId, setBrandId] = useState<Category[]>([]);
+  const [brandId, setBrandId] = useState<Category | null>(null); 
   const [toggleBrand, setToggleBrand] = useState(false)
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState("");
-  const [inputs, setInputs] = useState({
+  const [inputs, setInputs] = useState<{
+    brand: string;
+    category: string;
+    subcategory: string;
+    No: number | null;
+    status: string;
+  }>({
     brand: '',
     category: '',
     subcategory: '',
     No: null,
     status: '1',
   });
+
   const [image, setImage] = useState<File | null>(null);
 
   const fetchCategories = async () => {
@@ -88,15 +97,17 @@ const Brand = () => {
 
   const handleEdit = async (No: number) => {
     try {
-      const res = await commonGetApis(`get_brand?id=${No}`)
-      setBrandId(res.data.DATA)
-      if (brandId) {
-        setToggleBrand(true)
+      const res = await commonGetApis(`get_brand?id=${No}`);
+      const data = res.data.DATA;
+      if (data) {
+        setBrandId(data);
+        setToggleBrand(true);
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   };
+  
 
   console.log("brandid123", brandId)
   const handleSubmit = async (e: React.FormEvent) => {
@@ -217,7 +228,7 @@ const Brand = () => {
 
       if (res.data) {
         toast.success('Status updated successfully');
-        fetchCategories(); 
+        fetchCategories();
       } else {
         toast.error('Failed to update status');
       }
@@ -229,7 +240,7 @@ const Brand = () => {
       }
       toast.error('Something went wrong while updating status');
     }
-    
+
   };
 
 
@@ -239,7 +250,7 @@ const Brand = () => {
     fetchSubCategories();
   }, [page]);
 
-  const count = Math.ceil(Number(totalCount)/1)
+  const count = Math.ceil(Number(totalCount) / 1)
   return (
     <div className="">
       <div className="flex flex-row justify-between items-center">
@@ -285,7 +296,7 @@ const Brand = () => {
                   item.Brand_Name.toLowerCase().includes(input.toLowerCase())
               )
               .map((curval) => {
-                const {No,Image: img,Category_Name,Status,Brand_Name,SubCategory_Name,} = curval;
+                const { No, Image: img, Category_Name, Status, Brand_Name, SubCategory_Name, } = curval;
                 return (
                   <tr key={No}>
                     <td className="px-2 py-2">{No}</td>
@@ -335,7 +346,7 @@ const Brand = () => {
 
         <div className="flex justify-end mt-4">
           <Stack spacing={2}>
-            <Pagination count={count} page={page} onChange={(e,page) => setPage(page)} variant="outlined" shape="rounded" />
+            <Pagination count={count} page={page} onChange={(e, page) => setPage(page)} variant="outlined" shape="rounded" />
           </Stack>
         </div>
       </div>
@@ -444,110 +455,110 @@ const Brand = () => {
           </form>
         </DialogContent>
       </Dialog>
-      
+
       <Dialog open={toggleBrand} onClose={() => setToggleBrand(false)}>
         <DialogContent>
-          { brandId && (
-          <form
-            onSubmit={handleSubmit}
-            className="bg-white z-[1] flex flex-col px-5"
-          >
-            <h1 className="text-2xl ml-20 mt-3">Add Brand</h1>
-            <button
-              className="text-gray-500 h-9 mt-1 text-2xl flex justify-end"
-              onClick={() => setToggleBrand(false)}
+          {brandId && (
+            <form
+              onSubmit={handleSubmit}
+              className="bg-white z-[1] flex flex-col px-5"
             >
-              X
-            </button>
-
-            <div className="flex flex-col mt-10">
-              <label className="py-2 text-gray-400">Brand Name</label>
-              <input
-                type="text"
-                name="brand"
-                onChange={handleBrandPost}
-                value={inputs.brand}
-                placeholder={brandId.Brand_Name}
-                required
-                className="border border-gray-200 px-2.5 py-2 w-full"
-              />
-            </div>
-
-            <div className="flex flex-col mt-5">
-              <label className="text-gray-400">Category</label>
-              <select
-                name="category"
-                value={inputs.category}
-                onChange={handleBrandPost}
-                className="border border-gray-200 w-full py-2 px-2"
+              <h1 className="text-2xl ml-20 mt-3">Add Brand</h1>
+              <button
+                className="text-gray-500 h-9 mt-1 text-2xl flex justify-end"
+                onClick={() => setToggleBrand(false)}
               >
-                <option value="">{brandId.Category_name}</option>
-                {brand.map((curval) => (
-                  <option key={curval.No} value={curval.No}>
-                    {curval.Category_Name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="flex flex-col mt-5">
-              <label className="text-gray-400">Sub-Category</label>
-              <select
-                name="subcategory"
-                value={inputs.subcategory}
-                onChange={handleBrandPost}
-                className="border border-gray-200 w-full py-2 px-2.5"
-              >
-                <option value="">{brandId.SubCategory_name}</option>
-                {subCategory.map((curval) => (
-                  <option key={curval.No} value={curval.No}>
-                    {curval.SubCategory_Name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="flex flex-col mt-5">
-              <label className="text-gray-400">Status</label>
-              <select
-                name="status"
-                value={inputs.status}
-                onChange={handleBrandPost}
-                className="border border-gray-200 w-full py-2 px-2.5"
-              >
-                <option value="1">Active</option>
-                <option value="0">Inactive</option>
-              </select>
-            </div>
-
-            <div className="flex flex-row mt-7">
-              <label htmlFor="thumbnail" className="cursor-pointer">
-                <div className="w-[325px] h-[125px] flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-300 hover:border-gray-500 hover:shadow-lg">
-                  <img
-                    src={image ? URL.createObjectURL(image) : brandId.Image}
-                    alt="Upload Thumbnail"
-                    width={110}
-                    height={100}
-                    className="object-cover rounded-lg"
-                  />
-                </div>
-              </label>
-              <input
-                type="file"
-                id="thumbnail"
-                className="hidden"
-                onChange={(e) =>
-                  setImage(e.target.files ? e.target.files[0] : null)
-                }
-              />
-            </div>
-
-            <DialogActions>
-              <button type="submit" className="bg-amber-300 w-xs h-12 mb-8">
-                Save
+                X
               </button>
-            </DialogActions>
-          </form>
+
+              <div className="flex flex-col mt-10">
+                <label className="py-2 text-gray-400">Brand Name</label>
+                <input
+                  type="text"
+                  name="brand"
+                  onChange={handleBrandPost}
+                  value={inputs.brand}
+                  placeholder={brandId.Brand_Name}
+                  required
+                  className="border border-gray-200 px-2.5 py-2 w-full"
+                />
+              </div>
+
+              <div className="flex flex-col mt-5">
+                <label className="text-gray-400">Category</label>
+                <select
+                  name="category"
+                  value={inputs.category}
+                  onChange={handleBrandPost}
+                  className="border border-gray-200 w-full py-2 px-2"
+                >
+                  <option value="">{brandId.Category_name}</option>
+                  {brand.map((curval) => (
+                    <option key={curval.No} value={curval.No}>
+                      {curval.Category_Name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex flex-col mt-5">
+                <label className="text-gray-400">Sub-Category</label>
+                <select
+                  name="subcategory"
+                  value={inputs.subcategory}
+                  onChange={handleBrandPost}
+                  className="border border-gray-200 w-full py-2 px-2.5"
+                >
+                  <option value="">{brandId.SubCategory_name}</option>
+                  {subCategory.map((curval) => (
+                    <option key={curval.No} value={curval.No}>
+                      {curval.SubCategory_Name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex flex-col mt-5">
+                <label className="text-gray-400">Status</label>
+                <select
+                  name="status"
+                  value={inputs.status}
+                  onChange={handleBrandPost}
+                  className="border border-gray-200 w-full py-2 px-2.5"
+                >
+                  <option value="1">Active</option>
+                  <option value="0">Inactive</option>
+                </select>
+              </div>
+
+              <div className="flex flex-row mt-7">
+                <label htmlFor="thumbnail" className="cursor-pointer">
+                  <div className="w-[325px] h-[125px] flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-300 hover:border-gray-500 hover:shadow-lg">
+                    <img
+                      src={image ? URL.createObjectURL(image) : brandId?.Image}
+                      alt="Upload Thumbnail"
+                      width={110}
+                      height={100}
+                      className="object-cover rounded-lg"
+                    />
+                  </div>
+                </label>
+                <input
+                  type="file"
+                  id="thumbnail"
+                  className="hidden"
+                  onChange={(e) =>
+                    setImage(e.target.files ? e.target.files[0] : null)
+                  }
+                />
+              </div>
+
+              <DialogActions>
+                <button type="submit" className="bg-amber-300 w-xs h-12 mb-8">
+                  Save
+                </button>
+              </DialogActions>
+            </form>
           )}
         </DialogContent>
       </Dialog>

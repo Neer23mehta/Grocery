@@ -36,7 +36,7 @@ const Products = () => {
   const [adds, setAdds] = useState<Product[]>([]);
   const [scroll, setScroll] = useState<boolean>(false);
   const [product, setProduct] = useState(false);
-  const [productIdData, setProductIdData] = useState<Newproduct[]>([]);
+  const [productIdData, setProductIdData] = useState<Newproduct | null>(null);
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState("");
   const [inputss, setInputss] = useState({

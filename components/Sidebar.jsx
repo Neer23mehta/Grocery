@@ -55,6 +55,7 @@ export const Sidebar = () => {
     return pathname === href;
   };
 
+  console.log("path",pathname)
 
   return (
     <div className="sticky z-20">
@@ -112,10 +113,10 @@ export const Sidebar = () => {
 
           <div className="relative">
             <button
-              className={`flex items-center gap-3 font-medium p-3 rounded-md ${isActive('/admin/category') ? 'text-amber-300' : 'text-white'}`}
+              className={`flex items-center gap-3 font-medium p-3 rounded-md ${isActive('/admin/category/categories') ? 'text-amber-300' : 'text-white'}`}
               onClick={toggleCategoryDropdown}
             >
-              <Image src={assets.category} className={isActive('/admin/category') ? 'text-amber-300' : 'text-white'} alt="category"   style={({ isActive }) => ({
+              <Image src={assets.category} className={isActive('/admin/category/categories') ? 'text-amber-300' : 'text-white'} alt="category"   style={({ isActive }) => ({
                                 color: isActive ? "yellow" : "white"
                             })}/>
               <p>Category</p>
@@ -169,7 +170,7 @@ export const Sidebar = () => {
           </Link>
           <Link
             href="/admin/faq"
-            className={`flex items-center gap-3 font-medium p-3 rounded-md transition-all ${isActive('/admin/faq') ? 'text-amber-500' : 'text-white'}`}
+            className={`flex items-center gap-3 font-medium p-3 rounded-md transition-all ${isActive('/admin/faq') ? 'text-amber-300' : 'text-white'}`}
           >
             <Image src={assets.faq} className={isActive('/admin/faq') ? 'text-amber-300' : 'text-white'} alt="faq" />
             <p>FAQ</p>

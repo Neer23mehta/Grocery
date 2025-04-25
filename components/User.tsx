@@ -10,11 +10,11 @@ import { IoSearchSharp } from "react-icons/io5";
 import { toast } from 'react-toastify';
 
 interface Users {
-    fullname: string,
-    user_email: string,
-    user_id: number,
-    user_status: number,
-    user_mobile_no: string
+    FullName: string,
+    Email: string,
+    User_id: number,
+    Status: number,
+    Mobile_no: string
 }
 
 const User = () => {
@@ -34,6 +34,7 @@ const User = () => {
         }
     }
 
+    console.log("use12343",users)
     const handleStatusChange = async (id:number, currentStatus:number) => {
         const token = localStorage.getItem("token");
         const refreshToken = localStorage.getItem("usertoken");
@@ -107,17 +108,17 @@ const User = () => {
                     </thead>
                     <tbody className='space-y-2.5'>
                         {
-                            users?.filter(item => input == "" || item.fullname.toLowerCase().includes(input.toLowerCase())).map((curval, index) => {
-                                const { fullname, user_email, user_id, user_status, user_mobile_no } = curval;
+                            users?.filter(item => input == "" || item.FullName.toLowerCase().includes(input.toLowerCase())).map((curval, index) => {
+                                const { User_id,Email,Status,Mobile_no,FullName } = curval;
                                 return (
-                                    <tr key={user_id} className='space-y-2 px-2 py-2'>
-                                        <td className='px-4 py-3'>{user_id}</td>
-                                        <td className='px-4 py-3'><Link href={`/admin/user/${user_id}`}>{fullname}</Link></td>
-                                        <td className='px-4 py-3'>{user_mobile_no}</td>
-                                        <td className='px-4 py-3'>{user_email}</td>
-                                        <td onClick={() => handleStatusChange(user_id, user_status)} className='px-2 py-2'>
+                                    <tr key={User_id} className='space-y-2 px-2 py-2'>
+                                        <td className='px-4 py-3'>{User_id}</td>
+                                        <td className='px-4 py-3'><Link href={`/admin/user/${User_id}`}>{FullName}</Link></td>
+                                        <td className='px-4 py-3'>{Mobile_no}</td>
+                                        <td className='px-4 py-3'>{Email}</td>
+                                        <td onClick={() => handleStatusChange(User_id, Status)} className='px-2 py-2'>
                                             {
-                                                user_status == 1 ? <span><Image src={assets.scrollon} alt='ON' /></span> : <span><Image src={assets.scrolloff} alt='OFF' /></span>
+                                                Status == 1 ? <span><Image src={assets.scrollon} alt='ON' /></span> : <span><Image src={assets.scrolloff} alt='OFF' /></span>
                                             }
                                         </td>
                                     </tr>

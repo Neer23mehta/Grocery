@@ -79,6 +79,10 @@ const User = () => {
         fetchGet();
     }, [page])
 
+    useEffect(() => {
+        document.title = "Admin User";
+    }, []);
+    
     const count = Math.ceil(Number(totalCount) / 1)
     console.log("users123", users)
     return (

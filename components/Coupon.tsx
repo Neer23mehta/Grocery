@@ -199,6 +199,11 @@ const Coupons = () => {
       toast.error("Something went Wrong")
     }
   }
+
+    useEffect(() => {
+              document.title = "Admin Coupon-Management";
+    }, []);
+
   console.log("coupons",coupon)
   return (
     <div className='p-5'>

@@ -126,12 +126,51 @@ const Subcategory = () => {
       }
 
       setOpenModal(false);
-      fetchCategories(); 
+      fetchCategories();
     } catch (error) {
       console.error("Error submitting subcategory:", error);
     }
   };
 
+  const handleSubCategoryUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+  
+    const refreshtoken = localStorage.getItem("usertoken");
+    const token = localStorage.getItem("token");
+  
+    const formdata = new FormData();
+    formdata.append("subcategory_name", inputs.subcategory);
+    formdata.append("fk_category_id", inputs.category);
+    formdata.append("status", inputs.status);
+    formdata.append("id", String(editSubcategory?.No)); // this is key!
+  
+    if (image) {
+      formdata.append("image", image);
+    }
+  
+    try {
+      const res = await axios.post("http://192.168.2.181:3000/admin/add_subCategory", formdata, {
+        headers: {
+          Authorizations: token,
+          language: "en",
+          refresh_token: refreshtoken,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+  
+      if (res.data.message === "SUCCESS") {
+        toast.success("Successfully updated subcategory");
+        setEditSub(false);
+        fetchCategories();
+      } else {
+        toast.error("Update failed");
+      }
+    } catch (error) {
+      console.error("Update error:", error);
+      toast.error("Error updating subcategory");
+    }
+  };
+  
   // const handleSubCategoryChanges = (e:any) => {
   //   const {name,value} = e.target;
   //   setInputss({...inputss,[name]:value})
@@ -141,7 +180,7 @@ const Subcategory = () => {
     const refreshtoken = localStorage.getItem("usertoken");
     const token = localStorage.getItem("token");
 
-    const newStatus = currentStatus === 1 ? 0 : 1; 
+    const newStatus = currentStatus === 1 ? 0 : 1;
 
     const formData = new URLSearchParams();
     formData.append("id", String(id));
@@ -180,14 +219,19 @@ const Subcategory = () => {
     try {
       const res = await commonGetApis(`get_subcategory?id=${No}`);
       setEditSubcategory(res.data.DATA);
-      if (res.data) {
+      setInputs({
+        subcategory: res.data.DATA.SubCategory_Name,
+        category: String(res.data.DATA.fk_category_id),
+        status: String(res.data.DATA.Status),
+      });
+            if (res.data) {
         setEditSub(true);
       }
     } catch (error) {
       console.log(error);
     }
   };
-  console.log("ids",editSubcategory)
+  console.log("ids", editSubcategory)
 
   const toggleStatus = () => {
     setStatus(!status)
@@ -198,9 +242,13 @@ const Subcategory = () => {
     fetchCategories();
   }, [page]);
 
-  console.log("adds123",adds)
-  const count=Math.ceil(Number(totalCount) / 1)
-  console.log("count123",count)
+   useEffect(() => {
+          document.title = "Admin Subcategory";
+    }, []);
+
+  console.log("adds123", adds)
+  const count = Math.ceil(Number(totalCount) / 1)
+  console.log("count123", count)
   return (
     <div>
       <div className="flex flex-row justify-between items-center">
@@ -262,7 +310,7 @@ const Subcategory = () => {
       </table>
       <Dialog open={openModal} onClose={() => setOpenModal(false)}>
         <DialogContent>
-          <form onSubmit={handleSubCategorySubmit} className="flex flex-col items-center px-5">
+          <form onSubmit={handleSubCategorySubmit} className="flex flex-col items-center justify-center px-5">
             <h1 className="text-2xl font-bold mb-3">Add Sub Category</h1>
             <div className='flex flex-col justify-start items-start mt-6 w-full'>
               <p className='mb-2 text-gray-400'>Sub Category</p>
@@ -305,17 +353,24 @@ const Subcategory = () => {
               />
             </div>
 
-            <div className="flex flex-col mt-5">
+            <div className="flex flex-row justify-between space-x-55 items-center mt-5">
               <label className="text-gray-400">Status</label>
-              <select
-                name="status"
-                value={inputs.status}
-                onChange={(e) => handleSubCategoryChange(e)}
-                className="border border-gray-200 w-full py-2 px-2.5"
+              <div
+                className="cursor-pointer w-fit"
+                onClick={() =>
+                  setInputs((prev) => ({
+                    ...prev,
+                    status: prev.status === "1" ? "0" : "1",
+                  }))
+                }
               >
-                <option value="1">Active</option>
-                <option value="0">Inactive</option>
-              </select>
+                <Image
+                  src={inputs.status === "1" ? assets.scrollon : assets.scrolloff}
+                  alt="Status"
+                  width={42}
+                  height={52}
+                />
+              </div>
             </div>
 
             <DialogActions>
@@ -328,70 +383,70 @@ const Subcategory = () => {
       <Dialog open={editSub} onClose={() => setEditSub(false)}>
         <DialogContent>
           {editSubcategory && (
-            <form onSubmit={handleSubCategorySubmit}>
+            <form onSubmit={handleSubCategoryUpdate}>
             <div className="flex flex-col items-center">
-              <h1 className="text-2xl font-bold mb-3">Subcategory Details</h1>
-              <div className="flex flex-row mt-7">
-              <label htmlFor="thumbnail" className="cursor-pointer">
-                <div className="h-[125px] w-[325px] flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-300 hover:border-gray-500 hover:shadow-lg">
-                  <img
-                    src={image ? URL.createObjectURL(image) : editSubcategory.Image}
-                    alt="Upload Thumbnail"
-                    className="object-cover rounded-lg"
-                    width={100}
-                    height={50}
+                <h1 className="text-2xl font-bold mb-3">Subcategory Details</h1>
+                <div className="flex flex-row mt-7">
+                  <label htmlFor="thumbnail" className="cursor-pointer">
+                    <div className="h-[125px] w-[325px] flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-300 hover:border-gray-500 hover:shadow-lg">
+                      <img
+                        src={image ? URL.createObjectURL(image) : editSubcategory.Image}
+                        alt="Upload Thumbnail"
+                        className="object-cover rounded-lg"
+                        width={100}
+                        height={50}
+                      />
+                    </div>
+                  </label>
+                  <input
+                    type="file"
+                    id="thumbnail"
+                    className="hidden"
+                    onChange={(e) => setImage(e.target.files?.[0] || null)}
                   />
                 </div>
-              </label>
-              <input
-                type="file"
-                id="thumbnail"
-                className="hidden"
-                onChange={(e) => setImage(e.target.files?.[0] || null)}
-              />
-            </div>
-            <div className='flex flex-col justify-start items-start mt-6 w-full'>
-              <p className='mb-2 text-gray-400'>Sub Category</p>
-              <input type='text' name='subcategory' value={inputs.subcategory} placeholder={editSubcategory.SubCategory_Name} onChange={(e) => handleSubCategoryChange(e)} className='text-gray-400 border border-gray-200 py-2 w-full px-2' />
-            </div>
-            <div className="flex flex-col mt-5 justify-start items-start w-full">
-              <label className="text-gray-400">Category</label>
-              <select
-                name="category"
-                value={inputs.category}
-                onChange={(e) => handleSubCategoryChange(e)}
-                className="border border-gray-200 mt-1 py-2.5 px-2.5 w-full"
-              >
-                <option value="">{editSubcategory.Category_name}</option>
-                {brand.map((curval) => (
-                  <option key={curval.No} value={curval.No}>
-                    {curval.Category_Name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="flex flex-row gap-50 justify-between items-stretch mt-9">
-              <label className="text-gray-400">Status</label>
-              <button onClick={toggleStatus}>{status ? <span><Image src={assets.scrollon} alt='Active'/></span> : <span><Image src={assets.scrolloff} alt='Inactive'/></span>}</button>
-            </div>
-            <DialogActions>
+                <div className='flex flex-col justify-start items-start mt-6 w-full'>
+                  <p className='mb-2 text-gray-400'>Sub Category</p>
+                  <input type='text' name='subcategory' value={inputs.subcategory} placeholder={editSubcategory.SubCategory_Name} onChange={(e) => handleSubCategoryChange(e)} className='text-gray-400 border border-gray-200 py-2 w-full px-2' />
+                </div>
+                <div className="flex flex-col mt-5 justify-start items-start w-full">
+                  <label className="text-gray-400">Category</label>
+                  <select
+                    name="category"
+                    value={inputs.category}
+                    onChange={(e) => handleSubCategoryChange(e)}
+                    className="border border-gray-200 mt-1 py-2.5 px-2.5 w-full"
+                  >
+                    <option value="">{editSubcategory.Category_name}</option>
+                    {brand.map((curval) => (
+                      <option key={curval.No} value={curval.No}>
+                        {curval.Category_Name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex flex-row gap-50 justify-between items-stretch mt-9">
+                  <label className="text-gray-400">Status</label>
+                  <button onClick={toggleStatus}>{status ? <span><Image src={assets.scrollon} alt='Active' /></span> : <span><Image src={assets.scrolloff} alt='Inactive' /></span>}</button>
+                </div>
+                <DialogActions>
                   <div className='flex justify-center items-center w-full'>
                     <button type='submit' className='bg-amber-400 px-15 py-2 mt-2 font-bold'>Save</button>
                   </div>
                 </DialogActions>
-          </div>
-          </form>
+              </div>
+            </form>
           )}
         </DialogContent>
       </Dialog>
 
       <div className="flex justify-end bottom-0 mt-5 h-[20px] items-center">
-          <Stack spacing={2}>
-            <Pagination variant='outlined' shape='rounded' page={page}
+        <Stack spacing={2}>
+          <Pagination variant='outlined' shape='rounded' page={page}
             onChange={(e, page) => setPage(page)}
-            count ={count}/>
-          </Stack>
-        </div>
+            count={count} />
+        </Stack>
+      </div>
 
     </div>
   );

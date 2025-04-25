@@ -10,27 +10,27 @@ import commonGetApis, { deleteApi } from '@/commonapi/Commonapi';
 import { assets } from '@/assests/assets';
 
 interface Category {
-    Category_Name:string;
-    Image:string;
-    No:number;
-    Status:number;
+  Category_Name: string;
+  Image: string;
+  No: number;
+  Status: number;
 }
 
 interface Categoryid {
-    category:string;
-    id:number;
-    image:string;
-    status:number;
+  category: string;
+  id: number;
+  image: string;
+  status: number;
 }
 const Category = () => {
   const [input, setInput] = useState("");
-  const [adds, setAdds] = useState<Category []>([]);
+  const [adds, setAdds] = useState<Category[]>([]);
   const [addCategory, setAddCategory] = useState(false);
   const [image, setImage] = useState<File | null>(null);
   const [categoryId, setCategoryId] = useState<Categoryid | null>(null);
   const [toggleCategory, setToggleCategory] = useState(false)
   const [page, setPage] = useState(1);
-  const [totalCount , setTotalCount] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
   const [inputss, setInputss] = useState({
     category: "",
     status: "1"
@@ -51,9 +51,9 @@ const Category = () => {
     }
   };
 
-  const count = Math.ceil(Number(totalCount)/1)
+  const count = Math.ceil(Number(totalCount) / 1)
 
-  const handleSubmit = async (e:any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
     const refreshtoken = localStorage.getItem("usertoken");
     const token = localStorage.getItem("token");
@@ -70,7 +70,8 @@ const Category = () => {
         headers: {
           Authorizations: token,
           language: "en",
-          refresh_token: refreshtoken
+          refresh_token: refreshtoken,
+          'Content-Type': 'application/x-www-form-urlencoded'
         }
       });
       if (res.data) {
@@ -87,12 +88,15 @@ const Category = () => {
     }
   }
 
-  const handleIdDataSubmit = async (e:any) => {
+  const handleIdDataSubmit = async (e: any, id: any) => {
     e.preventDefault();
     const refreshtoken = localStorage.getItem("usertoken");
     const token = localStorage.getItem("token");
 
     const formdata = new FormData();
+    if (id) {
+      formdata.append("id", id);
+    }
     formdata.append("category_name", inputss.category);
     formdata.append("status", inputss.status);
     if (image) {
@@ -106,7 +110,7 @@ const Category = () => {
           refresh_token: refreshtoken
         }
       });
-      if (res.data.status === 200) {
+      if (res.data) {
         toast.success("Added")
       }
       else {
@@ -118,7 +122,7 @@ const Category = () => {
     }
   }
 
-  const handleDelete = async (id:any) => {
+  const handleDelete = async (id: any) => {
     try {
       await deleteApi(`deletecategory?id=${id}`);
       setAdds(prev => prev.filter(item => item.No !== id));
@@ -127,7 +131,7 @@ const Category = () => {
       console.log(error);
     }
   }
-  const handleStatusChange = async (id:number, currentStatus:any) => {
+  const handleStatusChange = async (id: number, currentStatus: any) => {
     const token = localStorage.getItem("token");
     const refreshToken = localStorage.getItem("usertoken");
 
@@ -168,19 +172,19 @@ const Category = () => {
     }
   };
 
-  const handleCategoryPost = (e:any) => {
+  const handleCategoryPost = (e: any) => {
     const { name, value } = e.target;
     setInputs({ ...inputs, [name]: value });
   };
 
-  const handleCategoryPosts = (e:any) => {
+  const handleCategoryPosts = (e: any) => {
     const { name, value } = e.target;
     setInputss({ ...inputss, [name]: value });
   }
-  const handleEditButton = async (No:number) => {
+  const handleEditButton = async (No: number) => {
     try {
       const res = await commonGetApis(`getcategory?id=${No}`)
-      setCategoryId(res.data.DATA)
+      setCategoryId(res?.data?.DATA)
       if (categoryId) {
         setToggleCategory(true)
       }
@@ -189,11 +193,14 @@ const Category = () => {
     }
   }
 
-  console.log("addcate",categoryId)
+  console.log("addcate", categoryId)
   useEffect(() => {
     fetchCategories();
   }, [page]);
 
+     useEffect(() => {
+            document.title = "Admin Category";
+      }, []);
   return (
     <div className="">
       <div className="flex flex-row justify-between items-center">
@@ -241,7 +248,7 @@ const Category = () => {
                       </td>
                       <td>{Category_Name}</td>
                       <td
-                        onClick={() => handleStatusChange(No, Status)} 
+                        onClick={() => handleStatusChange(No, Status)}
                         className='px-2 py-2 cursor-pointer'
                       >
                         {Status === 1 ? (
@@ -291,18 +298,26 @@ const Category = () => {
                 />
               </div>
 
-              <div className="flex flex-col mt-5">
+              <div className="flex flex-row justify-between px-2 mt-5">
                 <label className="text-gray-400">Status</label>
-                <select
-                  name="status"
-                  value={inputs.status}
-                  onChange={handleCategoryPost}
-                  className="border border-gray-200 w-full py-2 px-2.5"
+                <div
+                  className="cursor-pointer w-fit"
+                  onClick={() =>
+                    setInputs((prev) => ({
+                      ...prev,
+                      status: prev.status === "1" ? "0" : "1",
+                    }))
+                  }
                 >
-                  <option value="1">Active</option>
-                  <option value="0">Inactive</option>
-                </select>
+                  <Image
+                    src={inputs.status === "1" ? assets.scrollon : assets.scrolloff}
+                    alt="Status"
+                    width={32}
+                    height={32}
+                  />
+                </div>
               </div>
+
 
               <div className='flex flex-row mt-7'>
                 <label htmlFor="thumbnail" className="flex items-center justify-center cursor-pointer mb-6">
@@ -322,7 +337,7 @@ const Category = () => {
                   id="thumbnail"
                   className="hidden"
                   onChange={(e) => setImage(e.target.files?.[0] || null)}
-                  />
+                />
               </div>
 
               <DialogActions>
@@ -336,87 +351,95 @@ const Category = () => {
       <Dialog open={toggleCategory} onClose={() => setToggleCategory(false)}>
         <div className='flex flex-col justify-center bg-white shadow-md'>
           <DialogContent>
-            { categoryId && (
-            <form onSubmit={handleIdDataSubmit} className='bg-white z-[1] flex flex-col px-3'>
-              <div className='flex flex-row'>
-                <h1 className='items-center text-2xl ml-20'>Add Category</h1>
-                <div className='flex justify-end ml-25'>
-                  <button
-                    type="button"
-                    className='text-gray-500 h-9 mb-9 text-2xl flex justify-end right-0 left-20 hover:text-red-700'
-                    onClick={() => setToggleCategory(false)}
-                  >
-                    X
-                  </button>
+            {categoryId && (
+              <form onSubmit={(e) => handleIdDataSubmit(e, categoryId.id)} className='bg-white z-[1] flex flex-col px-3'>
+                <div className='flex flex-row'>
+                  <h1 className='items-center text-2xl ml-20'>Add Category</h1>
+                  <div className='flex justify-end ml-25'>
+                    <button
+                      type="button"
+                      className='text-gray-500 h-9 mb-9 text-2xl flex justify-end right-0 left-20 hover:text-red-700'
+                      onClick={() => setToggleCategory(false)}
+                    >
+                      X
+                    </button>
+                  </div>
                 </div>
-              </div>
-              <div className='flex flex-col justify-start items-start mt-10'>
-                <label className='py-2 text-gray-400'>Category Name</label>
-                <input
-                  type='text'
-                  name='category'
-                  onChange={handleCategoryPost}
-                  value={inputs.category}
-                  placeholder={categoryId.category}
-                  required
-                  className='border border-gray-200 px-2.5 py-2 w-full'
-                />
-              </div>
+                <div className='flex flex-col justify-start items-start mt-10'>
+                  <label className='py-2 text-gray-400'>Category Name</label>
+                  <input
+                    type='text'
+                    name='category'
+                    onChange={handleCategoryPost}
+                    value={inputs.category}
+                    placeholder={categoryId.category}
+                    required
+                    className='border border-gray-200 px-2.5 py-2 w-full'
+                  />
+                </div>
 
-              <div className="flex flex-col mt-5">
-                <label className="text-gray-400">Status</label>
-                <select
-                  name="status"
-                  value={inputs.status}
-                  onChange={handleCategoryPost}
-                  className="border border-gray-200 w-full py-2 px-2.5"
-                >
-                  <option value="1">Active</option>
-                  <option value="0">Inactive</option>
-                </select>
-              </div>
-
-              <div className='flex flex-row mt-7'>
-                <label htmlFor="thumbnail" className="flex items-center justify-center cursor-pointer mb-6">
-                  <div className="w-[355px] h-[125px] flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-300 transition-all duration-300 ease-in-out hover:border-gray-500 hover:shadow-lg">
-                    <img
-                      src={image ? URL.createObjectURL(image) : categoryId.image}
-                      alt="Upload Thumbnail"
-                      width={110}
-                      height={100}
-                      className="object-cover rounded-lg"
+                <div className="flex flex-row justify-between mt-5">
+                  <label className="text-gray-400">Status</label>
+                  <div
+                    className="cursor-pointer w-fit"
+                    onClick={() =>
+                      setInputss((prev) => ({
+                        ...prev,
+                        status: prev.status === "1" ? "0" : "1",
+                      }))
+                    }
+                  >
+                    <Image
+                      src={inputss.status === "1" ? assets.scrollon : assets.scrolloff}
+                      alt="Status"
+                      width={32}
+                      height={32}
                     />
                   </div>
-                </label>
+                </div>
 
-                <input
-                  type="file"
-                  id="thumbnail"
-                  className="hidden"
-                  onChange={(e) => {
-                    if (e.target.files && e.target.files[0]) {
-                      setImage(e.target.files[0]);
-                    }
-                  }}
-                />
-              </div>
 
-              <DialogActions>
-                <button type='submit' className='bg-amber-300 w-xs h-12 mb-8 mr-2.5'>Save</button>
-              </DialogActions>
-            </form>
+                <div className='flex flex-row mt-7'>
+                  <label htmlFor="thumbnail" className="flex items-center justify-center cursor-pointer mb-6">
+                    <div className="w-[355px] h-[125px] flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-300 transition-all duration-300 ease-in-out hover:border-gray-500 hover:shadow-lg">
+                      <img
+                        src={image ? URL.createObjectURL(image) : categoryId.image}
+                        alt="Upload Thumbnail"
+                        width={110}
+                        height={100}
+                        className="object-cover rounded-lg"
+                      />
+                    </div>
+                  </label>
+
+                  <input
+                    type="file"
+                    id="thumbnail"
+                    className="hidden"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) {
+                        setImage(e.target.files[0]);
+                      }
+                    }}
+                  />
+                </div>
+
+                <DialogActions>
+                  <button type='submit' className='bg-amber-300 w-xs h-12 mb-8 mr-2.5'>Save</button>
+                </DialogActions>
+              </form>
             )}
           </DialogContent>
         </div>
       </Dialog>
 
       <div className="flex justify-end bottom-0 mt-5 h-[20px] items-center">
-                <Stack spacing={2}>
-                  <Pagination variant='outlined' shape='rounded' page={page}
-                  onChange={(e, page) => setPage(page)}
-                  count ={count}/>
-                </Stack>
-              </div>
+        <Stack spacing={2}>
+          <Pagination variant='outlined' shape='rounded' page={page}
+            onChange={(e, page) => setPage(page)}
+            count={count} />
+        </Stack>
+      </div>
 
     </div>
   );

@@ -28,9 +28,7 @@ export default function MyEditor() {
   if (!editor) return null
 
   return (
-    <div className="max-w-full p-4 bg-white rounded-lg shadow space-y-4">
-      <h2 className="text-xl font-semibold">Terms & Conditions</h2>
-
+    <div className="max-w-full p-2 bg-white rounded-lg shadow space-y-4">
       <div className="flex flex-wrap gap-2 border-b pb-3">
         <button onClick={() => editor.chain().focus().toggleBold().run()} className={btn(editor.isActive('bold'))}>Bold</button>
         <button onClick={() => editor.chain().focus().toggleItalic().run()} className={btn(editor.isActive('italic'))}>Italic</button>

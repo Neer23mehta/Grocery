@@ -2,17 +2,20 @@
 import React, { useState } from 'react'
 import { assets } from '@/assests/assets'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation';
 
 const Logout = () => {
   const [logout, setLogout] = useState(true)
   const route = useRouter();
-  const handleLogout = () => {
-    route.push("/")
-    // localStorage.removeItem("token")
-    // localStorage.removeItem("usertoken")
-    // localStorage.removeItem("renderedSections")
+  const handleLogout = (e:any) => {
+    e.preventDefault(); 
+    localStorage.removeItem('token');
+    localStorage.removeItem('usertoken');
+    localStorage.removeItem('renderedSections');
+    
+    route.push("/");
   }
+  
 
   const handleLogoutPage = () => {
     setLogout(!logout)

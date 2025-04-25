@@ -11,26 +11,26 @@ import { SlArrowLeftCircle } from "react-icons/sl";
 export const Sidebar = () => {
   const router = useRouter();
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
-  const [isSidebarVisible, setIsSidebarVisible] = useState(false); 
-  
+  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 1024) { 
+      if (window.innerWidth < 1024) {
         setIsSmallScreen(true);
-        setIsSidebarVisible(false); 
+        setIsSidebarVisible(false);
       } else {
         setIsSmallScreen(false);
-        setIsSidebarVisible(true); 
+        setIsSidebarVisible(true);
       }
     };
 
-    handleResize(); 
-    window.addEventListener("resize", handleResize); 
+    handleResize();
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener("resize", handleResize); 
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -55,18 +55,18 @@ export const Sidebar = () => {
     return pathname === href;
   };
 
-  console.log("path",pathname)
+  console.log("path", pathname)
 
   return (
-    <div className="sticky z-20">
-      <button
+<div className="flex flex-col w-40 lg:w-65 h-screen">
+<button
         onClick={toggleSidebar}
         className="lg:hidden text-white bg-black mt-0  fixed top-4 left-0 rounded-full z-20 w-6  h-6 flex items-center justify-center"
       >
         {isSidebarVisible ? (
-          <span className="text-xl top-0"><SlArrowLeftCircle size={20}/></span> 
+          <span className="text-xl top-0"><SlArrowLeftCircle size={20} /></span>
         ) : (
-          <span className="text-xl top-0"><SlArrowRightCircle size={20}/></span> 
+          <span className="text-xl top-0"><SlArrowRightCircle size={20} /></span>
         )}
       </button>
 
@@ -80,8 +80,8 @@ export const Sidebar = () => {
           <Link
             href="/admin/dashboard"
             className={`flex items-center gap-3 font-medium p-3 rounded-md transition-all ${isActive('/admin/dashboard') ? 'text-amber-300' : 'text-white'}`
-          }
-          
+            }
+
           >
             <Image src={assets.dash} className={isActive('/admin') ? 'text-amber-300' : 'text-white'} alt="dashboard" />
             <p>Dashboard</p>
@@ -116,9 +116,9 @@ export const Sidebar = () => {
               className={`flex items-center gap-3 font-medium p-3 rounded-md ${isActive('/admin/category/categories') ? 'text-amber-300' : 'text-white'}`}
               onClick={toggleCategoryDropdown}
             >
-              <Image src={assets.category} className={isActive('/admin/category/categories') ? 'text-amber-300' : 'text-white'} alt="category"   style={({ isActive }) => ({
-                                color: isActive ? "yellow" : "white"
-                            })}/>
+              <Image src={assets.category} className={isActive('/admin/category/categories') ? 'text-amber-300' : 'text-white'} alt="category" style={({ isActive }) => ({
+                color: isActive ? "yellow" : "white"
+              })} />
               <p>Category</p>
             </button>
 

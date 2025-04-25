@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { assets } from "../assests/assets";
 import Image from 'next/image';
 import Link from 'next/link';
@@ -71,6 +71,9 @@ const Login = () => {
     }
   });
 
+    useEffect(() => {
+              document.title = "Admin Login";
+        }, []);
   return (
     <div className='relative flex items-center justify-center w-full h-screen bg-black'>
       <Image

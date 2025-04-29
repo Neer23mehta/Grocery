@@ -1,9 +1,9 @@
 import React from 'react'
 import Orderid from '@/components/Orderid'
 
-const Page = () => {
+const Page = ({params}:any) => {
   return (
-    <div><Orderid/></div>
+    <div><Orderid id={params.id}/></div>
   )
 }
 

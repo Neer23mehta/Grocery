@@ -3,7 +3,7 @@ import { ReactNode, useRef, useState } from "react";
 import { Sidebar } from "../../components/Sidebar";
 import { toast, ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import { assets } from "../../assests/assets";
 import { SlArrowDown } from "react-icons/sl";
@@ -38,6 +38,7 @@ const Layout = ({ children }: LayoutProps) => {
 
     const route = useRouter();
     const anchorRef = useRef(null);
+    const pathname = usePathname();
 
     const handleClick = () => {
         setLogout((prev) => !prev);
@@ -118,6 +119,10 @@ const Layout = ({ children }: LayoutProps) => {
         }
     }
 
+    const handleBackClick = () => {
+        route.push("/admin/products")
+    }
+
     const handleManageTaxs = async () => {
         const token = localStorage.getItem("token");
         const refreshToken = localStorage.getItem("usertoken");
@@ -150,15 +155,20 @@ const Layout = ({ children }: LayoutProps) => {
     return (
         <div className="flex min-h-screen bg-gray-100">
             <ToastContainer theme="dark" />
-            <div className="flex min-h-screen sticky z-40 top-0">
-                <Sidebar />
+
+            <div className="sticky top-0 h-screen z-30 overflow-y-auto bg-[#202020]">
+            <Sidebar />
             </div>
+
             <div className="flex flex-col w-full">
-                <div className="flex flex-col justify-end bg-white p-1 shadow-md border-b border-gray-200 sticky top-0 z-20">
+                <div className={`flex flex-col justify-end p-1 shadow-md border-b border-gray-300 sticky top-0 z-20 ${pathname === "/admin/dashboard" ? "bg-[#202020]" : "bg-gray-100"} `}>
                     <div className="flex flex-row items-center justify-end relative">
+                        {
+                            pathname == "/admin/products/addproduct" ? <button onClick={handleBackClick} className="mr-270"><Image src={assets.backs} alt="back" height={25} width={20} /></button> : null
+                        }
                         <Image src={assets.admin} alt="Admin" className="mt-2" />
-                        <button onClick={handleClick} ref={anchorRef} className="mr-1">Admin</button>
-                        <SlArrowDown size={12} onClick={handleClick} />
+                        <button onClick={handleClick} ref={anchorRef} className={`mr-2 ${pathname === "/admin/dashboard" ? "text-gray-100" : "text-[#202020]" }`}>Admin</button>
+                        <SlArrowDown size={12} onClick={handleClick} className={`mr-5 ${pathname === "/admin/dashboard" ? "text-gray-100" : "text-[#202020]" }`}/>
 
                         <Popper open={logout} anchorEl={anchorRef.current} placement="bottom-end" style={{ zIndex: 1300 }}>
                             <ClickAwayListener onClickAway={() => setLogout(false)}>
@@ -178,8 +188,8 @@ const Layout = ({ children }: LayoutProps) => {
                     </div>
                 </div>
 
-                <div className="p-6 bg-gray-100 flex-1 z-10">
-                    {children}
+                <div className={`p-6 flex-1 overflow-y-auto ${pathname === "/admin/dashboard" ? "bg-[#202020]" : "bg-gray-100"}`}>
+                {children}
 
                     <Dialog open={config} onClose={() => setConfig(false)}>
                         <div className='flex flex-col justify-center items-center'>

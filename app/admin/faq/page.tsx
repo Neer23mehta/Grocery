@@ -1,8 +1,9 @@
 import React from 'react'
+import Faq from '@/components/Faq'
 
 const page = () => {
   return (
-    <div>page</div>
+    <div><Faq/></div>
   )
 }
 

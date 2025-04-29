@@ -8,6 +8,7 @@ import Image from 'next/image';
 import { toast } from 'react-toastify';
 import commonGetApis, { deleteApi } from '@/commonapi/Commonapi';
 import { assets } from '@/assests/assets';
+import Link from 'next/link';
 
 interface Category {
   Category_Name: string;
@@ -206,7 +207,7 @@ const Category = () => {
       <div className="flex flex-row justify-between items-center">
         <div className="flex flex-col px-2">
           <h1 className="text-3xl font-bold">Category</h1>
-          <p className="text-gray-500 mt-2">Dashboard<span className="text-black ml-5">Category</span></p>
+          <p className='text-gray-500 mt-2'><Link href={`/admin/dashboard`}>Dashboard</Link> <span className='ml-2.5'>{`>`}</span><span className='text-black ml-2.5'>Category</span> </p>
         </div>
         <div>
           <TextField
@@ -312,8 +313,8 @@ const Category = () => {
                   <Image
                     src={inputs.status === "1" ? assets.scrollon : assets.scrolloff}
                     alt="Status"
-                    width={32}
-                    height={32}
+                    width={42}
+                    height={42}
                   />
                 </div>
               </div>
@@ -392,8 +393,8 @@ const Category = () => {
                     <Image
                       src={inputss.status === "1" ? assets.scrollon : assets.scrolloff}
                       alt="Status"
-                      width={32}
-                      height={32}
+                      width={42}
+                      height={42}
                     />
                   </div>
                 </div>

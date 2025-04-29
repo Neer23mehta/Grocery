@@ -9,6 +9,7 @@ import Image from 'next/image';
 import { toast } from 'react-toastify';
 import commonGetApis from '@/commonapi/Commonapi';
 import { assets } from '@/assests/assets';
+import Link from 'next/link';
 
 interface Category {
   No: number;
@@ -247,14 +248,14 @@ const Subcategory = () => {
     }, []);
 
   console.log("adds123", adds)
-  const count = Math.ceil(Number(totalCount) / 1)
+  const count = Math.ceil(Number(totalCount) / 10)
   console.log("count123", count)
   return (
     <div>
       <div className="flex flex-row justify-between items-center">
         <div className="flex flex-col px-2">
           <h1 className="text-3xl font-bold">Sub Category</h1>
-          <p className="text-gray-500 mt-2">Dashboard <span className="text-black ml-5">Sub Category</span></p>
+          <p className='text-gray-500 mt-2'><Link href={`/admin/dashboard`}>Dashboard</Link> <span className='ml-2.5'>{`>`}</span><span className='text-black ml-2.5'>Sub Category</span> </p>
         </div>
         <div>
           <TextField

@@ -10,6 +10,7 @@ import { MdEdit } from 'react-icons/md';
 import { RiDeleteBin5Fill } from 'react-icons/ri';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import Link from 'next/link';
 
 interface Users {
   No: number;
@@ -210,7 +211,7 @@ const Coupons = () => {
       <div className={`flex justify-between items-center ${submit ? "opacity-30" : "opacity-100"}`}>
         <div>
           <h1 className='text-3xl font-bold'>Coupon Management</h1>
-          <p className='text-gray-500 mt-2'>Dashboard <span className='text-black ml-5'>Coupon Management</span></p>
+          <p className='text-gray-500 mt-2'><Link href={`/admin/dashboard`}>Dashboard</Link> <span className='ml-2.5'>{`>`}</span><span className='text-black ml-2.5'>Coupon Management</span> </p>
         </div>
         <button onClick={handleAddSubmit} className='py-2 px-7 bg-amber-300 font-bold'>Add Coupon</button>
       </div>

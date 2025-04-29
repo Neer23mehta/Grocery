@@ -55,6 +55,8 @@ const Productadd = () => {
   const [subCategories, setSubCategories] = useState<Subcategory[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [image, setImage] = useState<File | null>(null);
+  const [all, setAll] = useState(false)
+  const [alls, setAlls] = useState(false)
 
   useEffect(() => {
     fetchCategories();
@@ -89,6 +91,9 @@ const Productadd = () => {
     }
   }
 
+  const handleToggle = () => {
+    setAll(!all)
+  }
   const validationSchema = Yup.object().shape({
     name: Yup.string().min(1).max(25).required("Name is required"),
     category: Yup.string().required("Category is required"),
@@ -123,36 +128,39 @@ const Productadd = () => {
       toast.error("Please select an image.");
       return;
     }
-
+  
     const formdata = new FormData();
     formdata.append("fk_category_id", values.category);
     formdata.append("fk_subcategory_id", values.subcategory);
     formdata.append("fk_brand_id", values.brand);
     formdata.append("product_name", values.name);
-    formdata.append("product_price", values.price);
-    formdata.append("variation", values.variation);
-    formdata.append("discount", values.discount);
-    formdata.append("discount_price", values.discountprice);
-    formdata.append("title", values.title);
-    formdata.append("description", values.description);
-    formdata.append("stock_status","1")
+    formdata.append("stock_status", "1");
     formdata.append("image", image);
-
+  
+    // Product variations as array item (even if one)
+    formdata.append("products[0][variation]", values.variation);
+    formdata.append("products[0][discount]", values.discount);
+    formdata.append("products[0][discount_price]", values.discountprice);
+    formdata.append("products[0][product_price]", values.price);
+    formdata.append("products[0][title]", values.title);
+    formdata.append("products[0][description]", values.description);
+  
     const token = localStorage.getItem('token');
     const refreshToken = localStorage.getItem('usertoken');
-
+  
     try {
       const res = await axios.post('http://192.168.2.181:3000/admin/add_product', formdata, {
         headers: {
-          Authorizations: token,
+          Authorizations: token || '',
           language: "en",
-          refresh_token: refreshToken
+          refresh_token: refreshToken || ''
         }
       });
-
+  
       if (res.data) {
         toast.success("Product Added Successfully");
         resetForm();
+        setImage(null);
       } else {
         toast.error("Failed to add product.");
       }
@@ -162,13 +170,21 @@ const Productadd = () => {
     }
   }
 
+  useEffect (() => {
+    document.title = "Admin addproduct"
+  },[])
+
   const handleCancel = () => {
     resetForm();
     setImage(null);
   }
 
+  const handleToggleSecond = () => {
+    setAlls(!alls)
+  }
+
   return (
-    <form onSubmit={handleSubmit} className='bg-white shadow-md p-5 flex flex-col space-y-8'>
+    <form onSubmit={handleSubmit} className='bg-white shadow-md p-5 flex flex-col space-y-4'>
       <h1 className='font-bold text-xl'>Add Product</h1>
 
       <div className='flex flex-col md:flex-row md:flex-wrap gap-5'>
@@ -244,58 +260,74 @@ const Productadd = () => {
         </div>
       </div>
 
-      <div className='flex flex-wrap gap-5'>
-        {[
-          { name: 'variation', label: 'Product qnty.' },
-          { name: 'price', label: 'Price' },
-          { name: 'discount', label: 'Discount (%)' },
-          { name: 'discountprice', label: 'Discount Price' }
-        ].map(({ name, label }) => (
-          <div key={name} className='flex flex-col w-full md:w-[48%] lg:w-[23%]'>
-            <p className='text-gray-400 mb-2'>{label}</p>
-            <TextField
-              name={name}
-              value={values[name as keyof ProductFormValues]}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              label={label}
-              variant="outlined"
-              error={touched[name as keyof ProductFormValues] && Boolean(errors[name as keyof ProductFormValues])}
-              helperText={touched[name as keyof ProductFormValues] && errors[name as keyof ProductFormValues]}
-            />
+      <div className='flex w-full justify-between items-center flex-row'>
+      <h1 className='text-xl font-bold'>Product Details</h1>
+        <Image src={assets.add} alt='Add' onClick={handleToggle} />
+      </div>
+      {
+        all ? (
+          <div className='flex flex-wrap gap-5'>
+            {[
+              { name: 'variation', label: 'Product qnty.' },
+              { name: 'price', label: 'Price' },
+              { name: 'discount', label: 'Discount (%)' },
+              { name: 'discountprice', label: 'Discount Price' }
+            ].map(({ name, label }) => (
+              <div key={name} className='flex flex-col w-full md:w-[48%] lg:w-[23%]'>
+                <p className='text-gray-400 mb-2'>{label}</p>
+                <TextField
+                  name={name}
+                  value={values[name as keyof ProductFormValues]}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  label={label}
+                  variant="outlined"
+                  error={touched[name as keyof ProductFormValues] && Boolean(errors[name as keyof ProductFormValues])}
+                  helperText={touched[name as keyof ProductFormValues] && errors[name as keyof ProductFormValues]}
+                />
+              </div>
+            ))}
           </div>
-        ))}
+        ) : null
+      }
+
+      <div className='flex w-full justify-between items-center flex-row'>
+      <h1 className='text-xl font-bold'>Other Info</h1>
+        <Image src={assets.add} alt='Add' onClick={handleToggleSecond} />
       </div>
 
-      <div className='flex flex-col md:flex-row gap-5'>
-        <div className='flex flex-col w-full'>
-          <p className='text-gray-400 mb-2'>Title Name</p>
-          <TextField
-            name="title"
-            value={values.title}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            label="Title"
-            variant="outlined"
-            error={touched.title && Boolean(errors.title)}
-            helperText={touched.title && errors.title}
-          />
-        </div>
-        <div className='flex flex-col w-full'>
-          <p className='text-gray-400 mb-2'>Description</p>
-          <TextField
-            name="description"
-            value={values.description}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            label="Description"
-            variant="outlined"
-            error={touched.description && Boolean(errors.description)}
-            helperText={touched.description && errors.description}
-          />
-        </div>
-      </div>
-
+      {
+        alls ? (
+          <div className='flex flex-col md:flex-row gap-5'>
+            <div className='flex flex-col w-full'>
+              <p className='text-gray-400 mb-2'>Title Name</p>
+              <TextField
+                name="title"
+                value={values.title}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                label="Title"
+                variant="outlined"
+                error={touched.title && Boolean(errors.title)}
+                helperText={touched.title && errors.title}
+              />
+            </div>
+            <div className='flex flex-col w-full'>
+              <p className='text-gray-400 mb-2'>Description</p>
+              <TextField
+                name="description"
+                value={values.description}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                label="Description"
+                variant="outlined"
+                error={touched.description && Boolean(errors.description)}
+                helperText={touched.description && errors.description}
+              />
+            </div>
+          </div>
+        ) : null
+      }
       <div className='flex flex-col sm:flex-row items-start sm:items-center gap-4'>
         <label htmlFor="thumbnail" className="cursor-pointer">
           <div className="w-[310px] h-[140px] flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-300 hover:border-gray-500 hover:shadow-lg">

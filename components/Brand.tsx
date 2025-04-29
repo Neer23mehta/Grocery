@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import Image from 'next/image';
 import commonGetApis from '@/commonapi/Commonapi';
 import { assets } from '@/assests/assets';
+import Link from 'next/link';
 
 interface Category {
   No: number;
@@ -16,8 +17,8 @@ interface Category {
   Status: number;
   Brand_Name: string;
   SubCategory_Name: string;
-  Category_name:string;
-  SubCategory_name:string;
+  Category_name: string;
+  SubCategory_name: string;
 }
 
 interface SUBCATEGORY {
@@ -33,7 +34,7 @@ const Brand = () => {
   const [addSub, setAddSub] = useState(false);
   const [brand, setBrand] = useState<Category[]>([]);
   const [subCategory, setSubCategory] = useState<SUBCATEGORY[]>([]);
-  const [brandId, setBrandId] = useState<Category | null>(null); 
+  const [brandId, setBrandId] = useState<Category | null>(null);
   const [toggleBrand, setToggleBrand] = useState(false)
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState("");
@@ -107,7 +108,7 @@ const Brand = () => {
       console.log(error);
     }
   };
-  
+
 
   console.log("brandid123", brandId)
   const handleSubmit = async (e: React.FormEvent) => {
@@ -250,15 +251,17 @@ const Brand = () => {
     fetchSubCategories();
   }, [page]);
 
+  useEffect(() => {
+    document.title = "Admin Brands"
+  },[])
+
   const count = Math.ceil(Number(totalCount) / 1)
   return (
     <div className="">
       <div className="flex flex-row justify-between items-center">
         <div className="flex flex-col px-2">
           <h1 className="text-3xl font-bold">Brands</h1>
-          <p className="text-gray-500 mt-2">
-            Dashboard<span className="text-black ml-5">Brand</span>
-          </p>
+          <p className='text-gray-500 mt-2'><Link href={`/admin/dashboard`}>Dashboard</Link> <span className='ml-2.5'>{`>`}</span><span className='text-black ml-2.5'>Brands</span> </p>
         </div>
         <div>
           <input
@@ -357,13 +360,14 @@ const Brand = () => {
             onSubmit={handleSubmit}
             className="bg-white z-[1] flex flex-col px-5"
           >
-            <h1 className="text-2xl ml-20 mt-3">Add Brand</h1>
-            <button
-              className="text-gray-500 h-9 mt-1 text-2xl flex justify-end"
+                <button
+              className="text-gray-500 text-2xl flex justify-end hover:text-red-700"
               onClick={() => setAddSub(false)}
             >
               X
             </button>
+            <h1 className="text-2xl ml-25">Add Brand</h1>
+        
 
             <div className="flex flex-col mt-10">
               <label className="py-2 text-gray-400">Brand Name</label>
@@ -412,17 +416,24 @@ const Brand = () => {
               </select>
             </div>
 
-            <div className="flex flex-col mt-5">
+            <div className="flex flex-row justify-between mt-5">
               <label className="text-gray-400">Status</label>
-              <select
-                name="status"
-                value={inputs.status}
-                onChange={handleBrandPost}
-                className="border border-gray-200 w-full py-2 px-2.5"
+              <div
+                className="cursor-pointer w-fit"
+                onClick={() =>
+                  setInputs((prev) => ({
+                    ...prev,
+                    status: prev.status === "1" ? "0" : "1",
+                  }))
+                }
               >
-                <option value="1">Active</option>
-                <option value="0">Inactive</option>
-              </select>
+                <Image
+                  src={inputs.status === "1" ? assets.scrollon : assets.scrolloff}
+                  alt="Status"
+                  width={42}
+                  height={42}
+                />
+              </div>
             </div>
 
             <div className="flex flex-row mt-7">

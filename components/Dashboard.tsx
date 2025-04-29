@@ -26,7 +26,8 @@ interface Alldetails {
   coupon_count:number;
   product_count:number;
   sub_category_count:number;
-  user_count:number
+  user_count:number;
+  order_count:number;
 }
 
 const Dashboard = () => {
@@ -37,17 +38,11 @@ const Dashboard = () => {
     coupon_count: 0,
     product_count: 0,
     sub_category_count: 0,
-    user_count: 0
+    user_count: 0,
+    order_count: 0,
     });
 
-    // const fetchOrderApis = async () => {
-    //     try {
-    //         const res = await commonGetApis("")
-    //     } catch (error) {
-    //         console.log(error)
-    //         toast.error("Something went Wrong")
-    //     }
-    // } 
+   
     const fetchDashboard = async () => {
       try {
         const res = await commonGetApis("get_dashboard_detail")
@@ -65,7 +60,6 @@ const Dashboard = () => {
 
     console.log("dash12",dashboard)
     useEffect(() => {
-      // fetchOrderApis();
       fetchDashboard();
     },[])
 
@@ -84,7 +78,7 @@ const Dashboard = () => {
       { title: 'Products', value: dashboard.product_count, name:'products', image:"📦" },
       { title: 'Categories', value: dashboard.category_count, name:'category/categories', image:"🗂️" },
       { title: 'Sub-Categories', value: dashboard.sub_category_count, name:'category/subcategories', image:"📁" },
-      { title: 'Orders', value: orders, name:'orders', image:"🧾" },
+      { title: 'Orders', value: dashboard.order_count, name:'orders', image:"🧾" },
       { title: 'Coupon', value: dashboard.coupon_count, name:'couponmanage', image:"🎟️" }
         ].map((item, index) => (
         <Link href={`/admin/${item.name}`} key={index}>
@@ -113,9 +107,9 @@ const Dashboard = () => {
       datasets: [
         {
           label: 'Total Count',
-          data: [dashboard.user_count, dashboard.brands_count, dashboard.product_count, dashboard.category_count, dashboard.sub_category_count, orders, dashboard.coupon_count],
+          data: [dashboard.user_count, dashboard.brands_count, dashboard.product_count, dashboard.category_count, dashboard.sub_category_count, dashboard.order_count, dashboard.coupon_count],
           backgroundColor: [
-            '#f70202', '#facc15', '#10b981', '#f97316', '#a855f7', '#ef4444', '#0ea5e9'
+            '#3b82f6', '#facc15', '#10b981', '#f97316', '#a855f7', '#ef4444', '#0ea5e9'
           ],
         },
       ],
@@ -141,7 +135,7 @@ const Dashboard = () => {
       datasets: [
         {
           label: 'Total Count',
-          data: [dashboard.user_count, dashboard.brands_count, dashboard.product_count, dashboard.category_count, dashboard.sub_category_count, orders, dashboard.coupon_count],
+          data: [dashboard.user_count, dashboard.brands_count, dashboard.product_count, dashboard.category_count, dashboard.sub_category_count, dashboard.order_count, dashboard.coupon_count],
           backgroundColor: [
             '#3b82f6', '#facc15', '#10b981', '#f97316', '#a855f7', '#ef4444', '#0ea5e9'
           ],

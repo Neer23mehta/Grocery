@@ -91,7 +91,7 @@ const User = () => {
             <div className='flex flex-row justify-between items-center'>
                 <div className='flex flex-col px-2'>
                     <h1 className='text-3xl font-bold'>Users</h1>
-                    <p className='text-gray-500 mt-2'>Dashboard <span className='text-black ml-5'>Users</span> </p>
+                    <p className='text-gray-500 mt-2'><Link href={`/admin/dashboard`}>Dashboard</Link> <span className='ml-2.5'>{`>`}</span><span className='text-black ml-2.5'>Users</span> </p>
                 </div>
                 <TextField id="outlined-basic" label="Search Users" variant="outlined" value={input} onChange={(e) => setInput(e.target.value)} />
             </div>

@@ -2,6 +2,7 @@
 import { assets } from '@/assests/assets';
 import commonGetApis from '@/commonapi/Commonapi';
 import Image from 'next/image';
+import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
 
 const Userid = ({ id }: any) => {
@@ -26,16 +27,17 @@ const Userid = ({ id }: any) => {
 
     console.log("User Details:", userDetails);
     console.log("Orders:", orders);
+    console.log("id123",id)
 
     return (
         <div>
             <div className='flex flex-row justify-between items-center'>
                 <div className='flex flex-col px-2'>
                     <h1 className='text-3xl font-bold'>Users Details</h1>
-                    <p className='text-gray-500 mt-2'>Dashboard <span className='text-gray-500 ml-5'>Users</span> <span className='text-black ml-5'>Users Details</span></p>
+                    <p className='text-gray-500 mt-2'><Link href={`/admin/dashboard`}>Dashboard</Link> <span className='ml-2.5'>{`>`}</span><span className='text-gray-500 ml-2.5'><Link href={`/admin/user`}>Users</Link></span><span className='ml-2.5'>{`>`}</span> <span className='ml-2.5 text-black'>Users Details</span> </p>
                 </div>
             </div>
-            <div className='flex flex-row items-center justify-between shadow-lg'>
+            <div className='flex flex-row items-center justify-between shadow-lg bg-white mt-5 py-4 px-2'>
                 <div>
                     <Image src={assets.use} alt='user' height={170} width={150} />
                 </div>

@@ -1,3 +1,4 @@
+'use client'
 import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { assets } from '@/assests/assets'
@@ -19,14 +20,15 @@ const Banner = () => {
 
   const fetchGetBanner = async () => {
     try {
-      const res = await commonGetApis("get_slider_with_banner")
-      setBanner(res?.data?.banner)
+      const res = await commonGetApis("get_all_home_management?fk_section_id=1")
+      setBanner(res?.data?.result?.banner || []);
     } catch (error) {
-      console.log("error", error)
+      console.log("error", error);
     }
   }
 
-  console.log("banner123",banner)
+
+  console.log("ban11232", banner)
   useEffect(() => {
     fetchGetBanner()
   }, [])
@@ -40,7 +42,7 @@ const Banner = () => {
     formdata.append("fk_section_id", "1")
 
     try {
-      const res = await axios.post("http://192.168.2.181:3000/admin/add_slider_with_banner", formdata, {
+      const res = await axios.post("http://192.168.2.181:3000/admin/add_home_management", formdata, {
         headers: {
           Authorizations: token,
           language: 'en',
@@ -50,9 +52,12 @@ const Banner = () => {
       })
       if (res.data) {
         toast.success("Banner Added Successfully")
-        fetchGetBanner() 
+        fetchGetBanner()
         setImage(null)
         setBannerOpen(false)
+      }
+      else {
+        toast.error(res?.data?.message);
       }
     } catch (error) {
       console.log(error)
@@ -62,10 +67,10 @@ const Banner = () => {
 
   const handleRemoveBanner = async (id: number) => {
     try {
-      const res = await deleteApi(`delete_slider_with_banner?id=${id}`)
+      const res = await deleteApi(`delete_home_management?id=${id}&fk_section_id=1`)
       if (res.data) {
         toast.success("Deleted Successfully")
-        fetchGetBanner() 
+        fetchGetBanner()
       }
     } catch (error) {
       console.log(error)
@@ -73,29 +78,13 @@ const Banner = () => {
     }
   }
 
-  // const handleBannerEdit = async (id:any) => {
-  //   try {
-  //     const res = await commonGetApis(`delete_slider_with_banner?id=${id}`)
-
-  //     if(res.data){
-  //       toast.success(res.data.message)
-  //     }
-  //     else{
-  //       toast.error(res.data.message)
-  //     }
-  //   } catch (error) {
-  //     console.log(error)
-  //     toast.error("Something went Wrong")
-  //   }
-  // }
-
   const handleToggleBanner = () => {
     setBannerOpen(!bannerOpen)
   }
 
   return (
     <div className='w-full'>
-      <div className='flex flex-col mt-5 px-6 py-4 bg-white shadow-md rounded-md '>
+      <div className='flex flex-col mt-5 px-6 py-4 bg-white shadow-md rounded-md'>
         <div className='flex justify-between items-center mb-4'>
           <h1 className='font-bold text-xl'>Banner Slider</h1>
           <Image
@@ -107,10 +96,11 @@ const Banner = () => {
           />
         </div>
 
-        <div className="w-full overflow-x-auto ">
-          <div className="flex gap-5 items-center w-max">
+        {/* Horizontal Scroll Section */}
+        <div className="w-full overflow-x-auto">
+          <div className="flex gap-5 items-center min-w-fit">
             {banner?.map((curval, index) => (
-              <div key={index} className='relative'>
+              <div key={index} className='relative flex-shrink-0'>
                 <button onClick={() => handleRemoveBanner(curval.id)}>
                   <Image
                     src={assets.cancel}
@@ -127,9 +117,8 @@ const Banner = () => {
                 />
               </div>
             ))}
-
             <div
-              className='h-[170px] w-[310px] border border-gray-300 mt-6 rounded-md flex items-center justify-center cursor-pointer hover:bg-gray-50 transition'
+              className='h-[170px] w-[310px] border border-gray-300 mt-6 rounded-md flex-shrink-0 flex items-center justify-center cursor-pointer hover:bg-gray-50 transition'
               onClick={handleToggleBanner}
             >
               <div className="flex items-center justify-center rounded-lg">
@@ -157,7 +146,7 @@ const Banner = () => {
           <p className='py-2 mt-3 text-start'>Add Image of Banner</p>
 
           <div className='w-[300px] h-[150px] px-10 py-2 border border-gray-300 rounded-md flex items-center justify-center cursor-pointer hover:bg-gray-50 transition'>
-            <label htmlFor="thumbnail" className="cursor-pointer text-center">
+            <label htmlFor="thumbnail" className="cursor-pointer text-center text-gray-300">
               <div className="flex items-center justify-center rounded-lg">
                 <Image
                   src={image ? URL.createObjectURL(image) : assets.add}

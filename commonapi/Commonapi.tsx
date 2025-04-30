@@ -47,7 +47,7 @@ export const commonPostApis = async (params:string,formdata:any) => {
   try {
     const res = await axios.post(`http://192.168.2.181:3000/admin/${params}`,formdata,{
       headers: {
-        Authorization: token,
+        Authorizations: token,
         language: "en",
         refresh_token: refreshtoken
       }

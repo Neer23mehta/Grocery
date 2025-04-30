@@ -71,7 +71,7 @@ export const Sidebar = () => {
       </button>
 
       <div
-        className={`flex flex-col lg:w-65 md:w-45 md:size-full lg:size-full border-r bg-[#202020] fixed lg:relative md:relative transition-all ${isSidebarVisible || !isSmallScreen ? 'block' : 'hidden'}`}
+        className={`flex flex-col lg:w-65 md:w-45 md:size-full lg:size-full border-r bg-[#202020] overflow-y-hidden overflow-x-hidden fixed lg:relative md:relative transition-all ${isSidebarVisible || !isSmallScreen ? 'block' : 'hidden'}`}
       >
         <div className="px-6 py-4 flex items-center justify-center">
           <Image src={assets.nlogo} alt="logo" width={130} height={100} />

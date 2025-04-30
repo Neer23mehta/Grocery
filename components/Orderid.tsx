@@ -7,6 +7,9 @@ import Image from 'next/image';
 import { assets } from '@/assests/assets';
 import commonGetApis from '@/commonapi/Commonapi';
 import Link from 'next/link';
+import Stepper from '@mui/material/Stepper';
+import Step from '@mui/material/Step';
+import StepLabel from '@mui/material/StepLabel';
 
 interface Orderdetail {
     Total: number;
@@ -26,24 +29,35 @@ interface Order {
 }
 
 interface All {
-    shipping_charge:number;
-    total:number;
-    total_tax:number;
+    shipping_charge: number;
+    total: number;
+    total_tax: number;
 }
 
 interface Status {
-    order_status:number;
+    order_status: number;
+}
+
+interface Address {
+    address_line1: string;
+    address_line2: string;
+}
+interface User {
+    firstname: string;
+    lastname: string;
+    mobile_no: string;
+    email: string;
 }
 
 const Orderid = ({ id }: any) => {
     const [input, setinput] = useState("")
     const [adds, setadds] = useState<Orderdetail[]>([])
     const [grandTotal, setGrandTotal] = useState("")
-    const [all, setAll] = useState<All[]>([])
-    const [order, setOrder] = useState<Order[]>([])
-    const [user, setUser] = useState([])
-    const [status, setStatus] = useState<Status []>([])
-    const [address, setAddress] = useState([])
+    const [all, setAll] = useState<All | null>(null)
+    const [order, setOrder] = useState<Order | null>(null)
+    const [user, setUser] = useState<User | null>(null);
+    const [status, setStatus] = useState<number>(0); 
+    const [address, setAddress] = useState<Address | null>(null);
     const [currentStatus, setCurrentStatus] = useState('');
 
     const steps = [
@@ -61,10 +75,10 @@ const Orderid = ({ id }: any) => {
             if (res.data) {
                 setadds(res?.data?.getData || [])
                 setGrandTotal(res?.data?.Grand_Total || [])
-                setOrder(res?.data?.getDataById || [])
-                setUser(res?.data?.getDataById?.user || [])
-                setStatus(res?.data?.getDataById?.order_status || [])
-                setAddress(res?.data?.getDataById?.address || [])
+                setOrder(res?.data?.getDataById || null);
+                setUser(res?.data?.getDataById?.user || null);
+                setStatus(res?.data?.getDataById?.order_status || 0);
+                setAddress(res?.data?.getDataById?.address || null);                
                 setAll(res?.data)
             }
         } catch (error) {
@@ -105,55 +119,67 @@ const Orderid = ({ id }: any) => {
             <div className='flex mt-5 ml-1 flex-row'>
                 <div className='flex flex-col'>
                     <div className='bg-white shadow-md w-[330px] h-[181px] mt-5 flex flex-col '>
-                        <h1 className='px-8 mt-5 text-2xl font-bold ml-20'>{order.order_no}</h1>
+                        <h1 className='px-8 mt-5 text-2xl font-bold ml-20'>{order?.order_no}</h1>
                         <div className='flex flex-row justify-between items-center mt-8 '>
-                            <p className='ml-5 text-gray-400'>Order Type</p> <p className='mr-2'>{order.order_type == 0 ? "Delivery" : "Selfservice"}</p>
+                            <p className='ml-5 text-gray-400'>Order Type</p> <p className='mr-2'>{order?.order_type == 0 ? "Delivery" : "Selfservice"}</p>
                         </div>
                         <div className='flex flex-row justify-between mt-5 '>
-                            <p className='ml-5 text-gray-400'>Payment Type</p> <p className='mr-2'>{order.payment_type == 0 ? "Cash" : "Online" }</p>
+                            <p className='ml-5 text-gray-400'>Payment Type</p> <p className='mr-2'>{order?.payment_type == 0 ? "Cash" : "Online"}</p>
                         </div>
                     </div>
                     <div className='flex flex-col bg-white shadow-md w-[330px] h-auto mt-5'>
                         <div className='flex flex-row items-center'>
                             <Image src={assets.dp} alt='User' height={100} width={100} />
-                            <h1 className='text-xl font-bold'>{`${user.firstname} ${user.lastname}`}</h1>
-                        </div>
+                            <h1 className='text-xl font-bold'>{`${user?.firstname || ""} ${user?.lastname || ""}`}</h1>
+                            </div>
                         <div className='flex flex-row ml-5 space-x-3 mt-3'>
                             <Image src={assets.mobile} alt='mobile' height={10} width={19} />
-                            <p>{user.mobile_no}</p>
-                        </div>
+                            <p>{user?.mobile_no}</p>
+                            </div>
                         <div className='flex flex-row ml-5 space-x-3 mt-5'>
                             <Image src={assets.mails} alt='mobile' height={10} width={19} />
-                            <p>{user.email}</p>
+                            <p>{user?.email}</p>
                         </div>
                         <div className='flex flex-row ml-5 space-x-3 mb-5 mt-5'>
                             <Image src={assets.location} alt='mobile' height={10} width={19} />
-                            <p>{`${address.address_line1} ${address.address_line2}`}</p>
-                        </div>
+                            <p>{`${address?.address_line1 || ""} ${address?.address_line2 || ""}`}</p>
+                            </div>
                     </div>
                 </div>
                 <div className='flex flex-col w-full'>
                     <div className='bg-white shadow-md px-8 py-2 ml-7 mt-5 h-[140px] w-auto flex justify-center items-center'>
-                        <div className='flex flex-row px-2 py-2'>
+                        <div className="flex items-start justify-between w-full px-10">
                             {steps.map((step, index) => {
-                                const isActive = index === status-1;
-                                const isCompleted = index < status;
+                                const isActive = index === status - 1;
+                                const isCompleted = index < status - 1;
+                                const isLast = index === steps.length - 1;
+
                                 return (
-                                    <div
-                                        key={step.key}
-                                        className={`flex flex-col justify-around items-center ${index !== 0 ? 'ml-25' : ''}`}
-                                    >
-                                        <Image
-                                            src={step.icon}
-                                            alt={step.label}
-                                            height={50}
-                                            width={50}
-                                            className={isActive ? 'text-green-700' : isCompleted ? 'text-green-700' : 'grayscale'}
-                                        />
-                                        <p className={`mt-2 text-sm ${isActive ? 'text-green-700' : ''} ${isCompleted ? 'text-green-700' : ''}`}>
-                                            {step.label}
-                                        </p>
-                                    </div>
+                                    <React.Fragment key={step.key}>
+                                        <div className="flex flex-col items-center relative">
+                                            <div className="z-10">
+                                                <Image
+                                                    src={step.icon}
+                                                    alt={step.label}
+                                                    width={50}
+                                                    height={50}
+                                                    className={`${isActive || isCompleted ? 'text-green-700' : 'grayscale'}`}
+                                                />
+                                            </div>
+
+                                            <p className={`mt-2 text-sm font-semibold text-center ${isActive || isCompleted ? 'text-green-700' : 'text-gray-400'}`}>
+                                                {step.label}
+                                            </p>
+                                        </div>
+
+                                        {!isLast && (
+                                            <div className="flex items-center flex-1 h-full relative top-[25px]">
+                                                <div
+                                                    className={`h-1 w-full ${isCompleted ? 'bg-green-700' : 'bg-gray-300'}`}
+                                                ></div>
+                                            </div>
+                                        )}
+                                    </React.Fragment>
                                 );
                             })}
                         </div>
@@ -190,15 +216,15 @@ const Orderid = ({ id }: any) => {
                         <div className="flex flex-col gap-4 mt-4 p-4 rounded-lg lg:w-auto md:w-auto sm:w-auto ml-25">
                             <div className="flex justify-between items-center">
                                 <p className="text-lg font-semibold text-black">Total</p>
-                                <p className="text-lg font-medium text-black">{all.total}</p>
+                                <p className="text-lg font-medium text-black">{all?.total}</p>
                             </div>
                             <div className="flex justify-between items-center">
                                 <p className="text-lg font-semibold text-green-600">Shipping Charge</p>
-                                <p className="text-lg font-medium text-green-600">{all.shipping_charge}</p>
+                                <p className="text-lg font-medium text-green-600">{all?.shipping_charge}</p>
                             </div>
                             <div className="flex justify-between items-center">
                                 <p className="text-lg font-semibold text-black">Tax</p>
-                                <p className="text-lg font-medium text-black">{all.total_tax}</p>
+                                <p className="text-lg font-medium text-black">{all?.total_tax}</p>
                             </div>
                             <div className=" pt-4 flex justify-between items-center">
                                 <p className="text-xl font-bold text-black">Grand Total</p>

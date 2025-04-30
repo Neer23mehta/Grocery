@@ -9,6 +9,7 @@ import axios from 'axios';
 import { useFormik } from 'formik';
 import * as Yup from 'yup'
 import Link from 'next/link';
+import { MdModeEditOutline } from "react-icons/md";
 
 interface Faq {
   Answer: string;
@@ -115,7 +116,10 @@ const Faq = () => {
             <li className='flex flex-col justify-center bg-white shadow-md space-x-5 mt-3 py-3' key={idx}>
               <div className='flex flex-row justify-between items-center'>
                 <p className='text-2xl'><span className='mr-5'>({idx + 1})</span>{curVal.Question}</p>
+                <div className='flex flex-row justify-center items-center gap-2.5'>
                 <RiDeleteBin6Line size={25} onClick={() => handleDeleteFaq(curVal.Faq_id)} />
+                {/* <MdModeEditOutline size={22}/> */}
+                </div>
               </div>
               <div className='flex flex-row justify-start items-center mt-5'>
                 <GoArrowRight size={30} /> <p className='text-2xl ml-3'>{curVal.Answer}</p>

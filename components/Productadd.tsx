@@ -22,6 +22,17 @@ interface ProductFormValues {
   description: string;
 }
 
+type ProductFormValuess = {
+  variation: string;
+  price: string;
+  discount: string;
+  discountprice: string;
+};
+
+type Orderinfo = {
+  title:string;
+  description:string;
+}
 interface Category {
   Category_Name: string;
   No: number;
@@ -57,7 +68,12 @@ const Productadd = () => {
   const [image, setImage] = useState<File | null>(null);
   const [all, setAll] = useState(false)
   const [alls, setAlls] = useState(false)
-
+  const [productFields, setProductFields] = useState<ProductFormValuess[]>([
+    { variation: '', price: '', discount: '', discountprice: '' }
+  ]);
+  const [orderFields, setOrderFields] = useState<Orderinfo[]>([{
+    title:'',description:''
+  }])
   useEffect(() => {
     fetchCategories();
     fetchSubCategories();
@@ -137,7 +153,6 @@ const Productadd = () => {
     formdata.append("stock_status", "1");
     formdata.append("image", image);
   
-    // Product variations as array item (even if one)
     formdata.append("products[0][variation]", values.variation);
     formdata.append("products[0][discount]", values.discount);
     formdata.append("products[0][discount_price]", values.discountprice);
@@ -183,6 +198,31 @@ const Productadd = () => {
     setAlls(!alls)
   }
 
+  const handleChanges = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    const updatedFields = [...productFields];
+    updatedFields[index][name as keyof ProductFormValuess] = value;
+    setProductFields(updatedFields);
+  };
+
+  const handleOrderInfo = (index:number,e:any) => {
+    const {name,value} = e.target;
+    const updatedFields = [...orderFields];
+    updatedFields[index][name as keyof Orderinfo] = value;
+    setOrderFields(updatedFields);
+  }
+  const handleAddFields = () => {
+    setProductFields([
+      ...productFields,
+      { variation: '', price: '', discount: '', discountprice: '' }
+    ]);
+  };
+  const handleAddField = () => {
+    setOrderFields([
+      ...orderFields,
+      { title:"",description:"" }
+    ]);
+  };
   return (
     <form onSubmit={handleSubmit} className='bg-white shadow-md p-5 flex flex-col space-y-4'>
       <h1 className='font-bold text-xl'>Add Product</h1>
@@ -209,7 +249,7 @@ const Productadd = () => {
             value={values.category}
             onChange={handleChange}
             onBlur={handleBlur}
-            className='py-3 px-2 border border-gray-300 rounded-md'
+            className='py-4 px-2 border border-gray-300 '
           >
             <option value="">Select</option>
             {categories.map((item) => (
@@ -228,7 +268,7 @@ const Productadd = () => {
             value={values.subcategory}
             onChange={handleChange}
             onBlur={handleBlur}
-            className='py-3 px-2 border border-gray-300 rounded-md'
+            className='py-4 px-2 border border-gray-300'
           >
             <option value="">Select</option>
             {subCategories.map((item) => (
@@ -247,7 +287,7 @@ const Productadd = () => {
             value={values.brand}
             onChange={handleChange}
             onBlur={handleBlur}
-            className='py-3 px-2 border border-gray-300 rounded-md'
+            className='py-4 px-2 border border-gray-300 '
           >
             <option value="">Select</option>
             {brands.map((item) => (
@@ -260,52 +300,51 @@ const Productadd = () => {
         </div>
       </div>
 
+      <div>
       <div className='flex w-full justify-between items-center flex-row'>
-      <h1 className='text-xl font-bold'>Product Details</h1>
-        <Image src={assets.add} alt='Add' onClick={handleToggle} />
+        <h1 className='text-xl font-bold'>Product Details</h1>
+        <Image src={assets.add} alt='Add' onClick={handleAddFields} />
       </div>
-      {
-        all ? (
-          <div className='flex flex-wrap gap-5'>
-            {[
-              { name: 'variation', label: 'Product qnty.' },
-              { name: 'price', label: 'Price' },
-              { name: 'discount', label: 'Discount (%)' },
-              { name: 'discountprice', label: 'Discount Price' }
-            ].map(({ name, label }) => (
-              <div key={name} className='flex flex-col w-full md:w-[48%] lg:w-[23%]'>
-                <p className='text-gray-400 mb-2'>{label}</p>
-                <TextField
-                  name={name}
-                  value={values[name as keyof ProductFormValues]}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  label={label}
-                  variant="outlined"
-                  error={touched[name as keyof ProductFormValues] && Boolean(errors[name as keyof ProductFormValues])}
-                  helperText={touched[name as keyof ProductFormValues] && errors[name as keyof ProductFormValues]}
-                />
-              </div>
-            ))}
-          </div>
-        ) : null
-      }
 
+      {productFields.map((values, index) => (
+        <div key={index} className='flex flex-wrap gap-5 mb-4'>
+          {[
+            { name: 'variation', label: 'Product qnty.' },
+            { name: 'price', label: 'Price' },
+            { name: 'discount', label: 'Discount (%)' },
+            { name: 'discountprice', label: 'Discount Price' }
+          ].map(({ name, label }) => (
+            <div key={name} className='flex flex-col w-full md:w-[48%] lg:w-[23%]'>
+              <p className='text-gray-400 mb-2'>{label}</p>
+              <TextField
+                name={name}
+                value={values[name as keyof ProductFormValuess]}
+                onChange={(e) => handleChanges(index, e)}
+                label={label}
+                variant='outlined'
+                error={touched[name as keyof ProductFormValuess] && Boolean(errors[name as keyof ProductFormValuess])}
+                helperText={touched[name as keyof ProductFormValuess] && errors[name as keyof ProductFormValuess]}
+              />
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
       <div className='flex w-full justify-between items-center flex-row'>
       <h1 className='text-xl font-bold'>Other Info</h1>
-        <Image src={assets.add} alt='Add' onClick={handleToggleSecond} />
+        <Image src={assets.add} alt='Add' onClick={handleAddField} />
       </div>
 
       {
-        alls ? (
-          <div className='flex flex-col md:flex-row gap-5'>
+        orderFields.map((values,idx) => {
+          return (
+            <div className='flex flex-col md:flex-row gap-5' key={idx}>
             <div className='flex flex-col w-full'>
               <p className='text-gray-400 mb-2'>Title Name</p>
               <TextField
                 name="title"
                 value={values.title}
-                onChange={handleChange}
-                onBlur={handleBlur}
+                onChange={(e) => handleOrderInfo(idx,e)}
                 label="Title"
                 variant="outlined"
                 error={touched.title && Boolean(errors.title)}
@@ -326,8 +365,10 @@ const Productadd = () => {
               />
             </div>
           </div>
-        ) : null
+          )
+        })
       }
+         
       <div className='flex flex-col sm:flex-row items-start sm:items-center gap-4'>
         <label htmlFor="thumbnail" className="cursor-pointer">
           <div className="w-[310px] h-[140px] flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-300 hover:border-gray-500 hover:shadow-lg">

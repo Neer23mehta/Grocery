@@ -67,6 +67,7 @@ const Products = () => {
     }
   };
 
+  console.log("pr123",adds)
   const count = Math.ceil(Number(totalCount)/1)
 
   useEffect(() => {

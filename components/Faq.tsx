@@ -49,6 +49,7 @@ const Faq = () => {
     }
   });
 
+  console.log("faq321213",faq)
   const {values,touched,handleBlur} = formik;
   const addFaqs = async () => {
     const token = localStorage.getItem("token");

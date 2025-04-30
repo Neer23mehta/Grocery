@@ -10,6 +10,7 @@ import ListItem from '@tiptap/extension-list-item'
 import Link from 'next/link'
 import axios from 'axios'
 import commonGetApis from '@/commonapi/Commonapi'
+import { toast } from 'react-toastify'
 
 const extensions = [
   StarterKit.configure({
@@ -63,6 +64,7 @@ export default function MyEditor() {
         }
       });
       console.log("Response:", res.data);
+      toast.success("Successfully Added")
     } catch (error) {
       console.error("Failed to submit:", error);
     }

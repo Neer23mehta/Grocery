@@ -84,18 +84,17 @@ const Products = () => {
   const handleStatusChange = async (id: number, currentStatus: number) => {
     const token = localStorage.getItem('token');
     const refreshToken = localStorage.getItem('usertoken');
-
+  
     if (!token || !refreshToken) {
       toast.error("Missing authentication tokens.");
       return;
-    }
-
+    } 
     const newStatus = currentStatus === 1 ? 0 : 1; 
-
+  
     const formData = new URLSearchParams();
     formData.append('id', String(id));
-    formData.append('stock_status', String(newStatus));
-
+    formData.append('stock_status', String(newStatus)); 
+  
     try {
       const res = await axios.post(
         "http://192.168.2.181:3000/admin/status_change",
@@ -109,14 +108,15 @@ const Products = () => {
           },
         }
       );
-
+  
       toast.success("Stock status updated successfully");
-      fetchCategories();
+      fetchCategories(); 
     } catch (error) {
       console.error("Error updating status:", error);
       toast.error("Failed to update stock status.");
     }
   };
+  
 
 
   const handleProductEdit = async (Id: any) => {

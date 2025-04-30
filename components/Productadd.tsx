@@ -14,12 +14,6 @@ interface ProductFormValues {
   category: string;
   subcategory: string;
   brand: string;
-  variation: string;
-  price: string;
-  discount: string;
-  discountprice: string;
-  title: string;
-  description: string;
 }
 
 type ProductFormValuess = {
@@ -30,9 +24,10 @@ type ProductFormValuess = {
 };
 
 type Orderinfo = {
-  title:string;
-  description:string;
+  title: string;
+  description: string;
 }
+
 interface Category {
   Category_Name: string;
   No: number;
@@ -53,31 +48,25 @@ const Productadd = () => {
     name: "",
     category: "",
     subcategory: "",
-    brand: "",
-    variation: "",
-    price: "",
-    discount: "",
-    discountprice: "",
-    title: "",
-    description: ""
+    brand: ""
   }
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [subCategories, setSubCategories] = useState<Subcategory[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [image, setImage] = useState<File | null>(null);
-  const [all, setAll] = useState(false)
-  const [alls, setAlls] = useState(false)
   const [productFields, setProductFields] = useState<ProductFormValuess[]>([
     { variation: '', price: '', discount: '', discountprice: '' }
   ]);
-  const [orderFields, setOrderFields] = useState<Orderinfo[]>([{
-    title:'',description:''
-  }])
+  const [orderFields, setOrderFields] = useState<Orderinfo[]>([
+    { title: 'Something', description: '' }
+  ]);
+
   useEffect(() => {
     fetchCategories();
     fetchSubCategories();
     fetchBrands();
+    document.title = "Admin addproduct";
   }, []);
 
   const fetchCategories = async () => {
@@ -107,20 +96,11 @@ const Productadd = () => {
     }
   }
 
-  const handleToggle = () => {
-    setAll(!all)
-  }
   const validationSchema = Yup.object().shape({
     name: Yup.string().min(1).max(25).required("Name is required"),
     category: Yup.string().required("Category is required"),
     subcategory: Yup.string().required("Subcategory is required"),
-    brand: Yup.string().required("Brand is required"),
-    variation: Yup.string().required("Variation is required"),
-    price: Yup.number().typeError("Price must be a number").required("Price is required"),
-    discount: Yup.number().typeError("Discount must be a number").min(0).max(100, "Must be between 0 and 100"),
-    discountprice: Yup.number().typeError("Discount price must be a number").required("Discounted price is required"),
-    title: Yup.string().required("Title is required"),
-    description: Yup.string().required("Description is required"),
+    brand: Yup.string().required("Brand is required")
   });
 
   const formik = useFormik<ProductFormValues>({
@@ -144,7 +124,7 @@ const Productadd = () => {
       toast.error("Please select an image.");
       return;
     }
-  
+
     const formdata = new FormData();
     formdata.append("fk_category_id", values.category);
     formdata.append("fk_subcategory_id", values.subcategory);
@@ -152,17 +132,22 @@ const Productadd = () => {
     formdata.append("product_name", values.name);
     formdata.append("stock_status", "1");
     formdata.append("image", image);
-  
-    formdata.append("products[0][variation]", values.variation);
-    formdata.append("products[0][discount]", values.discount);
-    formdata.append("products[0][discount_price]", values.discountprice);
-    formdata.append("products[0][product_price]", values.price);
-    formdata.append("products[0][title]", values.title);
-    formdata.append("products[0][description]", values.description);
-  
+
+    productFields.forEach((field, index) => {
+      formdata.append(`products[${index}][variation]`, field.variation);
+      formdata.append(`products[${index}][discount]`, field.discount);
+      formdata.append(`products[${index}][discount_price]`, field.discountprice);
+      formdata.append(`products[${index}][product_price]`, field.price);
+    });
+
+    orderFields.forEach((info, index) => {
+      formdata.append(`products[${index}][title]`, info.title || 'Untitled'); 
+      formdata.append(`products[${index}][description]`, info.description || 'No description'); 
+    });
+
     const token = localStorage.getItem('token');
     const refreshToken = localStorage.getItem('usertoken');
-  
+
     try {
       const res = await axios.post('http://192.168.2.181:3000/admin/add_product', formdata, {
         headers: {
@@ -171,11 +156,13 @@ const Productadd = () => {
           refresh_token: refreshToken || ''
         }
       });
-  
+
       if (res.data) {
         toast.success("Product Added Successfully");
         resetForm();
         setImage(null);
+        setProductFields([{ variation: '', price: '', discount: '', discountprice: '' }]);
+        setOrderFields([{ title: '', description: '' }]);
       } else {
         toast.error("Failed to add product.");
       }
@@ -183,19 +170,13 @@ const Productadd = () => {
       console.error("Error posting product:", error);
       toast.error("An error occurred while adding the product.");
     }
-  }
-
-  useEffect (() => {
-    document.title = "Admin addproduct"
-  },[])
+  };
 
   const handleCancel = () => {
     resetForm();
     setImage(null);
-  }
-
-  const handleToggleSecond = () => {
-    setAlls(!alls)
+    setProductFields([{ variation: '', price: '', discount: '', discountprice: '' }]);
+    setOrderFields([{ title: '', description: '' }]);
   }
 
   const handleChanges = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
@@ -205,170 +186,125 @@ const Productadd = () => {
     setProductFields(updatedFields);
   };
 
-  const handleOrderInfo = (index:number,e:any) => {
-    const {name,value} = e.target;
+  const handleOrderInfo = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
     const updatedFields = [...orderFields];
     updatedFields[index][name as keyof Orderinfo] = value;
     setOrderFields(updatedFields);
-  }
+  };
+
   const handleAddFields = () => {
     setProductFields([
       ...productFields,
       { variation: '', price: '', discount: '', discountprice: '' }
     ]);
   };
+
   const handleAddField = () => {
     setOrderFields([
       ...orderFields,
-      { title:"",description:"" }
+      { title: "", description: "" }
     ]);
   };
+
   return (
     <form onSubmit={handleSubmit} className='bg-white shadow-md p-5 flex flex-col space-y-4'>
       <h1 className='font-bold text-xl'>Add Product</h1>
 
       <div className='flex flex-col md:flex-row md:flex-wrap gap-5'>
-        <div className='flex flex-col w-full md:w-[48%] lg:w-[23%]'>
-          <p className='text-gray-400 mb-2'>Item Name</p>
-          <TextField
-            name="name"
-            value={values.name}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            label="Name"
-            variant="outlined"
-            error={touched.name && Boolean(errors.name)}
-            helperText={touched.name && errors.name}
-          />
-        </div>
-
-        <div className='flex flex-col w-full md:w-[48%] lg:w-[23%]'>
-          <p className='text-gray-400 mb-2'>Category</p>
-          <select
-            name="category"
-            value={values.category}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            className='py-4 px-2 border border-gray-300 '
-          >
-            <option value="">Select</option>
-            {categories.map((item) => (
-              <option key={item.No} value={item.No}>{item.Category_Name}</option>
-            ))}
-          </select>
-          {touched.category && errors.category && (
-            <span className="text-sm text-red-500">{errors.category}</span>
-          )}
-        </div>
-
-        <div className='flex flex-col w-full md:w-[48%] lg:w-[23%]'>
-          <p className='text-gray-400 mb-2'>Subcategory</p>
-          <select
-            name="subcategory"
-            value={values.subcategory}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            className='py-4 px-2 border border-gray-300'
-          >
-            <option value="">Select</option>
-            {subCategories.map((item) => (
-              <option key={item.No} value={item.No}>{item.SubCategory_Name}</option>
-            ))}
-          </select>
-          {touched.subcategory && errors.subcategory && (
-            <span className="text-sm text-red-500">{errors.subcategory}</span>
-          )}
-        </div>
-
-        <div className='flex flex-col w-full md:w-[48%] lg:w-[23%]'>
-          <p className='text-gray-400 mb-2'>Brand</p>
-          <select
-            name="brand"
-            value={values.brand}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            className='py-4 px-2 border border-gray-300 '
-          >
-            <option value="">Select</option>
-            {brands.map((item) => (
-              <option key={item.No} value={item.No}>{item.Brand_Name}</option>
-            ))}
-          </select>
-          {touched.brand && errors.brand && (
-            <span className="text-sm text-red-500">{errors.brand}</span>
-          )}
-        </div>
+        {[
+          { label: "Item Name", name: "name", type: "text", options: null },
+          { label: "Category", name: "category", options: categories.map(item => ({ value: item.No, label: item.Category_Name })) },
+          { label: "Subcategory", name: "subcategory", options: subCategories.map(item => ({ value: item.No, label: item.SubCategory_Name })) },
+          { label: "Brand", name: "brand", options: brands.map(item => ({ value: item.No, label: item.Brand_Name })) }
+        ].map((field, idx) => (
+          <div key={idx} className='flex flex-col w-full md:w-[48%] lg:w-[23%]'>
+            <p className='text-gray-400 mb-2'>{field.label}</p>
+            {field.options ? (
+              <select
+                name={field.name}
+                value={values[field.name as keyof ProductFormValues]}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                className='py-4 px-2 border border-gray-300'
+              >
+                <option value="">Select</option>
+                {field.options.map((opt, i) => (
+                  <option key={i} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+            ) : (
+              <TextField
+                name={field.name}
+                value={values[field.name as keyof ProductFormValues]}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                variant="outlined"
+                error={touched[field.name as keyof ProductFormValues] && Boolean(errors[field.name as keyof ProductFormValues])}
+                helperText={touched[field.name as keyof ProductFormValues] && errors[field.name as keyof ProductFormValues]}
+              />
+            )}
+          </div>
+        ))}
       </div>
 
       <div>
-      <div className='flex w-full justify-between items-center flex-row'>
-        <h1 className='text-xl font-bold'>Product Details</h1>
-        <Image src={assets.add} alt='Add' onClick={handleAddFields} />
+        <div className='flex w-full justify-between items-center'>
+          <h1 className='text-xl font-bold'>Product Details</h1>
+          <Image src={assets.add} alt='Add' onClick={handleAddFields} />
+        </div>
+        {productFields.map((field, index) => (
+          <div key={index} className='flex flex-wrap gap-5 mb-4'>
+            {[
+              { name: 'variation', label: 'Product qnty.' },
+              { name: 'price', label: 'Price' },
+              { name: 'discount', label: 'Discount (%)' },
+              { name: 'discountprice', label: 'Discount Price' }
+            ].map(({ name, label }) => (
+              <div key={name} className='flex flex-col w-full md:w-[48%] lg:w-[23%]'>
+                <p className='text-gray-400 mb-2'>{label}</p>
+                <TextField
+                  name={name}
+                  value={field[name as keyof ProductFormValuess]}
+                  onChange={(e) => handleChanges(index, e)}
+                  label={label}
+                  variant='outlined'
+                />
+              </div>
+            ))}
+          </div>
+        ))}
       </div>
 
-      {productFields.map((values, index) => (
-        <div key={index} className='flex flex-wrap gap-5 mb-4'>
-          {[
-            { name: 'variation', label: 'Product qnty.' },
-            { name: 'price', label: 'Price' },
-            { name: 'discount', label: 'Discount (%)' },
-            { name: 'discountprice', label: 'Discount Price' }
-          ].map(({ name, label }) => (
-            <div key={name} className='flex flex-col w-full md:w-[48%] lg:w-[23%]'>
-              <p className='text-gray-400 mb-2'>{label}</p>
-              <TextField
-                name={name}
-                value={values[name as keyof ProductFormValuess]}
-                onChange={(e) => handleChanges(index, e)}
-                label={label}
-                variant='outlined'
-                error={touched[name as keyof ProductFormValuess] && Boolean(errors[name as keyof ProductFormValuess])}
-                helperText={touched[name as keyof ProductFormValuess] && errors[name as keyof ProductFormValuess]}
-              />
-            </div>
-          ))}
-        </div>
-      ))}
-    </div>
-      <div className='flex w-full justify-between items-center flex-row'>
-      <h1 className='text-xl font-bold'>Other Info</h1>
+      <div className='flex w-full justify-between items-center'>
+        <h1 className='text-xl font-bold'>Other Info</h1>
         <Image src={assets.add} alt='Add' onClick={handleAddField} />
       </div>
-
-      {
-        orderFields.map((values,idx) => {
-          return (
-            <div className='flex flex-col md:flex-row gap-5' key={idx}>
-            <div className='flex flex-col w-full'>
-              <p className='text-gray-400 mb-2'>Title Name</p>
-              <TextField
-                name="title"
-                value={values.title}
-                onChange={(e) => handleOrderInfo(idx,e)}
-                label="Title"
-                variant="outlined"
-                error={touched.title && Boolean(errors.title)}
-                helperText={touched.title && errors.title}
-              />
-            </div>
-            <div className='flex flex-col w-full'>
-              <p className='text-gray-400 mb-2'>Description</p>
-              <TextField
-                name="description"
-                value={values.description}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                label="Description"
-                variant="outlined"
-                error={touched.description && Boolean(errors.description)}
-                helperText={touched.description && errors.description}
-              />
-            </div>
+      {orderFields.map((field, idx) => (
+        <div className='flex flex-col md:flex-row gap-5' key={idx}>
+          <div className='flex flex-col w-full'>
+            <p className='text-gray-400 mb-2'>Title Name</p>
+            <TextField
+              name="title"
+              value={field.title}
+              onChange={(e) => handleOrderInfo(idx, e)}
+              label="Title"
+              variant="outlined"
+            />
           </div>
-          )
-        })
-      }
-         
+          <div className='flex flex-col w-full'>
+            <p className='text-gray-400 mb-2'>Description</p>
+            <TextField
+              name="description"
+              value={field.description}
+              onChange={(e) => handleOrderInfo(idx, e)}
+              label="Description"
+              variant="outlined"
+            />
+          </div>
+        </div>
+      ))}
+
       <div className='flex flex-col sm:flex-row items-start sm:items-center gap-4'>
         <label htmlFor="thumbnail" className="cursor-pointer">
           <div className="w-[310px] h-[140px] flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-300 hover:border-gray-500 hover:shadow-lg">

@@ -4,6 +4,7 @@ import commonGetApis from '@/commonapi/Commonapi'
 // import IndiaMap from "@/Grocery/India"
 import { toast } from 'react-toastify'
 import Link from 'next/link'
+import CountUp from 'react-countup';
 import { Doughnut } from 'react-chartjs-2'
 import { Bar } from 'react-chartjs-2'
 import {
@@ -68,8 +69,8 @@ const Dashboard = () => {
           }, []);
 
   return (
-<div className="flex flex-col items-center px-4 py-8 bg-[#202020] w-full h-full">
-  <h1 className="text-4xl font-bold mb-10 text-center text-white">Dashboard</h1>
+<div className="flex flex-col items-center px-4 py-8 bg-gray-100 w-full h-full">
+  <h1 className="text-4xl font-bold mb-10 text-center text-black">Dashboard</h1>
 
   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 w-full max-w-7xl">
     {[
@@ -90,7 +91,7 @@ const Dashboard = () => {
         <h2 className="text-2xl font-semibold">{item.title}</h2>
         <h2 className='text-3xl'>{item.image}</h2>
         </div>
-        <p className="mt-2 text-lg font-bold">Total: ({item.value})</p>
+        <p className="mt-2 text-lg font-bold">Total: <CountUp end={item.value} /></p>
       </div>
       </Link>
     ))}

@@ -156,30 +156,34 @@ const Layout = ({ children }: LayoutProps) => {
         <div className="flex min-h-screen bg-gray-100">
             <ToastContainer theme="dark" />
 
-            <div className="sticky top-0 h-screen z-30 overflow-y-auto bg-[#202020]">
+            <div className="sticky top-0 h-screen z-30 overflow-y-auto overflow-x-hidden  bg-[#202020]">
             <Sidebar />
             </div>
 
             <div className="flex flex-col w-full">
-                <div className={`flex flex-col justify-end p-1 shadow-md border-b border-gray-300 sticky top-0 z-20 ${pathname === "/admin/dashboard" ? "bg-[#202020]" : "bg-gray-100"} `}>
-                    <div className="flex flex-row items-center justify-end relative">
+                <div className={`flex flex-col justify-end p-1 shadow-md border-b border-gray-300 sticky top-0 z-20 ${pathname === "/admin/dashboard" ? "bg-white" : "bg-white"} `}>
+                    <div className="flex flex-row items-center justify-between w-full relative">
+                        <div className="flex justify-start">
                         {
-                            pathname == "/admin/products/addproduct" ? <button onClick={handleBackClick} className="mr-270"><Image src={assets.backs} alt="back" height={25} width={20} /></button> : null
+                           pathname == "/admin/products/addproduct" ? <button onClick={handleBackClick} className="ml-5"><Image src={assets.backs} alt="back" height={25} width={20} /></button> : null
                         }
+                        </div>
+                        <div className="flex justify-end items-center">
                         <Image src={assets.admin} alt="Admin" className="mt-2" />
-                        <button onClick={handleClick} ref={anchorRef} className={`mr-2 ${pathname === "/admin/dashboard" ? "text-gray-100" : "text-[#202020]" }`}>Admin</button>
-                        <SlArrowDown size={12} onClick={handleClick} className={`mr-5 ${pathname === "/admin/dashboard" ? "text-gray-100" : "text-[#202020]" }`}/>
+                        <button onClick={handleClick} ref={anchorRef} className={`mr-2 text-xl text-black`}>Admin</button>
+                        <SlArrowDown size={12} onClick={handleClick} className={`mr-5 text-black`}/>
+                        </div>
 
                         <Popper open={logout} anchorEl={anchorRef.current} placement="bottom-end" style={{ zIndex: 1300 }}>
                             <ClickAwayListener onClickAway={() => setLogout(false)}>
-                                <Paper className="bg-white shadow-md p-2 mt-1 space-y-2 w-48">
-                                    <button onClick={handleConfiguration} className="flex items-center space-x-2 hover:bg-amber-300 w-full p-2">
+                                <Paper className="bg-white shadow-md space-y-2 w-55">
+                                    <button onClick={handleConfiguration} className="flex items-center text-xl space-x-2 hover:bg-amber-300 w-full p-3">
                                         <IoSettingsSharp /><span>Configuration</span>
                                     </button>
-                                    <button onClick={handleChangePassword} className="flex items-center space-x-2 hover:bg-amber-300 w-full p-2">
+                                    <button onClick={handleChangePassword} className="flex items-center text-xl space-x-2 hover:bg-amber-300 w-full p-3">
                                         <MdLock /><span>Change Password</span>
                                     </button>
-                                    <button onClick={handleLogout} className="flex items-center space-x-2 hover:bg-amber-300 w-full p-2">
+                                    <button onClick={handleLogout} className="flex items-center text-xl space-x-2 hover:bg-amber-300 w-full p-3">
                                         <GrLogout /><span>Log-Out</span>
                                     </button>
                                 </Paper>
@@ -188,7 +192,7 @@ const Layout = ({ children }: LayoutProps) => {
                     </div>
                 </div>
 
-                <div className={`p-6 flex-1 overflow-y-auto ${pathname === "/admin/dashboard" ? "bg-[#202020]" : "bg-gray-100"}`}>
+                <div className={`p-6 flex-1 overflow-y-auto bg-gray-100`}>
                 {children}
 
                     <Dialog open={config} onClose={() => setConfig(false)}>

@@ -61,6 +61,9 @@ const Advertise: React.FC = () => {
 
       if (res.data) {
         toast.success("Successfully Added");
+        fetchGetAdvertise(); 
+        setAdd(false); 
+        setImage(null); 
       }
     } catch (error) {
       console.log(error);
@@ -73,7 +76,10 @@ const Advertise: React.FC = () => {
       const res = await deleteApi(`delete_home_management?id=${id}&fk_section_id=4`);
 
       if (res.data) {
-        setAds(prev => prev.filter(item => item.id !== id));
+        setAds(prev => prev.map(item => ({
+          ...item,
+          section_advertisements: item.section_advertisements.filter(ad => ad.id !== id)
+        })));
         toast.success("Deleted Successfully");
       }
     } catch (error) {
@@ -108,8 +114,9 @@ const Advertise: React.FC = () => {
           </div>
           <Image src={assets.del} alt='delete' className='mt-5 flex justify-end' width={17} height={25} />
         </div>
+
         <div className="w-full overflow-x-auto">
-          <div className="flex gap-5 items-center overflow-x-auto">
+          <div className="flex gap-5 items-center min-w-max">
             {ads?.map((curval, index) => (
               <div key={index} className="flex gap-5">
                 {curval.section_advertisements.map((ad, idx) => (

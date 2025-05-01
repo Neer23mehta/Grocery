@@ -9,10 +9,10 @@ import { Dialog, DialogActions } from '@mui/material';
 import axios from 'axios';
 
 interface Brands {
-  Image: string,
-  Id: number,
-  Section_Id: number,
-  Section_Name: string,
+  Image: string;
+  Id: number;
+  Section_Id: number;
+  Section_Name: string;
   section_brand: {
     id: number;
     image: string;
@@ -20,130 +20,126 @@ interface Brands {
 }
 
 const Shopbybrand = () => {
-  const [brand, setBrand] = useState<Brands[]>([])
-  const [add, setAdd] = useState(false)
-  const [image, setImage] = useState<File | null>(null)
-  const [display, SetDisplay] = useState(false)
+  const [brand, setBrand] = useState<Brands[]>([]);
+  const [add, setAdd] = useState(false);
+  const [image, setImage] = useState<File | null>(null);
+  const [display, SetDisplay] = useState(false);
 
   const fetchGetBrands = async () => {
     try {
       const res = await commonGetApis("get_all_home_management?fk_section_id=3");
-      setBrand(res?.data?.result)
+      setBrand(res?.data?.result || []);
     } catch (error) {
-      console.log(error)
-      toast.error("Something went Wrong")
+      console.log(error);
+      toast.error("Something went Wrong");
     }
-  }
+  };
 
-  console.log("brands123", brand)
-
-  // remove brands from homemanagement screen 
   const handleRemoveBrands = () => {
-    SetDisplay(!display)
-  }
+    SetDisplay(!display);
+  };
 
-  // delete api 
   const handleDeleteBrand = async (id: number) => {
     try {
-      const res = await deleteApi(`delete_home_management?id=${id}&fk_section_id=3`)
+      const res = await deleteApi(`delete_home_management?id=${id}&fk_section_id=3`);
       if (res?.data) {
-        toast.success("Deleted Successfully")
-        fetchGetBrands();  // Refresh the list after deletion
+        toast.success("Deleted Successfully");
+        fetchGetBrands();
       }
     } catch (error) {
       console.log(error);
       toast.error("Something went Wrong");
     }
-  }
+  };
 
   const handleToggleAdd = () => {
     setAdd(!add);
-  }
+  };
 
-  // Add Api
   const handleNewBrand = async () => {
-    const refreshtoken = localStorage.getItem('usertoken')
-    const token = localStorage.getItem('token')
+    const refreshtoken = localStorage.getItem('usertoken');
+    const token = localStorage.getItem('token');
     const formdata = new FormData();
 
     formdata.append("fk_section_id", "3");
-    if (image) formdata.append("image", image)
+    if (image) formdata.append("image", image);
 
     try {
       const res = await axios.post("http://192.168.2.181:3000/admin/add_home_management", formdata, {
         headers: {
-          Authorizations: token,
+          Authorizations: token!,
           language: 'en',
-          refresh_token: refreshtoken,
+          refresh_token: refreshtoken!,
           'Content-Type': 'multipart/form-data',
         },
-      })
+      });
       if (res.data) {
-        toast.success("Successfully Added")
-        fetchGetBrands();  // Refresh the list after adding a new brand
+        toast.success("Successfully Added");
+        fetchGetBrands();
+        setAdd(false);
+        setImage(null);
       }
     } catch (error) {
       console.log(error);
       toast.error("Something went Wrong");
     }
-  }
+  };
 
-  // Get by id api to display more information or set it for editing
   const fetchGetById = async (id: number) => {
     try {
-      const res = await commonGetApis(`get_home_management_by_id?fk_section_id=3&id=${id}`)
+      const res = await commonGetApis(`get_home_management_by_id?fk_section_id=3&id=${id}`);
       if (res.data) {
-        // You can handle the response to set data for editing here
       }
     } catch (error) {
       console.log(error);
-      toast.error("Something went Wrong")
+      toast.error("Something went Wrong");
     }
-  }
+  };
 
   useEffect(() => {
     fetchGetBrands();
-  }, [])
+  }, []);
 
   return (
     <div className='w-full'>
-      <div className='flex flex-col mt-5 px-4 bg-white shadow-lg w-full overflow-x-auto'>
+      <div className='flex flex-col mt-5 px-4 bg-white shadow-lg w-full'>
         <div className='flex flex-row justify-between items-center'>
           <div className='flex flex-row'>
             <h1 className='mt-5 font-bold text-xl'>Brands</h1>
             <button className='text-gray-500 ml-3 mt-5'><MdEdit size={20} /></button>
           </div>
-          <Image src={assets.del} alt='delete' className='mt-5 flex justify-end' width={17} height={15} onClick={handleRemoveBrands}/>
+          <Image src={assets.del} alt='delete' className='mt-5 cursor-pointer' width={17} height={15} onClick={handleRemoveBrands} />
         </div>
 
-        <div className='flex flex-wrap justify-start items-center mb-5 mt-3 gap-5'>
-          {brand?.map((curval, index) => (
-            <div key={index} className="flex flex-row items-center gap-5">
-              {curval.section_brand.map((brandImage, imageIndex) => (
-                <div key={imageIndex} className="relative mb-2">
-                  <button onClick={() => handleDeleteBrand(brandImage.id)}>
-                    <Image
-                      src={assets.cancel}
-                      alt="remove"
-                      width={26}
-                      height={26}
-                      className="absolute top-8 right-0 z-10 cursor-pointer"
+        <div className='w-full overflow-x-auto mt-4'>
+          <div className='flex gap-5 min-w-max'>
+            {brand?.map((curval, index) => (
+              <div key={index} className='flex gap-5'>
+                {curval.section_brand.map((brandImage, imageIndex) => (
+                  <div key={imageIndex} className="relative">
+                    <button onClick={() => handleDeleteBrand(brandImage.id)}>
+                      <Image
+                        src={assets.cancel}
+                        alt="remove"
+                        width={26}
+                        height={26}
+                        className="absolute top-8 right-0 z-10 cursor-pointer"
+                      />
+                    </button>
+                    <img
+                      src={brandImage.image}
+                      alt={`brand-${brandImage.id}`}
+                      className='h-[110px] w-[110px] mt-2 object-cover rounded-md shadow-sm hover:shadow-md transition-shadow duration-200'
+                      onClick={() => fetchGetById(brandImage.id)}
                     />
-                  </button>
+                  </div>
+                ))}
+              </div>
+            ))}
 
-                  <img
-                    src={brandImage.image}
-                    alt={`brand-${brandImage.id}`}
-                    className='h-[110px] w-[110px] mt-2 object-cover rounded-md shadow-sm hover:shadow-md transition-shadow duration-200'
-                    onClick={() => fetchGetById(brandImage.id)}
-                  />
-                </div>
-              ))}
+            <div className='flex justify-center items-center border border-gray-300 mt-2 rounded-md h-[110px] w-[110px] cursor-pointer'>
+              <Image src={assets.add} alt="add brand" onClick={handleToggleAdd} />
             </div>
-          ))}
-          
-          <div className='flex justify-center items-center border border-gray-300 mt-6 rounded-md h-[110px] w-[110px]'>
-            <Image src={assets.add} alt="add brand" className="cursor-pointer" onClick={handleToggleAdd} />
           </div>
         </div>
       </div>
@@ -179,6 +175,7 @@ const Shopbybrand = () => {
               }
             />
           </div>
+
           <DialogActions>
             <div className='py-5 flex justify-center items-center'>
               <button onClick={handleNewBrand} className='font-bold mt-3 bg-amber-400 py-2 px-9 text-xl'>
@@ -189,7 +186,7 @@ const Shopbybrand = () => {
         </div>
       </Dialog>
     </div>
-  )
-}
+  );
+};
 
-export default Shopbybrand
+export default Shopbybrand;

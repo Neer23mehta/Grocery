@@ -288,7 +288,7 @@ const Subcategory = () => {
               .map(({ No, Image: ImgUrl, Category_Name, Status, SubCategory_Name }) => (
                 <tr key={No}>
                   <td className="px-2 py-2">{No}</td>
-                  <td><img src={ImgUrl} alt={Category_Name} className="w-14 h-13 object-cover" /></td>
+                  <td className='px-2 py-2'><img src={ImgUrl} alt={Category_Name} className="w-14 h-13 object-cover" /></td>
                   <td>{SubCategory_Name}</td>
                   <td>{Category_Name}</td>
                   <td onClick={() => handleStatusChange(No, Status)} className='px-2 py-2'>

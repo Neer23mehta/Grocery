@@ -29,8 +29,8 @@ interface ApiResponse {
 }
 
 interface Newproduct {
-    Category_Name:string;
-    Image:any;
+  Category_Name: string;
+  Image: any;
 }
 const Products = () => {
   const [input, setInput] = useState<string>("");
@@ -67,8 +67,8 @@ const Products = () => {
     }
   };
 
-  console.log("pr123",adds)
-  const count = Math.ceil(Number(totalCount)/1)
+  console.log("pr123", adds)
+  const count = Math.ceil(Number(totalCount) / 1)
 
   useEffect(() => {
     fetchCategories();
@@ -76,7 +76,7 @@ const Products = () => {
 
   useEffect(() => {
     document.title = "Admin Products"
-  },[])
+  }, [])
   const handleAddProduct = () => {
     route.push("/admin/products/addproduct");
   };
@@ -84,17 +84,17 @@ const Products = () => {
   const handleStatusChange = async (id: number, currentStatus: number) => {
     const token = localStorage.getItem('token');
     const refreshToken = localStorage.getItem('usertoken');
-  
+
     if (!token || !refreshToken) {
       toast.error("Missing authentication tokens.");
       return;
-    } 
-    const newStatus = currentStatus === 1 ? 0 : 1; 
-  
+    }
+    const newStatus = currentStatus === 1 ? 0 : 1;
+
     const formData = new URLSearchParams();
     formData.append('id', String(id));
-    formData.append('stock_status', String(newStatus)); 
-  
+    formData.append('stock_status', String(newStatus));
+
     try {
       const res = await axios.post(
         "http://192.168.2.181:3000/admin/status_change",
@@ -108,15 +108,15 @@ const Products = () => {
           },
         }
       );
-  
+
       toast.success("Stock status updated successfully");
-      fetchCategories(); 
+      fetchCategories();
     } catch (error) {
       console.error("Error updating status:", error);
       toast.error("Failed to update stock status.");
     }
   };
-  
+
 
 
   const handleProductEdit = async (Id: any) => {
@@ -132,7 +132,7 @@ const Products = () => {
     }
   };
 
-  console.log("products121",productIdData)
+  console.log("products121", productIdData)
   const handleProductPosts = (e: any) => {
     const { name, value } = e.target
     setInputss({ ...inputss, [name]: value, })
@@ -148,7 +148,7 @@ const Products = () => {
         <div className="flex flex-col px-2">
           <h1 className="text-3xl font-bold">Products</h1>
           <p className='text-gray-500 mt-2'><Link href={`/admin/dashboard`}>Dashboard</Link> <span className='ml-2.5'>{`>`}</span><span className='text-black ml-2.5'>Products</span> </p>
-          </div>
+        </div>
         <div>
           <TextField
             id="outlined-basic"
@@ -199,7 +199,7 @@ const Products = () => {
                       </div>
                     </td>
                     <td>
-                      <button onClick={() => handleProductEdit(Id)} className='ml-2 text-gray-500'><MdEdit /></button>
+                      <button onClick={() => handleProductEdit(Id)} className='ml-2 text-gray-500'> <Link href={`/admin/products/${Id}`}><MdEdit /></Link></button>
                       <button className='ml-3 text-gray-500'><RiDeleteBin5Fill /></button>
                     </td>
                   </tr>
@@ -207,69 +207,12 @@ const Products = () => {
               })}
           </tbody>
         </table>
-
-        <Dialog open={product} onClose={() => setProduct(false)}>
-          <div className='flex flex-col justify-center items-center'>
-            <DialogContent>
-              {productIdData && (
-                <div className="flex flex-col items-center px-5 justify-center">
-                  <form onSubmit={handleIdDataSubmit} className='flex flex-col justify-center items-center'>
-                    <h1 className="text-2xl font-bold mb-3">Category Details</h1>
-                    <div className='flex flex-row mt-7'>
-                      <label htmlFor="thumbnail" className="flex items-center justify-center cursor-pointer mb-6">
-                        <div className="w-[325px] h-[125px] flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-300 transition-all duration-300 ease-in-out hover:border-gray-500 hover:shadow-lg">
-                          <img
-                            src={image ? URL.createObjectURL(image) : productIdData.Image}
-                            alt="Upload Thumbnail"
-                            width={110}
-                            height={100}
-                            className="object-cover rounded-lg"
-                          />
-                        </div>
-                      </label>
-                      <input
-                        type="file"
-                        id="thumbnail"
-                        className="hidden"
-                        onChange={(e) => {
-                            if (e.target.files && e.target.files[0]) {
-                              setImage(e.target.files[0]);
-                            }
-                          }}
-                        />
-                    </div>
-                    <div className='border border-gray-400 h-[30px] flex justify-center'>
-                      <input className='focus:outline-none px-3' type='text' value={inputss.category} placeholder={productIdData.Category_Name} name='category' onChange={handleProductPosts} />
-                    </div>
-                    <div className="flex flex-col mt-5">
-                      <label className="text-gray-400">Status</label>
-                      <select
-                        name="stock"
-                        value={inputss.stock}
-                        onChange={handleProductPosts}
-                        className="border border-gray-200 w-full py-2 px-2.5"
-                      >
-                        <option value="1">Active</option>
-                        <option value="0">Inactive</option>
-                      </select>
-                    </div>
-                    <DialogActions>
-                      <div className='flex flex-row justify-center items-center'>
-                        <button type="submit" className="bg-amber-300 px-4 py-2 items-center flex">Save</button>
-                      </div>
-                    </DialogActions>
-                  </form>
-                </div>
-              )}
-            </DialogContent>
-          </div>
-        </Dialog>
         <div className="flex justify-end bottom-0 mt-5 h-[20px] items-center">
           <Stack spacing={2}>
-            <Pagination variant='outlined' shape='rounded' 
-            count={count}
-            page={page}
-            onChange={(e,page)=>setPage(page)}
+            <Pagination variant='outlined' shape='rounded'
+              count={count}
+              page={page}
+              onChange={(e, page) => setPage(page)}
             />
           </Stack>
         </div>

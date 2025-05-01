@@ -7,18 +7,10 @@ import Link from 'next/link'
 import CountUp from 'react-countup';
 import { Doughnut } from 'react-chartjs-2'
 import { Bar } from 'react-chartjs-2'
-import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    BarElement,
-    ArcElement,
-    Title,
-    Tooltip,
-    Legend,
-  } from 'chart.js';
+import {Chart as ChartJS,CategoryScale,LinearScale,BarElement,ArcElement,Title,Tooltip,Legend,} from 'chart.js';
+import { Skeleton } from '@mui/material'
   
-  ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
   
 
 interface Alldetails {
@@ -73,29 +65,41 @@ const Dashboard = () => {
   <h1 className="text-4xl font-bold mb-10 text-center text-black">Dashboard</h1>
 
   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 w-full max-w-7xl">
-    {[
-      { title: 'Users', value: dashboard.user_count , name:'user' , image:"👤" },
-      { title: 'Brands', value: dashboard.brands_count, name:'brands', image:"🏷️" },
-      { title: 'Products', value: dashboard.product_count, name:'products', image:"📦" },
-      { title: 'Categories', value: dashboard.category_count, name:'category/categories', image:"🗂️" },
-      { title: 'Sub-Categories', value: dashboard.sub_category_count, name:'category/subcategories', image:"📁" },
-      { title: 'Orders', value: dashboard.order_count, name:'orders', image:"🧾" },
-      { title: 'Coupon', value: dashboard.coupon_count, name:'couponmanage', image:"🎟️" }
-        ].map((item, index) => (
-        <Link href={`/admin/${item.name}`} key={index}>
+  {[
+    { title: 'Users', value: dashboard.user_count , name:'user' , image:"👤" },
+    { title: 'Brands', value: dashboard.brands_count, name:'brands', image:"🏷️" },
+    { title: 'Products', value: dashboard.product_count, name:'products', image:"📦" },
+    { title: 'Categories', value: dashboard.category_count, name:'category/categories', image:"🗂️" },
+    { title: 'Sub-Categories', value: dashboard.sub_category_count, name:'category/subcategories', image:"📁" },
+    { title: 'Orders', value: dashboard.order_count, name:'orders', image:"🧾" },
+    { title: 'Coupon', value: dashboard.coupon_count, name:'couponmanage', image:"🎟️" }
+  ].map((item, index) => (
+    <Link href={`/admin/${item.name}`} key={index}>
       <div
-        key={index}
         className="bg-white text-black shadow-lg rounded-lg p-6 flex flex-col justify-center hover:scale-105 transition-transform duration-300"
       >
         <div className='flex flex-row justify-between items-center'>
-        <h2 className="text-2xl font-semibold">{item.title}</h2>
-        <h2 className='text-3xl'>{item.image}</h2>
+          <h2 className="text-2xl font-semibold">
+            {dashboard.user_count === 0 && dashboard.order_count === 0 ? (
+              <Skeleton width={100} />
+            ) : (
+              item.title
+            )}
+          </h2>
+          <h2 className='text-3xl'>{item.image}</h2>
         </div>
-        <p className="mt-2 text-lg font-bold">Total: <CountUp end={item.value} /></p>
+        <p className="mt-2 text-lg font-bold">
+          Total: {dashboard.user_count === 0 && dashboard.order_count === 0 ? (
+            <Skeleton width={50} />
+          ) : (
+            <CountUp end={item.value} />
+          )}
+        </p>
       </div>
-      </Link>
-    ))}
-  </div>
+    </Link>
+  ))}
+</div>
+
   <div>
     {/* <IndiaMap/> */}
   </div>

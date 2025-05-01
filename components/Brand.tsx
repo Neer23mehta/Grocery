@@ -6,7 +6,7 @@ import { MdEdit } from 'react-icons/md';
 import { RiDeleteBin5Fill } from 'react-icons/ri';
 import { toast } from 'react-toastify';
 import Image from 'next/image';
-import commonGetApis from '@/commonapi/Commonapi';
+import commonGetApis, { deleteApi } from '@/commonapi/Commonapi';
 import { assets } from '@/assests/assets';
 import Link from 'next/link';
 
@@ -55,101 +55,94 @@ const Brand = () => {
   const [image, setImage] = useState<File | null>(null);
 
   const fetchCategories = async () => {
-    const refreshtoken = localStorage.getItem('usertoken');
-    const token = localStorage.getItem('token');
     try {
-      const res = await axios.get(
-        `http://192.168.2.181:3000/admin/get_brands?pageNumber=${page}&pageLimit=10`,
-        {
-          headers: {
-            Authorizations: token,
-            language: 'en',
-            refresh_token: refreshtoken,
-          },
-        }
-      );
-      setAdds(res?.data?.data?.result || []);
-      setTotalCount(res?.data?.data?.Total_Count);
+      const res = await commonGetApis(
+        `get_brands?pageNumber=${page}&pageLimit=10`);
+      setAdds(res?.data?.result || []);
+      setTotalCount(res?.data?.Total_Count);
     } catch (error) {
       console.error('Error fetching categories:', error);
     }
   };
-  console.log("res", adds)
-
   const handleDelete = async (No: number) => {
-    const refreshtoken = localStorage.getItem('usertoken');
-    const token = localStorage.getItem('token');
     try {
-      await axios.delete(
-        `http://192.168.2.181:3000/admin/delete_brand?id=${No}`,
-        {
-          headers: {
-            Authorizations: token,
-            language: 'en',
-            refresh_token: refreshtoken,
-          },
-        }
-      );
+      await deleteApi(`delete_brand?id=${No}`);
       setAdds((prev) => prev.filter((items) => items.No !== No));
+      toast.success("Deleted Successfully")
     } catch (error) {
       console.log(error);
     }
   };
-
   const handleEdit = async (No: number) => {
     try {
       const res = await commonGetApis(`get_brand?id=${No}`);
       const data = res.data.DATA;
       if (data) {
         setBrandId(data);
+        setInputs({
+          brand: data.Brand_Name,
+          category: String(data.fk_category_id),
+          subcategory: String(data.fk_subcategory_id),
+          No: data.No,
+          status: String(data.Status),
+        });
         setToggleBrand(true);
       }
     } catch (error) {
       console.log(error);
     }
-  };
-
-
-  console.log("brandid123", brandId)
+  };  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+  
     const refreshtoken = localStorage.getItem('usertoken');
     const token = localStorage.getItem('token');
+  
     const formdata = new FormData();
-
     formdata.append('brand_name', inputs.brand);
     formdata.append('fk_category_id', inputs.category);
     formdata.append('fk_subcategory_id', inputs.subcategory);
     formdata.append('status', inputs.status);
+    
     if (image) formdata.append('image', image);
-
+  
+    const headers = {
+      Authorizations: token,
+      language: 'en',
+      refresh_token: refreshtoken,
+      'Content-Type': 'multipart/form-data',
+    };
+  
     try {
-      const res = await axios.post(
-        'http://192.168.2.181:3000/admin/add_brand',
-        formdata,
-        {
-          headers: {
-            Authorizations: token,
-            language: 'en',
-            refresh_token: refreshtoken,
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      );
-
-      if (res.data) {
-        toast.success("Successfully Added");
-        setAddSub(false);
-        fetchCategories();
+      let res;
+  
+      if (inputs.No) {
+        formdata.append('id', String(inputs.No)); 
+        res = await axios.post('http://192.168.2.181:3000/admin/add_brand', formdata, { headers });
+        toast.success("Brand Updated Successfully");
       } else {
-        toast.error('Error while submitting.');
+        res = await axios.post('http://192.168.2.181:3000/admin/add_brand', formdata, { headers });
+        toast.success("Brand Added Successfully");
       }
+  
+      setAddSub(false);
+      setToggleBrand(false);
+      setInputs({
+        brand: '',
+        category: '',
+        subcategory: '',
+        No: null,
+        status: '1',
+      });
+      setImage(null);
+      fetchCategories();
     } catch (error) {
       console.error('Error submitting brand:', error);
       toast.error('Something went wrong.');
     }
   };
-
+  
+  
   const handleBrandPost = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -159,59 +152,29 @@ const Brand = () => {
       [name]: value,
     }));
   };
-
   const fetchGetCategory = async () => {
-    const refreshtoken = localStorage.getItem('usertoken');
-    const token = localStorage.getItem('token');
-
     try {
-      const res = await axios.get(
-        'http://192.168.2.181:3000/admin/getcategories?pageNumber=1&pageLimit=10',
-        {
-          headers: {
-            Authorizations: token,
-            language: 'en',
-            refresh_token: refreshtoken,
-          },
-        }
-      );
-      setBrand(res.data.data.result || []);
+      const res = await commonGetApis('getcategories?pageNumber=1&pageLimit=10');
+      setBrand(res.data.result || []);
     } catch (error) {
       console.log(error);
     }
   };
-
   const fetchSubCategories = async () => {
-    const refreshtoken = localStorage.getItem('usertoken');
-    const token = localStorage.getItem('token');
-
     try {
-      const res = await axios.get(
-        'http://192.168.2.181:3000/admin/get_subcategories?pageNumber=1&pageLimit=10',
-        {
-          headers: {
-            Authorizations: token,
-            language: 'en',
-            refresh_token: refreshtoken,
-          },
-        }
-      );
-      setSubCategory(res?.data?.data?.result || []);
+      const res = await commonGetApis('get_subcategories?pageNumber=1&pageLimit=10');
+      setSubCategory(res?.data?.result || []);
     } catch (error) {
       console.error('Error fetching subcategories:', error);
     }
   };
-
   const handleStatusChange = async (id: number, currentStatus: number) => {
     const refreshtoken = localStorage.getItem('usertoken');
     const token = localStorage.getItem('token');
-
     const newStatus = currentStatus === 1 ? 0 : 1;
-
     const formData = new URLSearchParams();
     formData.append('id', String(id));
     formData.append('status', String(newStatus));
-
     try {
       const res = await axios.post(
         'http://192.168.2.181:3000/admin/status_change3',
@@ -243,18 +206,14 @@ const Brand = () => {
     }
 
   };
-
-
   useEffect(() => {
     fetchCategories();
     fetchGetCategory();
     fetchSubCategories();
   }, [page]);
-
   useEffect(() => {
     document.title = "Admin Brands"
   },[])
-
   const count = Math.ceil(Number(totalCount) / 1)
   return (
     <div className="">
@@ -303,7 +262,7 @@ const Brand = () => {
                 return (
                   <tr key={No}>
                     <td className="px-2 py-2">{No}</td>
-                    <td>
+                    <td className='px-2 py-2'>
                       <img
                         src={img}
                         alt={Category_Name}

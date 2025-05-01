@@ -34,26 +34,28 @@ export default function MyEditor() {
     try {
       const res = await commonGetApis("get_terms_conditions");
       setData(res?.data?.result);
+      console.log("Fetched data:", res?.data?.result);
     } catch (error) {
       console.log(error);
     }
   };
-  
-  console.log("neersdaer",data)
+
+
+  console.log("neersdaer", data)
 
   useEffect(() => {
     fetchTandC();
   }, []);
-  
+
   const handleAddPage = async () => {
     const token = localStorage.getItem('token');
     const refreshToken = localStorage.getItem('usertoken');
-  
+
     const formdata = new URLSearchParams();
-    const editorContent = editor.getHTML(); 
+    const editorContent = editor.getHTML();
     formdata.append("text", editorContent);
     // formdata.append("id", "2"); 
-  
+
     try {
       const res = await axios.post("http://192.168.2.181:3000/admin/terms_and_condition", formdata, {
         headers: {
@@ -69,8 +71,8 @@ export default function MyEditor() {
       console.error("Failed to submit:", error);
     }
   }
-    console.log("neerr",data)
-  
+  console.log("neerr", data)
+
   if (!editor) return null;
 
   return (
@@ -128,16 +130,22 @@ export default function MyEditor() {
         </div>
       </div>
       <div className='bg-white flex flex-col mt-5 justify-center'>
-          {/* {
-            data?.map((curElem,idx) => {
-              const {Terms_and_Conditions,terms_and_condition_id} = curElem;
+        <div className='bg-white flex flex-col mt-5 justify-center'>
+          {Array.isArray(data) && data.length > 0 ? (
+            data.map((curElem, idx) => {
+              const { Terms_and_Conditions, terms_and_condition_id } = curElem;
               return (
-                <div key={idx} className='flex flex-row justify-start items-center'>
-                <h1 className='mt-3'><span className='mr-5'>({idx+1})</span>{Terms_and_Conditions}</h1>
+                <div key={terms_and_condition_id} className='flex flex-row justify-start items-center'>
+                  <h1 className='mt-3'>
+                    <span className='mr-5'>({idx + 1})</span>{Terms_and_Conditions}
+                  </h1>
                 </div>
-              )
+              );
             })
-          } */}
+          ) : (
+            <p>No terms and conditions available</p>
+          )}
+        </div>
       </div>
     </div>
   )

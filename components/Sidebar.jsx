@@ -91,7 +91,7 @@ export const Sidebar = () => {
             </Link>
 
             <Link href="/admin/user" className={`flex items-center gap-3 font-medium p-3 rounded-md transition-all ${isActive('/admin/user') ? 'text-amber-300' : 'text-white'}`}>
-              <Image src={assets.user} alt="user" />
+              <Image src={assets.user} alt="user" className={`${isActive('/admin/user') ? 'text-amber-300' : 'text-white'}`} />
               <p>Users</p>
             </Link>
 
@@ -105,7 +105,6 @@ export const Sidebar = () => {
               <p>Orders</p>
             </Link>
 
-            {/* Category Dropdown */}
             <div className="relative">
               <button
                 onClick={toggleCategoryDropdown}

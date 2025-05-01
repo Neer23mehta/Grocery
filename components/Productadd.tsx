@@ -43,7 +43,7 @@ interface Brand {
   No: number;
 }
 
-const Productadd = () => {
+const Productadd = ({ id }: any) => {
   const initialValues: ProductFormValues = {
     name: "",
     category: "",
@@ -54,6 +54,8 @@ const Productadd = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [subCategories, setSubCategories] = useState<Subcategory[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
+  const [product, setProduct] = useState("")
+  const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [image, setImage] = useState<File | null>(null);
   const [productFields, setProductFields] = useState<ProductFormValuess[]>([
     { variation: '', price: '', discount: '', discountprice: '' }
@@ -62,9 +64,55 @@ const Productadd = () => {
     { title: 'Something', description: '' }
   ]);
 
+  const fetchProductId = async () => {
+    if (!id) return;
+
+    try {
+      const res = await commonGetApis(`get_product_by_id?id=${id}`);
+      const data = res?.data?.DATA;
+
+      if (data && data.length > 0) {
+        setIsEditMode(true);
+
+        const item = data[0];
+
+        formik.setValues({
+          name: item.Product_Name,
+          category: String(item.Category_id),
+          subcategory: String(item.Subcategory_id),
+          brand: String(item.Brand_id),
+        });
+
+        setProduct(item.Image);
+
+        setProductFields([
+          {
+            variation: item.Variation,
+            price: String(item.Product_Price),
+            discount: String(item.Discount),
+            discountprice: String(item.Discount_Price),
+          }
+        ]);
+
+        setOrderFields([
+          {
+            title: item.Title,
+            description: item.Description,
+          }
+        ]);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to fetch product details");
+    }
+  };
+
+
+  console.log("prroihbecde32c", product)
   useEffect(() => {
     fetchCategories();
     fetchSubCategories();
+    fetchProductId();
     fetchBrands();
     document.title = "Admin addproduct";
   }, []);
@@ -120,57 +168,64 @@ const Productadd = () => {
   } = formik;
 
   const handlePostProducts = async () => {
-    if (!image) {
+    if (!image && !product) {
       toast.error("Please select an image.");
       return;
     }
-
+  
     const formdata = new FormData();
+  
+    if (isEditMode) {
+      formdata.append("id", id); 
+    }
+  
     formdata.append("fk_category_id", values.category);
     formdata.append("fk_subcategory_id", values.subcategory);
     formdata.append("fk_brand_id", values.brand);
     formdata.append("product_name", values.name);
     formdata.append("stock_status", "1");
-    formdata.append("image", image);
-
+  
+    if (image) {
+      formdata.append("image", image);
+    }
+  
     productFields.forEach((field, index) => {
       formdata.append(`products[${index}][variation]`, field.variation);
       formdata.append(`products[${index}][discount]`, field.discount);
       formdata.append(`products[${index}][discount_price]`, field.discountprice);
       formdata.append(`products[${index}][product_price]`, field.price);
     });
-
+  
     orderFields.forEach((info, index) => {
-      formdata.append(`products[${index}][title]`, info.title || 'Untitled'); 
-      formdata.append(`products[${index}][description]`, info.description || 'No description'); 
+      formdata.append(`products[${index}][title]`, info.title || 'Untitled');
+      formdata.append(`products[${index}][description]`, info.description || 'No description');
     });
-
+  
     const token = localStorage.getItem('token');
     const refreshToken = localStorage.getItem('usertoken');
-
+  
     try {
-      const res = await axios.post('http://192.168.2.181:3000/admin/add_product', formdata, {
+      const url = 'http://192.168.2.181:3000/admin/add_product'; 
+      const res = await axios.post(url, formdata, {
         headers: {
           Authorizations: token || '',
           language: "en",
           refresh_token: refreshToken || ''
         }
       });
-
+  
       if (res.data) {
-        toast.success("Product Added Successfully");
-        resetForm();
-        setImage(null);
-        setProductFields([{ variation: '', price: '', discount: '', discountprice: '' }]);
-        setOrderFields([{ title: '', description: '' }]);
+        toast.success(isEditMode ? "Product Updated Successfully" : "Product Added Successfully");
       } else {
-        toast.error("Failed to add product.");
+        toast.error("Failed to submit product.");
       }
     } catch (error) {
-      console.error("Error posting product:", error);
-      toast.error("An error occurred while adding the product.");
+      console.error("Error submitting product:", error);
+      toast.error("An error occurred.");
     }
   };
+  
+
 
   const handleCancel = () => {
     resetForm();
@@ -310,6 +365,8 @@ const Productadd = () => {
           <div className="w-[310px] h-[140px] flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-300 hover:border-gray-500 hover:shadow-lg">
             {image ? (
               <p>{image.name}</p>
+            ) : product ? (
+              <img src={product} alt="Product" className="w-[310px] h-[140px] object-cover" />
             ) : (
               <Image
                 src={assets.upimg}
@@ -318,7 +375,7 @@ const Productadd = () => {
                 width={310}
                 height={140}
               />
-            )}
+            )} 
             <input
               id="thumbnail"
               className="hidden"

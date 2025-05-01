@@ -89,39 +89,44 @@ const Category = () => {
     }
   }
 
-  const handleIdDataSubmit = async (e: any, id: any) => {
+  const handleIdDataSubmit = async (e: any, id: number) => {
     e.preventDefault();
-    const refreshtoken = localStorage.getItem("usertoken");
     const token = localStorage.getItem("token");
+    const refreshToken = localStorage.getItem("usertoken");
 
     const formdata = new FormData();
-    if (id) {
-      formdata.append("id", id);
-    }
+    formdata.append("id", String(id));
     formdata.append("category_name", inputss.category);
     formdata.append("status", inputss.status);
     if (image) {
       formdata.append("image", image);
     }
+
     try {
       const res = await axios.post("http://192.168.2.181:3000/admin/addcategory", formdata, {
         headers: {
-          Authorizations: token,
-          language: "en",
-          refresh_token: refreshtoken
+          "Authorizations": token,
+          "language": "en",
+          "refresh_token": refreshToken,
+          "Content-Type": "application/x-www-form-urlencoded"
         }
       });
+
       if (res.data) {
-        toast.success("Added")
-      }
-      else {
-        toast.error("Something went Wrong")
+        toast.success("Category updated successfully");
+        fetchCategories();
+        setToggleCategory(false);
+        setImage(null);
+        setInputss({ category: "", status: "1" });
+      } else {
+        toast.error("Something went wrong");
       }
     } catch (error) {
-      console.log(error)
-      toast.error("Something went Wrong")
+      console.error("Update error:", error);
+      toast.error("Something went wrong");
     }
-  }
+  };
+
 
   const handleDelete = async (id: any) => {
     try {
@@ -184,24 +189,31 @@ const Category = () => {
   }
   const handleEditButton = async (No: number) => {
     try {
-      const res = await commonGetApis(`getcategory?id=${No}`)
-      setCategoryId(res?.data?.DATA)
-      if (categoryId) {
-        setToggleCategory(true)
+      const res = await commonGetApis(`getcategory?id=${No}`);
+      const data = res?.data?.DATA;
+  
+      if (data) {
+        setCategoryId(data);
+        setInputss({
+          category: data.category,
+          status: String(data.status),
+        });
+        setToggleCategory(true);
       }
     } catch (error) {
-      console.log(error)
+      console.error("Error fetching category:", error);
     }
-  }
+  };
+  
 
   console.log("addcate", categoryId)
   useEffect(() => {
     fetchCategories();
   }, [page]);
 
-     useEffect(() => {
-            document.title = "Admin Category";
-      }, []);
+  useEffect(() => {
+    document.title = "Admin Category";
+  }, []);
   return (
     <div className="">
       <div className="flex flex-row justify-between items-center">
@@ -244,8 +256,8 @@ const Category = () => {
                   return (
                     <tr key={No} className="space-y-5">
                       <td className='px-2 py-3'>{No}</td>
-                      <td>
-                        <img src={Img} alt={Category_Name} className="w-14 h-13 object-cover" />
+                      <td className='py-2 px-2'>
+                        <img src={Img} alt={Category_Name} className="w-14 h-13 object-cover " />
                       </td>
                       <td>{Category_Name}</td>
                       <td
@@ -371,12 +383,13 @@ const Category = () => {
                   <input
                     type='text'
                     name='category'
-                    onChange={handleCategoryPost}
-                    value={inputs.category}
-                    placeholder={categoryId.category}
+                    onChange={handleCategoryPosts}
+                    value={inputss.category}
+                    placeholder='Category Name'
                     required
                     className='border border-gray-200 px-2.5 py-2 w-full'
                   />
+
                 </div>
 
                 <div className="flex flex-row justify-between mt-5">

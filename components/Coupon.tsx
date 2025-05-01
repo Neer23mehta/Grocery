@@ -56,6 +56,7 @@ const Coupons = () => {
   const [openCoupon, setOpenCoupon] = useState(false)
   const [page, setPage] = useState(1)
   const [totalCount, setTotalCount] = useState('')
+  const [isEditing, setIsEditing] = useState(false);
 
   const fetchGet = async () => {
     try {
@@ -151,7 +152,7 @@ const Coupons = () => {
   const handleCouponSubmit = async () => {
     const token = localStorage.getItem("token");
     const refreshToken = localStorage.getItem("usertoken");
-
+  
     const formdata = new URLSearchParams();
     formdata.append("coupon_name", formik.values.name);
     formdata.append("minimum_purchase", formik.values.minpurchase);
@@ -159,7 +160,11 @@ const Coupons = () => {
     formdata.append("start_date", formik.values.start_date);
     formdata.append("end_date", formik.values.end_date);
     formdata.append("coupon_code", formik.values.code);
-
+  
+    if (isEditing && coupon) {
+      formdata.append("id", String(coupon.No));
+    }
+  
     try {
       const res = await axios.post(
         "http://192.168.2.181:3000/admin/add_coupon",
@@ -173,33 +178,44 @@ const Coupons = () => {
           },
         }
       );
-
+  
       if (res.data) {
-        toast.success("Coupon added successfully!");
+        toast.success(isEditing ? "Coupon updated successfully!" : "Coupon added successfully!");
         fetchGet();
         formik.resetForm();
         setSubmit(false);
-      } else {
-        toast.error("Failed to add coupon");
+        setIsEditing(false); 
+        setOpenCoupon(false); 
+        toast.error("Failed to submit coupon");
       }
     } catch (error) {
       console.log("Submit Error:", error);
-      toast.error("Something went wrong while adding coupon");
+      toast.error("Something went wrong while submitting the coupon");
     }
   };
-
-  const handleEditById = async (Id:Number) => {
+  
+  const handleEditById = async (Id: number) => {
     try {
-      const res = await commonGetApis(`get_coupon_by_id?id=${Id}`)
-      if(res.data){
-        setCoupon(res.data.DATA)
-        setOpenCoupon(!openCoupon)
+      const res = await commonGetApis(`get_coupon_by_id?id=${Id}`);
+      if (res.data) {
+        setCoupon(res.data.DATA);
+        formik.setValues({
+          name: res.data.DATA.Coupon_Name,
+          minpurchase: String(res.data.DATA.Min_Purchase),
+          disprice: String(res.data.DATA.Discount_Price),
+          start_date: res.data.DATA.Start_Date,
+          end_date: res.data.DATA.End_Date,
+          code: res.data.DATA.Coupon_Code,
+        });
+        setIsEditing(true); 
+        setOpenCoupon(true); 
       }
     } catch (error) {
-      console.log(error)
-      toast.error("Something went Wrong")
+      console.log(error);
+      toast.error("Something went wrong");
     }
-  }
+  };
+  
 
     useEffect(() => {
               document.title = "Admin Coupon-Management";

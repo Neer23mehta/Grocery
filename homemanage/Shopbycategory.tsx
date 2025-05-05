@@ -1,11 +1,11 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import { assets } from '@/assests/assets'
 import Image from 'next/image'
-import { Dialog, DialogActions, DialogContent } from '@mui/material'
-import { toast } from 'react-toastify'
+import { assets } from '@/assests/assets'
 import commonGetApis, { deleteApi } from '@/commonapi/Commonapi'
+import { toast } from 'react-toastify'
 import axios from 'axios'
+import { Dialog, DialogActions } from '@mui/material'
 
 interface Category {
   id: number;
@@ -33,7 +33,27 @@ const Shopbycategory = () => {
     offer: "",
   })
 
-  const handleChange = (e: any) => {
+  const fetchShopByCategory = async () => {
+    try {
+      const res = await commonGetApis("get_all_home_management?fk_section_id=2")
+      setCategory(res?.data?.result || [])
+    } catch (error) {
+      console.error(error)
+      toast.error("Something went Wrong")
+    }
+  }
+
+  const fetchCategories = async () => {
+    try {
+      const res = await commonGetApis('getcategories?pageNumber=1&pageLimit=10')
+      const result = res?.data?.result || []
+      setAdds(result)
+    } catch (error) {
+      console.error("Error fetching categories:", error)
+    }
+  }
+
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setInput({ ...input, [name]: value });
   }
@@ -51,61 +71,24 @@ const Shopbycategory = () => {
         toast.success("Deleted Successfully")
       }
     } catch (error) {
-      console.log(error);
+      console.error(error)
       toast.error("Something went Wrong")
     }
   }
 
-  const handleToggleCategory = async () => {
-    setNewCategory(!newCategory)
+  const handleToggleCategory = () => {
+    setNewCategory(prev => !prev)
   }
 
-  const fetchGetById = async (id: number) => {
-    try {
-      const res = await commonGetApis(`get_home_management_by_id?fk_section_id=4&id=${id}`)
-      if (res.data) {
-        // You can handle detailed view here if needed
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error("Something went Wrong")
-    }
-  }
-
-  const fetchShopByCategory = async () => {
-    try {
-      const res = await commonGetApis("get_all_home_management?fk_section_id=2");
-      setCategory(res?.data?.result || [])
-    } catch (error) {
-      console.log(error)
-      toast.error("Something went Wrong")
-    }
-  }
-
-  const fetchCategories = async () => {
-    try {
-      const res = await commonGetApis('getcategories?pageNumber=1&pageLimit=10');
-      const result = res?.data?.result || [];
-      setAdds(result);
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  }
-
-  const handleCategoryChange = (e: any) => {
-    const { name, value } = e.target;
-    setInput({ ...input, [name]: value });
-  }
-
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
     const refreshtoken = localStorage.getItem('usertoken')
     const token = localStorage.getItem('token')
 
-    const formdata = new FormData();
-    formdata.append("fk_section_id", "2");
-    formdata.append("fk_category_id", input.category);
-    formdata.append("offer", input.offer);
+    const formdata = new FormData()
+    formdata.append("fk_section_id", "2")
+    formdata.append("fk_category_id", input.category)
+    formdata.append("offer", input.offer)
     if (image) formdata.append("image", image)
 
     try {
@@ -117,133 +100,134 @@ const Shopbycategory = () => {
           'Content-Type': 'multipart/form-data',
         },
       })
-      toast.success("Category added successfully");
-      fetchShopByCategory();
-      setNewCategory(false);
-      setInput({ category: "", offer: "" });
-      setImage(null);
+      if (res.data) {
+        toast.success("Category added successfully")
+        fetchShopByCategory()
+        setNewCategory(false)
+        setInput({ category: "", offer: "" })
+        setImage(null)
+      }
     } catch (error) {
-      console.log(error)
+      console.error(error)
       toast.error("Something went Wrong")
     }
   }
 
   useEffect(() => {
-    fetchShopByCategory();
-    fetchCategories();
+    fetchShopByCategory()
+    fetchCategories()
   }, [])
 
   return (
     <div className='w-full'>
-      <div className='flex flex-col mt-5 px-4 bg-white shadow-lg w-full'>
-        <div className='flex flex-row items-center'>
+      <div className='flex flex-col mt-5 px-6 py-4 bg-white shadow-md rounded-md'>
+        <div className='flex justify-between items-center mb-4'>
           <h1 className='mt-5 font-bold text-xl'>Shop by Category</h1>
-          <Image src={assets.edit} alt='edit' className='mt-5 flex justify-end ml-4' width={17} height={25} />
+          <Image src={assets.edit} alt='edit' className='mt-5 ml-4' width={17} height={25} />
         </div>
 
-        {/* Horizontal Scroll Container */}
-        <div className='w-full overflow-x-auto mt-5'>
-          <div className='flex gap-5 min-w-max'>
-            {category?.map((curval, index) => (
-              <div key={index} className="flex gap-5">
-                {curval.shop_by_category.map((ad, idx) => (
-                  <div key={ad.id} className="relative">
-                    <button
-                      onClick={() => handleRemoveCategory(ad.id)}
-                      className="absolute top-5 right-1 z-10"
-                    >
-                      <Image
-                        src={assets.cancel}
-                        alt="remove"
-                        width={26}
-                        height={26}
-                        className="cursor-pointer"
-                      />
-                    </button>
-                    <img
-                      src={ad.image}
-                      alt={`banner-${idx}`}
-                      className="h-[131px] w-[125px] object-cover mt-5 rounded-md shadow-sm hover:shadow-md transition-shadow duration-200"
-                      onClick={() => fetchGetById(ad.id)}
+        <div className="w-full overflow-x-auto">
+          <div className="flex gap-5 items-center min-w-fit">
+            {category?.map((curval, index) =>
+              curval.shop_by_category.map((ad, idx) => (
+                <div key={ad.id} className='relative flex-shrink-0'>
+                  <button onClick={() => handleRemoveCategory(ad.id)}>
+                    <Image
+                      src={assets.cancel}
+                      alt='remove'
+                      width={20}
+                      height={20}
+                      className='absolute top-6 right-0 z-10 cursor-pointer hover:text-red-700'
                     />
-                    <p className='text-sm mt-2'>{ad.category.category_name}</p>
-                    <p className='text-sm text-gray-500'>{`Min ${ad.offer}% Off`}</p>
-                  </div>
-                ))}
+                  </button>
+                  <img
+                    src={ad.image}
+                    alt='banner'
+                    className='h-[120px] w-[120px] object-cover rounded-md shadow-sm hover:shadow-md transition-shadow duration-200'
+                  />
+                  <p className='text-sm mt-2'>{ad.category.category_name}</p>
+                  <p className='text-sm text-gray-500'>{ad.offer}</p>
+                </div>
+              ))
+            )}
+            <div
+              className='h-[120px] w-[120px] border border-gray-300 rounded-md flex-shrink-0 flex items-center justify-center cursor-pointer hover:bg-gray-50 transition'
+              onClick={handleToggleCategory}
+            >
+              <div className="flex items-center justify-center rounded-lg">
+                <Image
+                  src={assets.add}
+                  alt="Upload Thumbnail"
+                  width={50}
+                  height={50}
+                  className="object-cover rounded-lg"
+                />
               </div>
-            ))}
-            {/* Add New Card */}
-            <div className='flex justify-center items-center h-[131px] mt-3 border rounded-md border-gray-300 mb-[38px] w-[125px] cursor-pointer'>
-              <Image src={assets.add} alt='Image' className='px-2 py-8' onClick={handleToggleCategory} />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Add Category Dialog */}
       <Dialog open={newCategory} onClose={() => setNewCategory(false)}>
         <div className='flex flex-col justify-center items-center'>
-          <DialogContent>
-            <form onSubmit={handleSubmit} className='flex flex-col bg-white py-6 px-10 justify-center items-center'>
-              <h1 className='text-2xl font-bold'>Shop By Category</h1>
+          <div className='mt-1 flex justify-end items-end'>
+            <button onClick={() => setNewCategory(false)} className='text-2xl text-gray-400 hover:text-red-500'>X</button>
+          </div>
+          <h1 className='text-2xl font-bold'>Add Shop by Category</h1>
 
-              <div className='flex flex-col justify-start mt-5 space-y-5'>
-                <p className='font-bold'>Add Image</p>
-                <div className='w-[300px] h-[150px] px-10 py-2 border border-gray-300 rounded-md flex items-center justify-center cursor-pointer hover:bg-gray-50 transition'>
-                  <label htmlFor="thumbnail" className="cursor-pointer text-center">
-                    <div className="flex items-center justify-center rounded-lg">
-                      <Image
-                        src={image ? URL.createObjectURL(image) : assets.add}
-                        alt="Upload Thumbnail"
-                        width={image ? 200 : 50}
-                        height={image ? 100 : 50}
-                        className="object-cover rounded-lg"
-                      />
-                    </div>
-                  </label>
-                  <input
-                    type="file"
-                    id="thumbnail"
-                    className="hidden"
-                    onChange={(e) => setImage(e.target.files ? e.target.files[0] : null)}
+          <form onSubmit={handleSubmit} className='py-5 flex flex-col items-center'>
+            <p className='mt-3 text-start'>Add Image of Category</p>
+            <div className='w-[120px] h-[120px] px-10 py-2 border border-gray-300 rounded-md flex items-center justify-center cursor-pointer hover:bg-gray-50 transition'>
+              <label htmlFor="thumbnail" className="cursor-pointer text-center text-gray-300">
+                <div className="flex items-center justify-center rounded-lg">
+                  <Image
+                    src={image ? URL.createObjectURL(image) : assets.add}
+                    alt="Upload Thumbnail"
+                    width={image ? 120 : 50}
+                    height={image ? 120 : 50}
+                    className="object-cover rounded-lg"
                   />
                 </div>
+              </label>
+              <input
+                type="file"
+                id="thumbnail"
+                className="hidden"
+                onChange={(e) => setImage(e.target.files ? e.target.files[0] : null)}
+              />
+            </div>
 
-                <div className='flex flex-col'>
-                  <label className='text-gray-400'>Select Category</label>
-                  <select
-                    value={input.category}
-                    name='category'
-                    className='font-bold px-3 py-2 mt-2 border-1 border-gray-200 text-black'
-                    onChange={handleCategoryChange}
-                  >
-                    <option value="">Select</option>
-                    {adds.map((curVal, index) => (
-                      <option key={index} value={curVal.No}>{curVal.Category_Name}</option>
-                    ))}
-                  </select>
-                </div>
+            <div className='mt-4 w-full'>
+              <label className='text-gray-400'>Select Category</label>
+              <select
+                value={input.category}
+                name='category'
+                className='font-bold px-3 py-2 mt-2 border border-gray-300 text-black w-full'
+                onChange={handleCategoryChange}
+              >
+                <option value="">Select</option>
+                {adds.map((curVal, index) => (
+                  <option key={index} value={curVal.No}>{curVal.Category_Name}</option>
+                ))}
+              </select>
+            </div>
 
-                <div className='flex flex-col'>
-                  <label className='text-gray-400'>Offer</label>
-                  <input
-                    type='text'
-                    name='offer'
-                    value={input.offer}
-                    onChange={handleCategoryChange}
-                    placeholder='e.g. 10% Off'
-                    className='font-bold border-1 border-gray-200 mt-2 py-2 px-3 text-black'
-                  />
-                </div>
-              </div>
+            <div className='mt-4 w-full'>
+              <label className='text-gray-400'>Offer</label>
+              <input
+                type='text'
+                name='offer'
+                value={input.offer}
+                onChange={handleCategoryChange}
+                placeholder='e.g. 10% Off'
+                className='font-bold border border-gray-300 mt-2 py-2 px-3 text-black w-full'
+              />
+            </div>
 
-              <DialogActions>
-                <div className='flex justify-center items-center mt-5'>
-                  <button type='submit' className='px-6 py-2 bg-amber-400 font-bold'>Submit</button>
-                </div>
-              </DialogActions>
-            </form>
-          </DialogContent>
+            <DialogActions>
+              <button type='submit' className='px-6 py-2 bg-amber-400 font-bold mt-5'>Save</button>
+            </DialogActions>
+          </form>
         </div>
       </Dialog>
     </div>

@@ -116,7 +116,7 @@ const Advertise: React.FC = () => {
         </div>
 
         <div className="w-full overflow-x-auto">
-          <div className="flex gap-5 items-center min-w-max">
+          <div className="flex gap-5 items-center min-w-fit">
             {ads?.map((curval, index) => (
               <div key={index} className="flex gap-5">
                 {curval.section_advertisements.map((ad, idx) => (

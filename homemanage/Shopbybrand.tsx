@@ -111,8 +111,8 @@ const Shopbybrand = () => {
           <Image src={assets.del} alt='delete' className='mt-5 cursor-pointer' width={17} height={15} onClick={handleRemoveBrands} />
         </div>
 
-        <div className='w-full overflow-x-auto mt-4'>
-          <div className='flex gap-5 min-w-max'>
+        <div className='w-full overflow-x-auto'>
+          <div className='flex mb-3 gap-5 min-w-max'>
             {brand?.map((curval, index) => (
               <div key={index} className='flex gap-5'>
                 {curval.section_brand.map((brandImage, imageIndex) => (
@@ -123,13 +123,13 @@ const Shopbybrand = () => {
                         alt="remove"
                         width={26}
                         height={26}
-                        className="absolute top-8 right-0 z-10 cursor-pointer"
+                        className="absolute top-6 right-0 z-10 cursor-pointer"
                       />
                     </button>
                     <img
                       src={brandImage.image}
                       alt={`brand-${brandImage.id}`}
-                      className='h-[110px] w-[110px] mt-2 object-cover rounded-md shadow-sm hover:shadow-md transition-shadow duration-200'
+                      className='h-[110px] w-[110px] object-cover rounded-md shadow-sm hover:shadow-md transition-shadow duration-200'
                       onClick={() => fetchGetById(brandImage.id)}
                     />
                   </div>
@@ -137,7 +137,7 @@ const Shopbybrand = () => {
               </div>
             ))}
 
-            <div className='flex justify-center items-center border border-gray-300 mt-2 rounded-md h-[110px] w-[110px] cursor-pointer'>
+            <div className='flex justify-center items-center border border-gray-300 mt-6 rounded-md h-[110px] w-[110px] cursor-pointer'>
               <Image src={assets.add} alt="add brand" onClick={handleToggleAdd} />
             </div>
           </div>

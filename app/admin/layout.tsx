@@ -10,8 +10,6 @@ import { SlArrowDown } from "react-icons/sl";
 import { GrLogout } from "react-icons/gr";
 import { IoSettingsSharp } from "react-icons/io5";
 import { MdLock } from "react-icons/md";
-import { useFormik } from "formik";
-import { HandleYupSchema } from "@/Grocery/Yupschema";
 import Logout from "@/components/Logout";
 import Newpassword from "@/components/Newpassword";
 import { Dialog, DialogContent, Popper, ClickAwayListener, Paper } from "@mui/material";
@@ -63,20 +61,6 @@ const Layout = ({ children }: LayoutProps) => {
         setLogoutPage(false);
     };
 
-    const initialValues = {
-        managedelivery: "",
-        managetax: ""
-    };
-
-    const formik = useFormik({
-        initialValues,
-        validationSchema: HandleYupSchema,
-        onSubmit: (value, action) => {
-          console.log("Form Data", value);
-          action.resetForm();
-        }
-      });      
-
     const handleManageDelivery = () => {
         setManageDelivery(true)
         setManageTax(false)
@@ -105,7 +89,7 @@ const Layout = ({ children }: LayoutProps) => {
         formdata.append("delivery_charge", input.charge);
         formdata.append("id", input.id);
         try {
-            await axios.post('http://192.168.2.181:3000/admin/manage_delivery', formdata, {
+         const res =  await axios.post('http://192.168.2.181:3000/admin/manage_delivery', formdata, {
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded",
                     "Authorizations": token,
@@ -113,6 +97,9 @@ const Layout = ({ children }: LayoutProps) => {
                     "refresh_token": refreshToken,
                 },
             })
+            if(res.data){
+                toast.success("Successfully Updated")
+            }
         } catch (error) {
             console.log(error)
         }
@@ -226,6 +213,7 @@ const Layout = ({ children }: LayoutProps) => {
                                             <>
                                                 <label className='text-gray-400'>Tax %</label>
                                                 <input type='text' value={tax} onChange={(e) => setTax(e.target.value)} required name='tax' placeholder='Tax %' className='font-bold border border-gray-200 mt-2 py-2 px-3 text-black' />
+                                                
                                                 <div className='flex justify-center mt-5'>
                                                     <button onClick={handleManageTaxs} className='px-28 py-2 bg-amber-400 font-bold mb-3'>Update</button>
                                                 </div>

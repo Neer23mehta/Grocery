@@ -135,20 +135,20 @@ const Subcategory = () => {
 
   const handleSubCategoryUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     const refreshtoken = localStorage.getItem("usertoken");
     const token = localStorage.getItem("token");
-  
+
     const formdata = new FormData();
     formdata.append("subcategory_name", inputs.subcategory);
     formdata.append("fk_category_id", inputs.category);
     formdata.append("status", inputs.status);
     formdata.append("id", String(editSubcategory?.No)); // this is key!
-  
+
     if (image) {
       formdata.append("image", image);
     }
-  
+
     try {
       const res = await axios.post("http://192.168.2.181:3000/admin/add_subCategory", formdata, {
         headers: {
@@ -158,7 +158,7 @@ const Subcategory = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-  
+
       if (res.data.message === "SUCCESS") {
         toast.success("Successfully updated subcategory");
         setEditSub(false);
@@ -171,7 +171,7 @@ const Subcategory = () => {
       toast.error("Error updating subcategory");
     }
   };
-  
+
   // const handleSubCategoryChanges = (e:any) => {
   //   const {name,value} = e.target;
   //   setInputss({...inputss,[name]:value})
@@ -225,7 +225,7 @@ const Subcategory = () => {
         category: String(res.data.DATA.fk_category_id),
         status: String(res.data.DATA.Status),
       });
-            if (res.data) {
+      if (res.data) {
         setEditSub(true);
       }
     } catch (error) {
@@ -243,9 +243,9 @@ const Subcategory = () => {
     fetchCategories();
   }, [page]);
 
-   useEffect(() => {
-          document.title = "Admin Subcategory";
-    }, []);
+  useEffect(() => {
+    document.title = "Admin Subcategory";
+  }, []);
 
   console.log("adds123", adds)
   const count = Math.ceil(Number(totalCount) / 10)
@@ -288,7 +288,16 @@ const Subcategory = () => {
               .map(({ No, Image: ImgUrl, Category_Name, Status, SubCategory_Name }) => (
                 <tr key={No}>
                   <td className="px-2 py-2">{No}</td>
-                  <td className='px-2 py-2'><img src={ImgUrl} alt={Category_Name} className="w-14 h-13 object-cover" /></td>
+                  <td className='px-2 py-2'>
+                    <Image
+                      src={ImgUrl}
+                      alt={Category_Name}
+                      width={56}
+                      height={52}
+                      objectFit="cover"
+                      className="rounded"
+                    />
+                  </td>
                   <td>{SubCategory_Name}</td>
                   <td>{Category_Name}</td>
                   <td onClick={() => handleStatusChange(No, Status)} className='px-2 py-2'>
@@ -385,12 +394,12 @@ const Subcategory = () => {
         <DialogContent>
           {editSubcategory && (
             <form onSubmit={handleSubCategoryUpdate}>
-            <div className="flex flex-col items-center">
+              <div className="flex flex-col items-center">
                 <h1 className="text-2xl font-bold mb-3">Subcategory Details</h1>
                 <div className="flex flex-row mt-7">
                   <label htmlFor="thumbnail" className="cursor-pointer">
                     <div className="h-[125px] w-[325px] flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-300 hover:border-gray-500 hover:shadow-lg">
-                      <img
+                      <Image
                         src={image ? URL.createObjectURL(image) : editSubcategory.Image}
                         alt="Upload Thumbnail"
                         className="object-cover rounded-lg"

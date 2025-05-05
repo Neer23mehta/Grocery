@@ -126,11 +126,14 @@ const Shopbybrand = () => {
                         className="absolute top-6 right-0 z-10 cursor-pointer"
                       />
                     </button>
-                    <img
-                      src={brandImage.image}
+                    <Image
+                      src={brandImage.image || '/placeholder.png'} 
                       alt={`brand-${brandImage.id}`}
-                      className='h-[110px] w-[110px] object-cover rounded-md shadow-sm hover:shadow-md transition-shadow duration-200'
+                      width={110} 
+                      height={110} 
+                      className="object-cover rounded-md shadow-sm hover:shadow-md transition-shadow duration-200"
                       onClick={() => fetchGetById(brandImage.id)}
+                      unoptimized 
                     />
                   </div>
                 ))}

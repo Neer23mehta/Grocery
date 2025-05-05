@@ -63,24 +63,24 @@ const Products = () => {
   const handleStatusChange = async (id: number, currentStatus: number) => {
     const token = localStorage.getItem('token');
     const refreshToken = localStorage.getItem('usertoken');
-  
+
     if (!token || !refreshToken) {
       toast.error("Missing authentication tokens.");
       return;
     }
-  
+
     const newStatus = currentStatus === 1 ? 0 : 1;
-  
+
     setAdds((prevAdds) =>
       prevAdds.map((product) =>
         product.Product_var_id === id ? { ...product, Stock_Status: newStatus } : product
       )
     );
-  
+
     const formData = new URLSearchParams();
     formData.append('id', String(id));
     formData.append('stock_status', String(newStatus));
-  
+
     try {
       const res = await axios.post(
         "http://192.168.2.181:3000/admin/status_change",
@@ -94,8 +94,8 @@ const Products = () => {
           },
         }
       );
-  
-      if(res.data){
+
+      if (res.data) {
         toast.success("Stock status updated successfully");
       }
     } catch (error) {
@@ -108,7 +108,7 @@ const Products = () => {
       );
     }
   };
-  
+
   const handleProductEdit = async (Id: number) => {
     try {
       const res = await commonGetApis(`get_product_by_id?id=${Id}`)
@@ -174,7 +174,17 @@ const Products = () => {
                 const { Product_Name, Description, Price, Stock_Status, Variation, Category_Name, Product_var_id } = curval;
                 return (
                   <tr key={index} className=''>
-                    <td className='px-2 py-2'>{curval.Image && <img src={curval.Image} alt={Product_Name} width={50} height={50} />}</td>
+                    <td className='px-2 py-2'>
+                      {curval.Image && (
+                        <Image
+                          src={curval.Image}
+                          alt={Product_Name}
+                          width={50}
+                          height={50}
+                          className="object-cover"
+                        />
+                      )}
+                    </td>
                     <td className='px-2 py-2'>{Product_Name}</td>
                     <td className='px-2 py-2'>{Category_Name}</td>
                     <td className='px-2 py-2'>{Description}</td>

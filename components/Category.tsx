@@ -180,7 +180,7 @@ const Category = () => {
   };
 
   const handleCategoryPost = (e: React.FormEvent<HTMLInputElement>) => {
-    const { name, value } = e.target as HTMLInputElement; 
+    const { name, value } = e.target as HTMLInputElement;
     setInputs({ ...inputs, [name]: value });
   };
 
@@ -261,8 +261,15 @@ const Category = () => {
                     <tr key={No} className="space-y-5">
                       <td className='px-2 py-3'>{No}</td>
                       <td className='py-2 px-2'>
-                        <img src={Img} alt={Category_Name} className="w-14 h-13 object-cover " />
-                      </td>
+                        <Image
+                          src={Img}
+                          alt={Category_Name}
+                          width={56} 
+                          height={52} 
+                          className="object-cover rounded-md"
+                          unoptimized 
+                        />                     
+                        </td>
                       <td>{Category_Name}</td>
                       <td
                         onClick={() => handleStatusChange(No, Status)}
@@ -417,13 +424,16 @@ const Category = () => {
                 <div className='flex flex-row mt-7'>
                   <label htmlFor="thumbnail" className="flex items-center justify-center cursor-pointer mb-6">
                     <div className="w-[355px] h-[125px] flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-300 transition-all duration-300 ease-in-out hover:border-gray-500 hover:shadow-lg">
-                      <img
-                        src={image ? URL.createObjectURL(image) : categoryId.image}
-                        alt="Upload Thumbnail"
-                        width={110}
-                        height={100}
-                        className="object-cover rounded-lg"
-                      />
+                      {(image || categoryId?.image) && (
+                        <Image
+                          src={image ? URL.createObjectURL(image) : categoryId.image}
+                          alt="Upload Thumbnail"
+                          width={110}
+                          height={100}
+                          className="object-cover rounded-lg"
+                          unoptimized={!!image}
+                        />
+                      )}
                     </div>
                   </label>
 

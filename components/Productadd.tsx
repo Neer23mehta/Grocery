@@ -45,7 +45,7 @@ interface Brand {
 }
 
 interface ProductProp {
-  id:number
+  id: number
 }
 const Productadd = ({ id }: ProductProp) => {
   const initialValues: ProductFormValues = {
@@ -79,22 +79,22 @@ const Productadd = ({ id }: ProductProp) => {
       const res = await commonGetApis(`get_product_by_variation?id=${id}`);
       const data = res?.data?.DATA;
 
-      setDatas(data); 
+      setDatas(data);
       if (data && data.length > 0) {
         const item = data[0];
         const dt = res.data.result?.[0];
-      
+
         setIsEditMode(true);
         setProductId(item.Product_id);
         setProductVarId(item.Product_var_id);
-      
+
         formik.setValues({
           name: item.Product_Name,
           category: String(dt.Category_id),
           subcategory: String(dt.SubCategory_id),
           brand: String(dt.Brand_id),
           categoryid: item.Product_id,
-        });      
+        });
 
         setProduct(item.Image);
 
@@ -189,7 +189,7 @@ const Productadd = ({ id }: ProductProp) => {
 
     const formdata = new FormData();
     if (isEditMode && productId && productVarId) {
-      formdata.append("id", String(productId)); 
+      formdata.append("id", String(productId));
     }
 
     formdata.append("fk_category_id", values.category);
@@ -207,11 +207,11 @@ const Productadd = ({ id }: ProductProp) => {
       formdata.append(`products[${index}][discount]`, field.discount);
       formdata.append(`products[${index}][discount_price]`, field.discountprice);
       formdata.append(`products[${index}][product_price]`, field.price);
-      
+
       if (isEditMode && productId && productVarId) {
-        formdata.append(`products[${index}][fk_product_id]`, String(productId)); 
-        formdata.append(`products[${index}][id]`, String(productVarId)); 
-      }      
+        formdata.append(`products[${index}][fk_product_id]`, String(productId));
+        formdata.append(`products[${index}][id]`, String(productVarId));
+      }
     });
 
     orderFields.forEach((info, index) => {
@@ -339,7 +339,7 @@ const Productadd = ({ id }: ProductProp) => {
                 <TextField
                   name={name}
                   value={field[name as keyof ProductFormValuess]}
-                  onChange={(e) => handleChanges(e,index)}
+                  onChange={(e) => handleChanges(e, index)}
                   label={label}
                   variant='outlined'
                 />
@@ -384,15 +384,21 @@ const Productadd = ({ id }: ProductProp) => {
             {image ? (
               <p>{image.name}</p>
             ) : product ? (
-              <img src={product} alt="Product" className="w-[310px] h-[140px] object-cover" />
+            <Image
+              src={product}
+              alt="Product"
+              width={310}
+              height={140}
+              className="object-cover"
+            />
             ) : (
-              <Image
-                src={assets.upimg}
-                alt="Upload Thumbnail"
-                className="object-cover rounded-lg"
-                width={310}
-                height={140}
-              />
+            <Image
+              src={assets.upimg}
+              alt="Upload Thumbnail"
+              className="object-cover rounded-lg"
+              width={310}
+              height={140}
+            />
             )}
             <input
               id="thumbnail"

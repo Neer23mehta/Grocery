@@ -46,7 +46,7 @@ const Setpassword = () => {
     }
   })
 
-  const handleSubmits = async (e:any) => {
+  const handleSubmits = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {

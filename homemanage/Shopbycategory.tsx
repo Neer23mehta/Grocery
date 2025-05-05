@@ -14,7 +14,10 @@ interface Category {
     image: string;
     offer: string;
     category_name: string;
-    category: any;
+  }[];
+  category: {
+    category_name:string
+    image:boolean
   }[];
 }
 
@@ -113,6 +116,8 @@ const Shopbycategory = () => {
     }
   }
 
+  console.log("neer ",category)
+
   useEffect(() => {
     fetchShopByCategory()
     fetchCategories()
@@ -128,9 +133,9 @@ const Shopbycategory = () => {
 
         <div className="w-full overflow-x-auto">
           <div className="flex gap-5 items-center min-w-fit">
-            {category?.map((curval, index) =>
+            {category?.map((curval) =>
               curval.shop_by_category.map((ad, idx) => (
-                <div key={ad.id} className='relative flex-shrink-0'>
+                <div key={idx} className='relative flex-shrink-0'>
                   <button onClick={() => handleRemoveCategory(ad.id)}>
                     <Image
                       src={assets.cancel}
@@ -140,12 +145,15 @@ const Shopbycategory = () => {
                       className='absolute top-6 right-0 z-10 cursor-pointer hover:text-red-700'
                     />
                   </button>
-                  <img
-                    src={ad.image}
-                    alt='banner'
-                    className='h-[120px] w-[120px] object-cover rounded-md shadow-sm hover:shadow-md transition-shadow duration-200'
+                  <Image
+                    src={ad.image || '/placeholder.png'}
+                    alt="banner"
+                    width={120}
+                    height={120}
+                    className="object-cover rounded-md shadow-sm hover:shadow-md transition-shadow duration-200"
+                    unoptimized
                   />
-                  <p className='text-sm mt-2'>{ad.category.category_name}</p>
+                  <p className='text-sm mt-2'>{ad.category_name}</p>
                   <p className='text-sm text-gray-500'>{ad.offer}</p>
                 </div>
               ))

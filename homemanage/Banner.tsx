@@ -110,10 +110,12 @@ const Banner = () => {
                     className='absolute top-6 right-0 z-10 cursor-pointer'
                   />
                 </button>
-                <img
-                  src={curval.image}
-                  alt='banner'
-                  className='h-[170px] w-[310px] object-cover rounded-md shadow-sm hover:shadow-md transition-shadow duration-200'
+                <Image
+                  src={curval.image} 
+                  alt="banner"
+                  width={310}  
+                  height={170}
+                  className="object-cover rounded-md shadow-sm hover:shadow-md transition-shadow duration-200"
                 />
               </div>
             ))}

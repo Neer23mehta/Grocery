@@ -76,7 +76,7 @@ const Page = () => {
           </div>
           <div className="bg-white rounded-xl p-5 shadow hover:shadow-lg transition">
             <h2 className="text-lg font-semibold text-gray-700">Revenue</h2>
-            <p className="text-2xl font-bold text-amber-500 mt-2">{""}</p>
+            <p className="text-2xl font-bold text-amber-500 mt-2">{"$ 1 Billion"}</p>
           </div>
         </div>
 

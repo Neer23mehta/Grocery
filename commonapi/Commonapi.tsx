@@ -40,7 +40,7 @@ export const deleteApi = async (params: string) => {
   }
 }
 
-export const commonPostApis = async (params:string,formdata:any) => {
+export const commonPostApis = async (params: string, formdata: URLSearchParams) => {
   const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
   const refreshtoken = typeof window !== "undefined" ? localStorage.getItem("usertoken") : null;
 

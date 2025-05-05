@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { MdEdit } from "react-icons/md";
 import { Dialog, DialogActions } from '@mui/material';
 import { toast } from 'react-toastify';
-import commonGetApis, { commonPostApis, deleteApi } from '@/commonapi/Commonapi';
+import commonGetApis, { deleteApi } from '@/commonapi/Commonapi';
 import axios from 'axios';
 
 interface Advertise {
@@ -23,7 +23,6 @@ const Advertise: React.FC = () => {
   const [add, setAdd] = useState(false);
   const [ads, setAds] = useState<Advertise[]>([]);
   const [image, setImage] = useState<File | null>(null);
-  const [advertise, setAdvertise] = useState<Advertise[]>([]);
 
   const handleToggleAdd = () => {
     setAdd(!add);
@@ -61,9 +60,9 @@ const Advertise: React.FC = () => {
 
       if (res.data) {
         toast.success("Successfully Added");
-        fetchGetAdvertise(); 
-        setAdd(false); 
-        setImage(null); 
+        fetchGetAdvertise();
+        setAdd(false);
+        setImage(null);
       }
     } catch (error) {
       console.log(error);
@@ -92,7 +91,7 @@ const Advertise: React.FC = () => {
     try {
       const res = await commonGetApis(`get_home_management_by_id?fk_section_id=4&id=${id}`);
       if (res.data) {
-        setAdvertise(res?.data);
+        toast.success("Get Successfully")
       }
     } catch (error) {
       console.log(error);
@@ -133,11 +132,13 @@ const Advertise: React.FC = () => {
                         className="cursor-pointer"
                       />
                     </button>
-                    <img
-                      src={ad.image}
-                      alt={`banner-${idx}`}
-                      className="h-[140px] w-[250px] mb-5 object-cover rounded-md shadow-sm mt-6 hover:shadow-md transition-shadow duration-200"
-                      onClick={() => fetchGetById(ad.id)}
+                    <Image
+                      src={ad.image} 
+                      alt={`banner-${idx}`} 
+                      width={250}  
+                      height={140}
+                      className="mb-5 object-cover rounded-md shadow-sm mt-6 hover:shadow-md transition-shadow duration-200"
+                      onClick={() => fetchGetById(ad.id)} 
                     />
                   </div>
                 ))}

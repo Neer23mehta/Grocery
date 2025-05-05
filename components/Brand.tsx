@@ -92,42 +92,42 @@ const Brand = () => {
     } catch (error) {
       console.log(error);
     }
-  };  
+  };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     const refreshtoken = localStorage.getItem('usertoken');
     const token = localStorage.getItem('token');
-  
+
     const formdata = new FormData();
     formdata.append('brand_name', inputs.brand);
     formdata.append('fk_category_id', inputs.category);
     formdata.append('fk_subcategory_id', inputs.subcategory);
     formdata.append('status', inputs.status);
-    
+
     if (image) formdata.append('image', image);
-  
+
     const headers = {
       Authorizations: token,
       language: 'en',
       refresh_token: refreshtoken,
       'Content-Type': 'multipart/form-data',
     };
-  
+
     try {
       let res;
-  
+
       if (inputs.No) {
-        formdata.append('id', String(inputs.No)); 
+        formdata.append('id', String(inputs.No));
         res = await axios.post('http://192.168.2.181:3000/admin/add_brand', formdata, { headers });
-        if(res.data){
+        if (res.data) {
           toast.success("Added")
         }
         toast.success("Brand Updated Successfully");
       } else {
         toast.success("Brand Added Successfully");
       }
-  
+
       setAddSub(false);
       setToggleBrand(false);
       setInputs({
@@ -144,8 +144,8 @@ const Brand = () => {
       toast.error('Something went wrong.');
     }
   };
-  
-  
+
+
   const handleBrandPost = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -201,9 +201,9 @@ const Brand = () => {
       }
     } catch (error) {
       const axiosError = error as AxiosError;
-    
+
       console.error('Full Error:', axiosError);
-    
+
       if (axiosError.response) {
         console.error('Response Error:', axiosError.response);
         console.error('Response Data:', axiosError.response.data);
@@ -217,7 +217,7 @@ const Brand = () => {
   }, [page]);
   useEffect(() => {
     document.title = "Admin Brands"
-  },[])
+  }, [])
   const count = Math.ceil(Number(totalCount) / 1)
   return (
     <div className="">
@@ -267,12 +267,13 @@ const Brand = () => {
                   <tr key={No}>
                     <td className="px-2 py-2">{No}</td>
                     <td className='px-2 py-2'>
-                      <img
+                      <Image
                         src={img}
                         alt={Category_Name}
-                        className="w-14 h-13 object-cover"
-                        height={13}
-                        width={14}
+                        width={56}
+                        height={52}
+                        className="object-cover w-14 h-13 rounded-md"
+                        unoptimized
                       />
                     </td>
                     <td className="px-2 py-2">{Brand_Name}</td>
@@ -325,14 +326,14 @@ const Brand = () => {
             onSubmit={handleSubmit}
             className="bg-white z-[1] flex flex-col px-5"
           >
-                <button
+            <button
               className="text-gray-500 text-2xl flex justify-end hover:text-red-700"
               onClick={() => setAddSub(false)}
             >
               X
             </button>
             <h1 className="text-2xl ml-25">Add Brand</h1>
-        
+
 
             <div className="flex flex-col mt-10">
               <label className="py-2 text-gray-400">Brand Name</label>
@@ -495,34 +496,35 @@ const Brand = () => {
               </div>
 
               <div className="flex flex-row justify-between mt-5">
-              <label className="text-gray-400">Status</label>
-              <div
-                className="cursor-pointer w-fit"
-                onClick={() =>
-                  setInputs((prev) => ({
-                    ...prev,
-                    status: prev.status === "1" ? "0" : "1",
-                  }))
-                }
-              >
-                <Image
-                  src={inputs.status === "1" ? assets.scrollon : assets.scrolloff}
-                  alt="Status"
-                  width={42}
-                  height={42}
-                />
+                <label className="text-gray-400">Status</label>
+                <div
+                  className="cursor-pointer w-fit"
+                  onClick={() =>
+                    setInputs((prev) => ({
+                      ...prev,
+                      status: prev.status === "1" ? "0" : "1",
+                    }))
+                  }
+                >
+                  <Image
+                    src={inputs.status === "1" ? assets.scrollon : assets.scrolloff}
+                    alt="Status"
+                    width={42}
+                    height={42}
+                  />
+                </div>
               </div>
-            </div>
 
               <div className="flex flex-row mt-7">
                 <label htmlFor="thumbnail" className="cursor-pointer">
                   <div className="w-[325px] h-[125px] flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-300 hover:border-gray-500 hover:shadow-lg">
-                    <img
-                      src={image ? URL.createObjectURL(image) : brandId?.Image}
+                    <Image
+                      src={image ? URL.createObjectURL(image) : brandId?.Image || '/placeholder.png'}
                       alt="Upload Thumbnail"
                       width={110}
                       height={100}
                       className="object-cover rounded-lg"
+                      unoptimized 
                     />
                   </div>
                 </label>

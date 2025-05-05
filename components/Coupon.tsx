@@ -41,13 +41,13 @@ const initialValues: ProductFormValues = {
 };
 
 interface Coupon {
-  Coupon_Code:string;
-  Coupon_Name:string;
-  Date:string;
-  Discount_Price:number
-  Min_Purchase:number;
-  No:number;
-  Status:number;
+  Coupon_Code: string;
+  Coupon_Name: string;
+  Date: string;
+  Discount_Price: number
+  Min_Purchase: number;
+  No: number;
+  Status: number;
 }
 const Coupons = () => {
   const [submit, setSubmit] = useState(false);
@@ -152,7 +152,7 @@ const Coupons = () => {
   const handleCouponSubmit = async () => {
     const token = localStorage.getItem("token");
     const refreshToken = localStorage.getItem("usertoken");
-  
+
     const formdata = new URLSearchParams();
     formdata.append("coupon_name", formik.values.name);
     formdata.append("minimum_purchase", formik.values.minpurchase);
@@ -160,11 +160,11 @@ const Coupons = () => {
     formdata.append("start_date", formik.values.start_date);
     formdata.append("end_date", formik.values.end_date);
     formdata.append("coupon_code", formik.values.code);
-  
+
     if (isEditing && coupon) {
       formdata.append("id", String(coupon.No));
     }
-  
+
     try {
       const res = await axios.post(
         "http://192.168.2.181:3000/admin/add_coupon",
@@ -178,22 +178,22 @@ const Coupons = () => {
           },
         }
       );
-  
+
       if (res.data) {
         toast.success(isEditing ? "Coupon updated successfully!" : "Coupon added successfully!");
         fetchGet();
         formik.resetForm();
         setSubmit(false);
-        setIsEditing(false); 
-        setOpenCoupon(false); 
-        toast.error("Failed to submit coupon");
+        setIsEditing(false);
+        setOpenCoupon(false);
+        // toast.error("Failed to submit coupon");
       }
     } catch (error) {
       console.log("Submit Error:", error);
       toast.error("Something went wrong while submitting the coupon");
     }
   };
-  
+
   const handleEditById = async (Id: number) => {
     try {
       const res = await commonGetApis(`get_coupon_by_id?id=${Id}`);
@@ -207,21 +207,21 @@ const Coupons = () => {
           end_date: res.data.DATA.End_Date,
           code: res.data.DATA.Coupon_Code,
         });
-        setIsEditing(true); 
-        setOpenCoupon(true); 
+        setIsEditing(true);
+        setOpenCoupon(true);
       }
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong");
     }
   };
-  
 
-    useEffect(() => {
-              document.title = "Admin Coupon-Management";
-    }, []);
 
-  console.log("coupons",coupon)
+  useEffect(() => {
+    document.title = "Admin Coupon-Management";
+  }, []);
+
+  console.log("coupons", coupon)
   return (
     <div className='p-5'>
       <div className={`flex justify-between items-center ${submit ? "opacity-30" : "opacity-100"}`}>
@@ -268,229 +268,231 @@ const Coupons = () => {
       </table>
 
       <div className='flex justify-end mt-5'>
-        <Stack spacing={0}><Pagination count={count} page={page} onChange={(e,page) => setPage(page)} variant='outlined' shape='rounded' /></Stack>
+        <Stack spacing={0}><Pagination count={count} page={page} onChange={(e, page) => setPage(page)} variant='outlined' shape='rounded' /></Stack>
       </div>
 
       <Dialog open={submit} onClose={handleSubmitRemove}>
-          <div className='flex justify-center flex-col items-center'>
-        <DialogContent>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              formik.validateForm().then((errors) => {
-                if (Object.keys(errors).length === 0) {
-                  handleCouponSubmit();
-                } else {
-                  toast.error("Please fix validation errors.");
-                }
-              });
-            }}
-            className='space-y-3 px-7 '
-          >
-            <div className='flex justify-end'>
-              <Image src={assets.can} alt='close' onClick={handleSubmitRemove} className='cursor-pointer' />
-            </div>
-            <h1 className='text-2xl font-bold mb-5 text-center'>Add Coupon</h1>
+        <div className='flex justify-center flex-col items-center'>
+          <DialogContent>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                formik.validateForm().then((errors) => {
+                  if (Object.keys(errors).length === 0) {
+                    handleCouponSubmit();
+                  } else {
+                    toast.error("Please fix validation errors.");
+                  }
+                });
+              }}
+              className='space-y-3 px-7 '
+            >
+              <div className='flex justify-end'>
+                <Image src={assets.can} alt='close' onClick={handleSubmitRemove} className='cursor-pointer' />
+              </div>
+              <h1 className='text-2xl font-bold mb-5 text-center'>Add Coupon</h1>
 
-            <div className='flex flex-col justify-start items-start'>
-              <label className='block text-gray-500'>Coupon Name</label>
-              <input
-                name='name'
-                type='text'
-                value={formik.values.name}
-                onChange={formik.handleChange}
-                className='border border-gray-300 px-2 py-2'
-              />
-              {touched.name && errors.name && (
-                <span className="text-sm text-red-500">{errors.name}</span>
-              )}
-            </div>
-            <div className='flex flex-col justify-start items-start'>
-              <label className='block text-gray-500'>Minimum Purchase</label>
-              <input
-                name='minpurchase'
-                type='number'
-                value={formik.values.minpurchase}
-                onChange={formik.handleChange}
-                className='border border-gray-300 px-2 py-2'
-              />
-              {touched.minpurchase && errors.minpurchase && (
-                <span className="text-sm text-red-500">{errors.minpurchase}</span>
-              )}
-            </div>
-            <div className='flex flex-col justify-start items-start'>
-              <label className='block text-gray-500'>Discount Price</label>
-              <input
-                name='disprice'
-                type='number'
-                value={formik.values.disprice}
-                onChange={formik.handleChange}
-                className='border border-gray-300 px-2 py-2'
-              />
+              <div className='flex flex-col justify-start items-start'>
+                <label className='block text-gray-500'>Coupon Name</label>
+                <input
+                  name='name'
+                  type='text'
+                  value={formik.values.name}
+                  onChange={formik.handleChange}
+                  className='border border-gray-300 px-2 py-2'
+                />
+                {touched.name && errors.name && (
+                  <span className="text-sm text-red-500">{errors.name}</span>
+                )}
+              </div>
+              <div className='flex flex-col justify-start items-start'>
+                <label className='block text-gray-500'>Minimum Purchase</label>
+                <input
+                  name='minpurchase'
+                  type='number'
+                  value={formik.values.minpurchase}
+                  onChange={formik.handleChange}
+                  className='border border-gray-300 px-2 py-2'
+                />
+                {touched.minpurchase && errors.minpurchase && (
+                  <span className="text-sm text-red-500">{errors.minpurchase}</span>
+                )}
+              </div>
+              <div className='flex flex-col justify-start items-start'>
+                <label className='block text-gray-500'>Discount Price</label>
+                <input
+                  name='disprice'
+                  type='number'
+                  value={formik.values.disprice}
+                  onChange={formik.handleChange}
+                  className='border border-gray-300 px-2 py-2'
+                />
                 {touched.disprice && errors.disprice && (
-                <span className="text-sm text-red-500">{errors.disprice}</span>
-              )}
-            </div>
-            <div className='flex flex-col justify-start items-start'>
-              <label className='block text-gray-500'>Start Date</label>
-              <input
-                name='start_date'
-                type='date'
-                value={formik.values.start_date}
-                onChange={formik.handleChange}
-                className='w-full border border-gray-300 px-2 py-2'
-              />
+                  <span className="text-sm text-red-500">{errors.disprice}</span>
+                )}
+              </div>
+              <div className='flex flex-col justify-start items-start'>
+                <label className='block text-gray-500'>Start Date</label>
+                <input
+                  name='start_date'
+                  type='date'
+                  value={formik.values.start_date}
+                  onChange={formik.handleChange}
+                  className='w-full border border-gray-300 px-2 py-2'
+                />
                 {touched.start_date && errors.start_date && (
-                <span className="text-sm text-red-500">{errors.start_date}</span>
-              )}
-            </div>
-            <div className='flex flex-col justify-start items-start'>
-              <label className='block text-gray-500'>End Date</label>
-              <input
-                name='end_date'
-                type='date'
-                value={formik.values.end_date}
-                onChange={formik.handleChange}
-                className='border w-full border-gray-300 px-2 py-2'
-              />
+                  <span className="text-sm text-red-500">{errors.start_date}</span>
+                )}
+              </div>
+              <div className='flex flex-col justify-start items-start'>
+                <label className='block text-gray-500'>End Date</label>
+                <input
+                  name='end_date'
+                  type='date'
+                  value={formik.values.end_date}
+                  onChange={formik.handleChange}
+                  className='border w-full border-gray-300 px-2 py-2'
+                />
                 {touched.end_date && errors.end_date && (
-                <span className="text-sm text-red-500">{errors.end_date}</span>
-              )}
-            </div>
-            <div className='flex flex-col justify-start items-start'>
-              <label className='block text-gray-500'>Coupon Code</label>
-              <input
-                name='code'
-                type='text'
-                value={formik.values.code}
-                onChange={formik.handleChange}
-                className='border border-gray-300 px-2 py-2'
-              />
+                  <span className="text-sm text-red-500">{errors.end_date}</span>
+                )}
+              </div>
+              <div className='flex flex-col justify-start items-start'>
+                <label className='block text-gray-500'>Coupon Code</label>
+                <input
+                  name='code'
+                  type='text'
+                  value={formik.values.code}
+                  onChange={formik.handleChange}
+                  className='border border-gray-300 px-2 py-2'
+                />
                 {touched.code && errors.code && (
-                <span className="text-sm text-red-500">{errors.code}</span>
-              )}
-            </div>
+                  <span className="text-sm text-red-500">{errors.code}</span>
+                )}
+              </div>
 
-            <DialogActions>
-              <button type='submit' className='w-full py-2 bg-amber-400 font-bold'>Submit</button>
-            </DialogActions>
-          </form>
-        </DialogContent>
+              <DialogActions>
+                <button type='submit' className='w-full py-2 bg-amber-400 font-bold'>Submit</button>
+              </DialogActions>
+            </form>
+          </DialogContent>
         </div>
       </Dialog>
 
       <Dialog open={openCoupon} onClose={() => setOpenCoupon(false)}>
-          <div className='flex justify-center flex-col items-center'>
-        <DialogContent>
-          {
-            coupon && (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              formik.validateForm().then((errors) => {
-                if (Object.keys(errors).length === 0) {
-                  handleCouponSubmit();
-                } else {
-                  toast.error("Please fix validation errors.");
-                }
-              });
-            }}
-            className='space-y-3 px-7 '
-          >
-            <div className='flex justify-end'>
-              <Image src={assets.can} alt='close' onClick={() => setOpenCoupon(false)} className='cursor-pointer' />
-            </div>
-            <h1 className='text-2xl font-bold mb-5 text-center'>Add Coupon</h1>
+        <div className='flex justify-center flex-col items-center'>
+          <DialogContent>
+            {
+              coupon && (
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    formik.validateForm().then((errors) => {
+                      if (Object.keys(errors).length === 0) {
+                        handleCouponSubmit();
+                      } else {
+                        toast.error("Please fix validation errors.");
+                      }
+                    });
+                  }}
+                  className='space-y-3 px-7 '
+                >
+                  <div className='flex justify-end'>
+                    <Image src={assets.can} alt='close' onClick={() => setOpenCoupon(false)} className='cursor-pointer' />
+                  </div>
+                  <h1 className='text-2xl font-bold mb-5 text-center'>Add Coupon</h1>
 
-            <div className='flex flex-col justify-start items-start'>
-              <label className='block text-gray-500'>Coupon Name</label>
-              <input
-                name='name'
-                type='text'
-                value={formik.values.name}
-                onChange={formik.handleChange}
-                placeholder={coupon.Coupon_Name}
-                className='border border-gray-300 px-2 py-2'
-              />
-              {touched.name && errors.name && (
-                <span className="text-sm text-red-500">{errors.name}</span>
-              )}
-            </div>
-            <div className='flex flex-col justify-start items-start'>
-              <label className='block text-gray-500'>Minimum Purchase</label>
-              <input
-                name='minpurchase'
-                type='number'
-                value={formik.values.minpurchase}
-                // placeholder={coupon.Min_Purchase}
-                onChange={formik.handleChange}
-                className='border border-gray-300 px-2 py-2'
-              />
-              {touched.minpurchase && errors.minpurchase && (
-                <span className="text-sm text-red-500">{errors.minpurchase}</span>
-              )}
-            </div>
-            <div className='flex flex-col justify-start items-start'>
-              <label className='block text-gray-500'>Discount Price</label>
-              <input
-                name='disprice'
-                type='number'
-                value={formik.values.disprice}
-                onChange={formik.handleChange}
-                // placeholder={coupon.Discount_Price}
-                className='border border-gray-300 px-2 py-2'
-              />
-                {touched.disprice && errors.disprice && (
-                <span className="text-sm text-red-500">{errors.disprice}</span>
-              )}
-            </div>
-            <div className='flex flex-col justify-start items-start'>
-              <label className='block text-gray-500'>Start Date</label>
-              <input
-                name='start_date'
-                type='date'
-                value={formik.values.start_date}
-                onChange={formik.handleChange}
-                className='w-full border border-gray-300 px-2 py-2'
-              />
-                {touched.start_date && errors.start_date && (
-                <span className="text-sm text-red-500">{errors.start_date}</span>
-              )}
-            </div>
-            <div className='flex flex-col justify-start items-start'>
-              <label className='block text-gray-500'>End Date</label>
-              <input
-                name='end_date'
-                type='date'
-                value={formik.values.end_date}
-                onChange={formik.handleChange}
-                className='border w-full border-gray-300 px-2 py-2'
-              />
-                {touched.end_date && errors.end_date && (
-                <span className="text-sm text-red-500">{errors.end_date}</span>
-              )}
-            </div>
-            <div className='flex flex-col justify-start items-start'>
-              <label className='block text-gray-500'>Coupon Code</label>
-              <input
-                name='code'
-                type='text'
-                value={formik.values.code}
-                onChange={formik.handleChange}
-                // placeholder={coupon.Coupon_Code}
-                className='border border-gray-300 px-2 py-2'
-              />
-                {touched.code && errors.code && (
-                <span className="text-sm text-red-500">{errors.code}</span>
-              )}
-            </div>
+                  <div className='flex flex-col justify-start items-start'>
+                    <label className='block text-gray-500'>Coupon Name</label>
+                    <input
+                      name='name'
+                      type='text'
+                      value={formik.values.name}
+                      onChange={formik.handleChange}
+                      placeholder={coupon.Coupon_Name}
+                      className='border border-gray-300 px-2 py-2'
+                    />
+                    {touched.name && errors.name && (
+                      <span className="text-sm text-red-500">{errors.name}</span>
+                    )}
+                  </div>
+                  <div className='flex flex-col justify-start items-start'>
+                    <label className='block text-gray-500'>Minimum Purchase</label>
+                    <input
+                      name='minpurchase'
+                      type='number'
+                      value={formik.values.minpurchase}
+                      // placeholder={coupon.Min_Purchase}
+                      onChange={formik.handleChange}
+                      className='border border-gray-300 px-2 py-2'
+                    />
+                    {touched.minpurchase && errors.minpurchase && (
+                      <span className="text-sm text-red-500">{errors.minpurchase}</span>
+                    )}
+                  </div>
+                  <div className='flex flex-col justify-start items-start'>
+                    <label className='block text-gray-500'>Discount Price</label>
+                    <input
+                      name='disprice'
+                      type='number'
+                      value={formik.values.disprice}
+                      onChange={formik.handleChange}
+                      // placeholder={coupon.Discount_Price}
+                      className='border border-gray-300 px-2 py-2'
+                    />
+                    {touched.disprice && errors.disprice && (
+                      <span className="text-sm text-red-500">{errors.disprice}</span>
+                    )}
+                  </div>
+                  <div className='flex flex-col justify-start items-start'>
+                    <label className='block text-gray-500'>Start Date</label>
+                    <input
+                      name='start_date'
+                      type='date'
+                      value={formik.values.start_date || ''}
+                      onChange={formik.handleChange}
+                      className='w-full border border-gray-300 px-2 py-2'
+                    />
+                    {touched.start_date && errors.start_date && (
+                      <span className="text-sm text-red-500">{errors.start_date}</span>
+                    )}
+                  </div>
 
-            <DialogActions>
-              <button type='submit' className='w-full py-2 bg-amber-400 font-bold'>Submit</button>
-            </DialogActions>
-          </form>
-          )}
-        </DialogContent>
+                  <div className='flex flex-col justify-start items-start'>
+                    <label className='block text-gray-500'>End Date</label>
+                    <input
+                      name='end_date'
+                      type='date'
+                      value={formik.values.end_date || ''}
+                      onChange={formik.handleChange}
+                      className='border w-full border-gray-300 px-2 py-2'
+                    />
+                    {touched.end_date && errors.end_date && (
+                      <span className="text-sm text-red-500">{errors.end_date}</span>
+                    )}
+                  </div>
+
+                  <div className='flex flex-col justify-start items-start'>
+                    <label className='block text-gray-500'>Coupon Code</label>
+                    <input
+                      name='code'
+                      type='text'
+                      value={formik.values.code}
+                      onChange={formik.handleChange}
+                      // placeholder={coupon.Coupon_Code}
+                      className='border border-gray-300 px-2 py-2'
+                    />
+                    {touched.code && errors.code && (
+                      <span className="text-sm text-red-500">{errors.code}</span>
+                    )}
+                  </div>
+
+                  <DialogActions>
+                    <button type='submit' className='w-full py-2 bg-amber-400 font-bold'>Submit</button>
+                  </DialogActions>
+                </form>
+              )}
+          </DialogContent>
         </div>
       </Dialog>
     </div>

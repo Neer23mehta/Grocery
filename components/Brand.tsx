@@ -488,18 +488,25 @@ const Brand = () => {
                 </select>
               </div>
 
-              <div className="flex flex-col mt-5">
-                <label className="text-gray-400">Status</label>
-                <select
-                  name="status"
-                  value={inputs.status}
-                  onChange={handleBrandPost}
-                  className="border border-gray-200 w-full py-2 px-2.5"
-                >
-                  <option value="1">Active</option>
-                  <option value="0">Inactive</option>
-                </select>
+              <div className="flex flex-row justify-between mt-5">
+              <label className="text-gray-400">Status</label>
+              <div
+                className="cursor-pointer w-fit"
+                onClick={() =>
+                  setInputs((prev) => ({
+                    ...prev,
+                    status: prev.status === "1" ? "0" : "1",
+                  }))
+                }
+              >
+                <Image
+                  src={inputs.status === "1" ? assets.scrollon : assets.scrolloff}
+                  alt="Status"
+                  width={42}
+                  height={42}
+                />
               </div>
+            </div>
 
               <div className="flex flex-row mt-7">
                 <label htmlFor="thumbnail" className="cursor-pointer">

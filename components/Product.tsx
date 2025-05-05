@@ -9,7 +9,7 @@ import { RiDeleteBin5Fill } from "react-icons/ri";
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { assets } from '@/assests/assets';
-import commonGetApis from '@/commonapi/Commonapi';
+import commonGetApis, { deleteApi } from '@/commonapi/Commonapi';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
 
@@ -22,6 +22,7 @@ interface Product {
   Variation: string;
   Category_Name: string;
   Id: number;
+  Product_var_id: number;
 }
 
 interface ApiResponse {
@@ -84,17 +85,24 @@ const Products = () => {
   const handleStatusChange = async (id: number, currentStatus: number) => {
     const token = localStorage.getItem('token');
     const refreshToken = localStorage.getItem('usertoken');
-
+  
     if (!token || !refreshToken) {
       toast.error("Missing authentication tokens.");
       return;
     }
+  
     const newStatus = currentStatus === 1 ? 0 : 1;
-
+  
+    setAdds((prevAdds) =>
+      prevAdds.map((product) =>
+        product.Product_var_id === id ? { ...product, Stock_Status: newStatus } : product
+      )
+    );
+  
     const formData = new URLSearchParams();
     formData.append('id', String(id));
     formData.append('stock_status', String(newStatus));
-
+  
     try {
       const res = await axios.post(
         "http://192.168.2.181:3000/admin/status_change",
@@ -108,15 +116,19 @@ const Products = () => {
           },
         }
       );
-
+  
       toast.success("Stock status updated successfully");
-      fetchCategories();
     } catch (error) {
       console.error("Error updating status:", error);
       toast.error("Failed to update stock status.");
+      setAdds((prevAdds) =>
+        prevAdds.map((product) =>
+          product.Product_var_id === id ? { ...product, Stock_Status: currentStatus } : product
+        )
+      );
     }
   };
-
+  
 
 
   const handleProductEdit = async (Id: any) => {
@@ -138,8 +150,16 @@ const Products = () => {
     setInputss({ ...inputss, [name]: value, })
   }
 
-  const handleIdDataSubmit = () => {
-
+  const handleIdDelete = async (id: any) => {
+    try {
+      const res = await deleteApi(`deleteproductvariation?id=${id}`)
+      if (res.data) {
+        setAdds((prev) => prev.filter((items) => items.Product_var_id !== id))
+        toast.success("Deleted Successfully")
+      }
+    } catch (error) {
+      console.log(error)
+    }
   }
   console.log("proid", productIdData)
   return (
@@ -180,7 +200,7 @@ const Products = () => {
             {adds
               .filter((item) => input === "" || item.Product_Name.toLowerCase().includes(input.toLowerCase()))
               .map((curval, index) => {
-                const { Product_Name, Description, Price, Stock_Status, Variation, Category_Name, Id } = curval;
+                const { Product_Name, Description, Price, Stock_Status, Variation, Category_Name, Id, Product_var_id } = curval;
                 return (
                   <tr key={index} className=''>
                     <td className='px-2 py-2'>{curval.Image && <img src={curval.Image} alt={Product_Name} width={50} height={50} />}</td>
@@ -189,7 +209,7 @@ const Products = () => {
                     <td className='px-2 py-2'>{Description}</td>
                     <td className='px-2 py-2'>{Variation}</td>
                     <td className='px-2 py-2'>{Price}</td>
-                    <td onClick={() => handleStatusChange(Id, Stock_Status)} className='px-2 py-2'>
+                    <td onClick={() => handleStatusChange(Product_var_id, Stock_Status)} className='px-2 py-2'>
                       <div>
                         {Stock_Status === 1 ? (
                           <Image src={assets.scrollon} alt='In-Stock' />
@@ -199,8 +219,8 @@ const Products = () => {
                       </div>
                     </td>
                     <td>
-                      <button onClick={() => handleProductEdit(Id)} className='ml-2 text-gray-500'> <Link href={`/admin/products/${Id}`}><MdEdit /></Link></button>
-                      <button className='ml-3 text-gray-500'><RiDeleteBin5Fill /></button>
+                      <button onClick={() => handleProductEdit(Product_var_id)} className='ml-2 text-gray-500'> <Link href={`/admin/products/${Product_var_id}`}><MdEdit /></Link></button>
+                      <button onClick={() => handleIdDelete(Product_var_id)} className='ml-3 text-gray-500'><RiDeleteBin5Fill /></button>
                     </td>
                   </tr>
                 );

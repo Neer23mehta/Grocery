@@ -14,6 +14,7 @@ interface ProductFormValues {
   category: string;
   subcategory: string;
   brand: string;
+  categoryid: number;
 }
 
 type ProductFormValuess = {
@@ -48,13 +49,17 @@ const Productadd = ({ id }: any) => {
     name: "",
     category: "",
     subcategory: "",
-    brand: ""
+    brand: "",
+    categoryid: 0
   }
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [subCategories, setSubCategories] = useState<Subcategory[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [product, setProduct] = useState("")
+  const [datas, setDatas] = useState([]);
+  const [productId, setProductId] = useState<number | null>(null);
+  const [productVarId, setProductVarId] = useState<number | null>(null);
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [image, setImage] = useState<File | null>(null);
   const [productFields, setProductFields] = useState<ProductFormValuess[]>([
@@ -68,20 +73,26 @@ const Productadd = ({ id }: any) => {
     if (!id) return;
 
     try {
-      const res = await commonGetApis(`get_product_by_id?id=${id}`);
+      const res = await commonGetApis(`get_product_by_variation?id=${id}`);
       const data = res?.data?.DATA;
+      const dt = res?.data?.result?.[0]; 
 
+      setDatas(data); 
       if (data && data.length > 0) {
-        setIsEditMode(true);
-
         const item = data[0];
-
+        const dt = res.data.result?.[0];
+      
+        setIsEditMode(true);
+        setProductId(item.Product_id);
+        setProductVarId(item.Product_var_id);
+      
         formik.setValues({
           name: item.Product_Name,
-          category: String(item.Category_id),
-          subcategory: String(item.Subcategory_id),
-          brand: String(item.Brand_id),
-        });
+          category: String(dt.Category_id),
+          subcategory: String(dt.SubCategory_id),
+          brand: String(dt.Brand_id),
+          categoryid: item.Product_id,
+        });      
 
         setProduct(item.Image);
 
@@ -107,6 +118,7 @@ const Productadd = ({ id }: any) => {
     }
   };
 
+  console.log("uyhvkjhkvjkvb", datas)
 
   console.log("prroihbecde32c", product)
   useEffect(() => {
@@ -172,40 +184,44 @@ const Productadd = ({ id }: any) => {
       toast.error("Please select an image.");
       return;
     }
-  
+
     const formdata = new FormData();
-  
-    if (isEditMode) {
-      formdata.append("id", id); 
+    if (isEditMode && productId && productVarId) {
+      formdata.append("id", String(productId)); 
     }
-  
+
     formdata.append("fk_category_id", values.category);
     formdata.append("fk_subcategory_id", values.subcategory);
     formdata.append("fk_brand_id", values.brand);
     formdata.append("product_name", values.name);
     formdata.append("stock_status", "1");
-  
+
     if (image) {
       formdata.append("image", image);
     }
-  
+
     productFields.forEach((field, index) => {
       formdata.append(`products[${index}][variation]`, field.variation);
       formdata.append(`products[${index}][discount]`, field.discount);
       formdata.append(`products[${index}][discount_price]`, field.discountprice);
       formdata.append(`products[${index}][product_price]`, field.price);
+      
+      if (isEditMode && productId && productVarId) {
+        formdata.append(`products[${index}][fk_product_id]`, String(productId)); 
+        formdata.append(`products[${index}][id]`, String(productVarId)); 
+      }      
     });
-  
+
     orderFields.forEach((info, index) => {
       formdata.append(`products[${index}][title]`, info.title || 'Untitled');
       formdata.append(`products[${index}][description]`, info.description || 'No description');
     });
-  
+
     const token = localStorage.getItem('token');
     const refreshToken = localStorage.getItem('usertoken');
-  
+
     try {
-      const url = 'http://192.168.2.181:3000/admin/add_product'; 
+      const url = 'http://192.168.2.181:3000/admin/add_product';
       const res = await axios.post(url, formdata, {
         headers: {
           Authorizations: token || '',
@@ -213,7 +229,7 @@ const Productadd = ({ id }: any) => {
           refresh_token: refreshToken || ''
         }
       });
-  
+
       if (res.data) {
         toast.success(isEditMode ? "Product Updated Successfully" : "Product Added Successfully");
       } else {
@@ -224,7 +240,7 @@ const Productadd = ({ id }: any) => {
       toast.error("An error occurred.");
     }
   };
-  
+
 
 
   const handleCancel = () => {
@@ -234,14 +250,14 @@ const Productadd = ({ id }: any) => {
     setOrderFields([{ title: '', description: '' }]);
   }
 
-  const handleChanges = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChanges = (index: number, e: any) => {
     const { name, value } = e.target;
     const updatedFields = [...productFields];
     updatedFields[index][name as keyof ProductFormValuess] = value;
     setProductFields(updatedFields);
   };
 
-  const handleOrderInfo = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleOrderInfo = (index: number, e: any) => {
     const { name, value } = e.target;
     const updatedFields = [...orderFields];
     updatedFields[index][name as keyof Orderinfo] = value;
@@ -375,7 +391,7 @@ const Productadd = ({ id }: any) => {
                 width={310}
                 height={140}
               />
-            )} 
+            )}
             <input
               id="thumbnail"
               className="hidden"

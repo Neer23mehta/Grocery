@@ -39,10 +39,10 @@ export const Sidebar = () => {
 
   const toggleCategoryDropdown = () => setIsCategoryOpen(!isCategoryOpen);
   const toggleSidebar = () => setIsSidebarVisible(!isSidebarVisible);
-  const isActive = (href) => pathname === href;
+  const isActive = (href) => pathname.startsWith(href);
 
   return (
-    <div className="flex flex-col w-40 lg:w-65 h-screen">
+    <div className="flex flex-col w-40 lg:w-75 h-screen">
       <button
         onClick={toggleSidebar}
         className="lg:hidden text-white bg-black fixed top-4 left-0 rounded-full z-20 w-6 h-6 flex items-center justify-center"
@@ -59,7 +59,7 @@ export const Sidebar = () => {
           sx: {
             width: { xs: 160, md: 180, lg: 260 },
             bgcolor: '#202020',
-            overflowY: 'auto', 
+            overflowY: 'auto',
             overflowX: 'hidden',
             borderRight: '1px solid #333',
             position: isSmallScreen ? 'fixed' : 'relative',
@@ -67,7 +67,7 @@ export const Sidebar = () => {
               width: '8px',
             },
             '&::-webkit-scrollbar-thumb': {
-              backgroundColor: 'yellow',    
+              backgroundColor: 'yellow',
               borderRadius: '8px',
             },
             '&::-webkit-scrollbar-track': {
@@ -76,11 +76,14 @@ export const Sidebar = () => {
           },
           className: "overflow-x-hidden",
         }}
-        ModalProps={{ keepMounted: true }}
-      >
+        ModalProps={{
+          keepMounted: true,
+          disablePortal: true,
+          disableScrollLock: true
+        }}      >
 
         <div className="flex flex-col h-full">
-          <div className="px-6 py-4 flex items-center justify-center">
+          <div className="py-4 px-5 flex items-center justify-center">
             <Image src={assets.nlogo} alt="logo" width={130} height={100} />
           </div>
 
@@ -91,10 +94,15 @@ export const Sidebar = () => {
             </Link>
 
             <Link href="/admin/user" className={`flex items-center gap-3 font-medium p-3 rounded-md transition-all ${isActive('/admin/user') ? 'text-amber-300' : 'text-white'}`}>
-              <Image src={assets.user} alt="user" className={`${isActive('/admin/user') ? 'text-amber-300' : 'text-white'}`} />
+              <Image
+                src={assets.user}
+                alt="user"
+                className={`${isActive('/admin/user') ? 'fill-amber-400' : 'fill-white'}`}
+                width={20}
+                height={20}
+              />
               <p>Users</p>
             </Link>
-
             <Link href="/admin/products" className={`flex items-center gap-3 font-medium p-3 rounded-md transition-all ${isActive('/admin/products') ? 'text-amber-300' : 'text-white'}`}>
               <Image src={assets.products} alt="products" />
               <p>Products</p>
@@ -108,7 +116,7 @@ export const Sidebar = () => {
             <div className="relative">
               <button
                 onClick={toggleCategoryDropdown}
-                className={`flex items-center gap-3 font-medium p-3 rounded-md ${isActive('/admin/category/categories') ? 'text-amber-300' : 'text-white'}`}
+                className={`flex items-center gap-3 font-medium p-3 rounded-md ${isActive('/admin/category') ? 'text-amber-300' : 'text-white'}`}
               >
                 <Image src={assets.category} alt="category" />
                 <p>Category</p>
@@ -118,20 +126,19 @@ export const Sidebar = () => {
                 <div className="mt-2 shadow-md rounded-md w-full z-10">
                   <button
                     onClick={() => handleCategoryChange({ target: { value: 'categories' } })}
-                    className="w-full text-left px-4 py-2 text-white ml-5"
+                    className={`w-full text-left px-4 py-2 text-white ml-5 ${isActive('/admin/category/categories') ? 'text-amber-300' : 'text-white'}`}
                   >
                     Category
                   </button>
                   <button
                     onClick={() => handleCategoryChange({ target: { value: 'subcategories' } })}
-                    className="w-full text-left px-4 py-2 text-white ml-5"
+                    className={`w-full text-left px-4 py-2 text-white ml-5 ${isActive('/admin/category/subcategories') ? 'text-amber-300' : 'text-white'}`}
                   >
                     Sub Category
                   </button>
                 </div>
               )}
             </div>
-
             <Link href="/admin/brands" className={`flex items-center gap-3 font-medium p-3 rounded-md transition-all ${isActive('/admin/brands') ? 'text-amber-300' : 'text-white'}`}>
               <Image src={assets.brands} alt="brands" />
               <p>Brands</p>

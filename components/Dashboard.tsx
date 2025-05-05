@@ -9,9 +9,21 @@ import { Doughnut } from 'react-chartjs-2'
 import { Bar } from 'react-chartjs-2'
 import {Chart as ChartJS,CategoryScale,LinearScale,BarElement,ArcElement,Title,Tooltip,Legend,} from 'chart.js';
 import { Skeleton } from '@mui/material'
-  
-ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
-  
+import { LineElement, PointElement, LineController } from 'chart.js';
+import { Line } from 'react-chartjs-2';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend,
+  LineElement,
+  PointElement,
+  LineController
+);
 
 interface Alldetails {
   brands_count:number;
@@ -165,6 +177,42 @@ const Dashboard = () => {
 </div>
 
 </div>
+{/* <div className="w-full max-w-3xl mt-20 bg-white p-6 rounded-lg shadow-lg">
+  <h2 className="text-2xl font-bold mb-4 text-black">Trend Over Time</h2>
+  <Line
+    data={{
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'], // Example months
+      datasets: [
+        {
+          label: 'Orders Trend',
+          data: [5, 10, 6, 12, 8, 15, dashboard.order_count], // Simulated data with latest order count
+          borderColor: '#3b82f6',
+          backgroundColor: 'rgba(59, 130, 246, 0.2)',
+          tension: 0.3,
+          fill: true,
+        },
+      ],
+    }}
+    options={{
+      responsive: true,
+      plugins: {
+        legend: {
+          display: true,
+          position: 'top',
+        },
+        title: {
+          display: false,
+        },
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
+      },
+    }}
+  />
+</div> */}
+
 </div>
   )
 }

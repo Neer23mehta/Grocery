@@ -1,7 +1,13 @@
 import React from 'react'
 import Userid from '@/Grocery/Userid'
 
-const Page = ({params}:any) => {
+type Pageprop = {
+  params : {
+    id:number
+  }
+}
+
+const Page = ({params}:Pageprop) => {
   return (
     <div><Userid id={params.id}/></div>
   )

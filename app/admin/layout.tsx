@@ -12,7 +12,6 @@ import { IoSettingsSharp } from "react-icons/io5";
 import { MdLock } from "react-icons/md";
 import { useFormik } from "formik";
 import { HandleYupSchema } from "@/Grocery/Yupschema";
-import Setpassword from "@/components/Setpassword";
 import Logout from "@/components/Logout";
 import Newpassword from "@/components/Newpassword";
 import { Dialog, DialogContent, Popper, ClickAwayListener, Paper } from "@mui/material";
@@ -69,14 +68,14 @@ const Layout = ({ children }: LayoutProps) => {
         managetax: ""
     };
 
-    const { handleChange: formikChange, handleSubmit, values } = useFormik({
+    const formik = useFormik({
         initialValues,
         validationSchema: HandleYupSchema,
         onSubmit: (value, action) => {
-            console.log("Form Data", value);
-            action.resetForm()
+          console.log("Form Data", value);
+          action.resetForm();
         }
-    });
+      });      
 
     const handleManageDelivery = () => {
         setManageDelivery(true)
@@ -92,10 +91,10 @@ const Layout = ({ children }: LayoutProps) => {
         setConfig(false);
     }
 
-    const handleManageDeliverySubmit = (e: any) => {
+    const handleManageDeliverySubmit = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setInput({ ...input, [name]: value });
-    }
+      };      
 
     const handleManageDeliverys = async () => {
         const token = localStorage.getItem("token");

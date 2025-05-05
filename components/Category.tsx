@@ -23,19 +23,20 @@ interface Categoryid {
   image: string;
   status: number;
 }
+
 const Category = () => {
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState<string>('');
   const [adds, setAdds] = useState<Category[]>([]);
-  const [addCategory, setAddCategory] = useState(false);
+  const [addCategory, setAddCategory] = useState<boolean>(false);
   const [image, setImage] = useState<File | null>(null);
   const [categoryId, setCategoryId] = useState<Categoryid | null>(null);
-  const [toggleCategory, setToggleCategory] = useState(false)
-  const [page, setPage] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
+  const [toggleCategory, setToggleCategory] = useState<boolean>(false);
+  const [page, setPage] = useState<number>(1);
+  const [totalCount, setTotalCount] = useState<number>(0);
   const [inputss, setInputss] = useState({
     category: "",
     status: "1"
-  })
+  });
   const [inputs, setInputs] = useState({
     category: "",
     status: "1"
@@ -44,7 +45,7 @@ const Category = () => {
   const fetchCategories = async () => {
     try {
       const res = await commonGetApis(`getcategories?pageNumber=${page}&pageLimit=10`);
-      setTotalCount(res?.data?.Total_Count)
+      setTotalCount(res?.data?.Total_Count || 0);
       const result = res?.data?.result || [];
       setAdds(result);
     } catch (error) {
@@ -52,9 +53,9 @@ const Category = () => {
     }
   };
 
-  const count = Math.ceil(Number(totalCount) / 1)
+  const count = Math.ceil(totalCount / 10);  // Assuming 10 items per page
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const refreshtoken = localStorage.getItem("usertoken");
     const token = localStorage.getItem("token");
@@ -87,9 +88,9 @@ const Category = () => {
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
-  const handleIdDataSubmit = async (e: any, id: number) => {
+  const handleIdDataSubmit = async (e: React.FormEvent<HTMLFormElement>, id: number) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
     const refreshToken = localStorage.getItem("usertoken");
@@ -127,8 +128,7 @@ const Category = () => {
     }
   };
 
-
-  const handleDelete = async (id: any) => {
+  const handleDelete = async (id: number) => {
     try {
       await deleteApi(`deletecategory?id=${id}`);
       setAdds(prev => prev.filter(item => item.No !== id));
@@ -136,8 +136,9 @@ const Category = () => {
     } catch (error) {
       console.log(error);
     }
-  }
-  const handleStatusChange = async (id: number, currentStatus: any) => {
+  };
+
+  const handleStatusChange = async (id: number, currentStatus: number) => {
     const token = localStorage.getItem("token");
     const refreshToken = localStorage.getItem("usertoken");
 
@@ -178,20 +179,21 @@ const Category = () => {
     }
   };
 
-  const handleCategoryPost = (e: any) => {
-    const { name, value } = e.target;
+  const handleCategoryPost = (e: React.FormEvent<HTMLInputElement>) => {
+    const { name, value } = e.target as HTMLInputElement; 
     setInputs({ ...inputs, [name]: value });
   };
 
-  const handleCategoryPosts = (e: any) => {
+  const handleCategoryPosts = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setInputss({ ...inputss, [name]: value });
-  }
+  };
+
   const handleEditButton = async (No: number) => {
     try {
       const res = await commonGetApis(`getcategory?id=${No}`);
       const data = res?.data?.DATA;
-  
+
       if (data) {
         setCategoryId(data);
         setInputss({
@@ -204,9 +206,7 @@ const Category = () => {
       console.error("Error fetching category:", error);
     }
   };
-  
 
-  console.log("addcate", categoryId)
   useEffect(() => {
     fetchCategories();
   }, [page]);
@@ -214,12 +214,16 @@ const Category = () => {
   useEffect(() => {
     document.title = "Admin Category";
   }, []);
+
   return (
     <div className="">
       <div className="flex flex-row justify-between items-center">
         <div className="flex flex-col px-2">
           <h1 className="text-3xl font-bold">Category</h1>
-          <p className='text-gray-500 mt-2'><Link href={`/admin/dashboard`}>Dashboard</Link> <span className='ml-2.5'>{`>`}</span><span className='text-black ml-2.5'>Category</span> </p>
+          <p className='text-gray-500 mt-2'>
+            <Link href={`/admin/dashboard`}>Dashboard</Link> <span className='ml-2.5'>{`>`}</span>
+            <span className='text-black ml-2.5'>Category</span>
+          </p>
         </div>
         <div>
           <TextField
@@ -265,9 +269,9 @@ const Category = () => {
                         className='px-2 py-2 cursor-pointer'
                       >
                         {Status === 1 ? (
-                          <Image src={assets.scrollon} alt='Active' width={32} height={32} />
+                          <Image src={assets.scrollon} alt='Active' width={42} height={42} />
                         ) : (
-                          <Image src={assets.scrolloff} alt='Inactive' width={32} height={32} />
+                          <Image src={assets.scrolloff} alt='Inactive' width={42} height={42} />
                         )}
                       </td>
                       <td>
@@ -331,7 +335,6 @@ const Category = () => {
                 </div>
               </div>
 
-
               <div className='flex flex-row mt-7'>
                 <label htmlFor="thumbnail" className="flex items-center justify-center cursor-pointer mb-6">
                   <div className="w-[355px] h-[125px] flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-300 transition-all duration-300 ease-in-out hover:border-gray-500 hover:shadow-lg">
@@ -367,7 +370,7 @@ const Category = () => {
             {categoryId && (
               <form onSubmit={(e) => handleIdDataSubmit(e, categoryId.id)} className='bg-white z-[1] flex flex-col px-3'>
                 <div className='flex flex-row'>
-                  <h1 className='items-center text-2xl ml-20'>Add Category</h1>
+                  <h1 className='items-center text-2xl ml-20'>Edit Category</h1>
                   <div className='flex justify-end ml-25'>
                     <button
                       type="button"
@@ -389,7 +392,6 @@ const Category = () => {
                     required
                     className='border border-gray-200 px-2.5 py-2 w-full'
                   />
-
                 </div>
 
                 <div className="flex flex-row justify-between mt-5">
@@ -411,7 +413,6 @@ const Category = () => {
                     />
                   </div>
                 </div>
-
 
                 <div className='flex flex-row mt-7'>
                   <label htmlFor="thumbnail" className="flex items-center justify-center cursor-pointer mb-6">
@@ -454,7 +455,6 @@ const Category = () => {
             count={count} />
         </Stack>
       </div>
-
     </div>
   );
 };

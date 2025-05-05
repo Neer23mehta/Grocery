@@ -1,5 +1,5 @@
 'use client';
-import { Dialog, DialogActions, DialogContent, InputLabel, MenuItem, Pagination, Select, Stack, TextField, } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, Pagination, Stack } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { MdEdit } from 'react-icons/md';
@@ -9,6 +9,7 @@ import Image from 'next/image';
 import commonGetApis, { deleteApi } from '@/commonapi/Commonapi';
 import { assets } from '@/assests/assets';
 import Link from 'next/link';
+import { AxiosError } from 'axios';
 
 interface Category {
   No: number;
@@ -119,9 +120,11 @@ const Brand = () => {
       if (inputs.No) {
         formdata.append('id', String(inputs.No)); 
         res = await axios.post('http://192.168.2.181:3000/admin/add_brand', formdata, { headers });
+        if(res.data){
+          toast.success("Added")
+        }
         toast.success("Brand Updated Successfully");
       } else {
-        res = await axios.post('http://192.168.2.181:3000/admin/add_brand', formdata, { headers });
         toast.success("Brand Added Successfully");
       }
   
@@ -196,16 +199,17 @@ const Brand = () => {
       } else {
         toast.error('Failed to update status');
       }
-    } catch (error: any) {
-      console.error('Full Error:', error);
-      if (error.response) {
-        console.error('Response Error:', error.response);
-        console.error('Response Data:', error.response.data);
+    } catch (error) {
+      const axiosError = error as AxiosError;
+    
+      console.error('Full Error:', axiosError);
+    
+      if (axiosError.response) {
+        console.error('Response Error:', axiosError.response);
+        console.error('Response Data:', axiosError.response.data);
       }
-      toast.error('Something went wrong while updating status');
     }
-
-  };
+  }
   useEffect(() => {
     fetchCategories();
     fetchGetCategory();
@@ -267,6 +271,8 @@ const Brand = () => {
                         src={img}
                         alt={Category_Name}
                         className="w-14 h-13 object-cover"
+                        height={13}
+                        width={14}
                       />
                     </td>
                     <td className="px-2 py-2">{Brand_Name}</td>

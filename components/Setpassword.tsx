@@ -2,11 +2,8 @@
 import React, { useState } from 'react';
 import { assets } from "../assests/assets";
 import Image from 'next/image';
-import Link from 'next/link';
-import { ErrorMessage, useFormik } from 'formik';
+import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { FaRegEyeSlash } from "react-icons/fa6";
-import { FaRegEye } from "react-icons/fa";
 import { TextField } from '@mui/material';
 import axios from 'axios'; 
 import { toast } from 'react-toastify';
@@ -41,7 +38,7 @@ const Setpassword = () => {
   };
 
 
-  const { values, errors, touched, handleBlur, handleChange, handleSubmit } = useFormik({
+  const { values, errors, touched, handleBlur, handleChange } = useFormik({
     initialValues: initialValues,
     validationSchema: validationSchema,
     onSubmit: (value, action) => {

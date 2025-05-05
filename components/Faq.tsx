@@ -4,12 +4,11 @@ import commonGetApis, { deleteApi } from '@/commonapi/Commonapi'
 import { GoArrowRight } from "react-icons/go";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { toast } from 'react-toastify';
-import { Dialog, DialogContent, TextField, DialogActions, Button } from '@mui/material';
+import { Dialog, DialogContent, TextField } from '@mui/material';
 import axios from 'axios';
 import { useFormik } from 'formik';
 import * as Yup from 'yup'
 import Link from 'next/link';
-import { MdModeEditOutline } from "react-icons/md";
 
 interface Faq {
   Answer: string;
@@ -45,19 +44,17 @@ const Faq = () => {
     initialValues: initialValues,
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      addFaqs();
+      addFaqs(values);  // Pass the form values to addFaqs
     }
   });
 
-  console.log("faq321213",faq)
-  const {values,touched,handleBlur} = formik;
-  const addFaqs = async () => {
+  const addFaqs = async (values: { Question: string, Answer: string }) => {
     const token = localStorage.getItem("token");
     const refreshToken = localStorage.getItem("usertoken");
 
     const formData = new URLSearchParams();
-    formData.append("question",values.Question);
-    formData.append("answer",values.Answer);
+    formData.append("question", values.Question);
+    formData.append("answer", values.Answer);
     try {
       const res = await axios.post("http://192.168.2.181:3000/admin/add_faqs", formData, {
         headers: {
@@ -119,7 +116,6 @@ const Faq = () => {
                 <p className='text-2xl'><span className='mr-5'>({idx + 1})</span>{curVal.Question}</p>
                 <div className='flex flex-row justify-center items-center gap-2.5'>
                 <RiDeleteBin6Line size={25} onClick={() => handleDeleteFaq(curVal.Faq_id)} />
-                {/* <MdModeEditOutline size={22}/> */}
                 </div>
               </div>
               <div className='flex flex-row justify-start items-center mt-5'>
@@ -133,7 +129,7 @@ const Faq = () => {
       <Dialog open={open} onClose={() => setOpen(false)}>
         <div className='bg-white shadow-md flex flex-col justify-center items-center'>
           <div className='flex justify-end'>
-          <button className='ml-120 mt-2 text-2xl hover:text-red-700' onClick={() => setOpen(false)}>X</button>
+            <button className='ml-120 mt-2 text-2xl hover:text-red-700' onClick={() => setOpen(false)}>X</button>
           </div>
           <h1 className='px-2 text-2xl font-bold'>Add Faq</h1>
           <DialogContent>
@@ -161,7 +157,7 @@ const Faq = () => {
                 helperText={formik.touched.Answer && formik.errors.Answer}
               />
               <div className='flex justify-center items-center mt-3 text-xl'>
-                <button className='px-5 py-2 bg-amber-400' onClick={addFaqs}>Add Faq</button>
+                <button className='px-5 py-2 bg-amber-400' type="submit">Add Faq</button>
               </div>
             </form>
           </DialogContent>

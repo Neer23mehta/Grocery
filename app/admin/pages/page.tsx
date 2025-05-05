@@ -1,7 +1,6 @@
 'use client'
 import React from 'react'
 import MyEditor from '@/components/Myeditor'
-import Link from 'next/link'
 
 const Page = () => {
   return (

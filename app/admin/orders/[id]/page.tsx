@@ -1,7 +1,13 @@
 import React from 'react'
 import Orderid from '@/components/Orderid'
 
-const Page = ({params}:any) => {
+type ParamProp = {
+  params: {
+    id:number
+  }
+}
+
+const Page = ({params}:ParamProp) => {
   return (
     <div><Orderid id={params.id}/></div>
   )

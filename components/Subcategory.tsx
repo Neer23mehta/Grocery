@@ -208,15 +208,15 @@ const Subcategory = () => {
       } else {
         toast.error("Failed to update status");
       }
-    } catch (error: any) {
-      console.error("Error updating status:", error.response?.data || error.message);
+    } catch (error) {
+      console.error(error);
       toast.error("Something went wrong");
     }
   };
 
 
 
-  const handleEditButton = async (No: any) => {
+  const handleEditButton = async (No: number) => {
     try {
       const res = await commonGetApis(`get_subcategory?id=${No}`);
       setEditSubcategory(res.data.DATA);

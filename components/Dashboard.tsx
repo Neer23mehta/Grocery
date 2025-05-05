@@ -1,7 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import commonGetApis from '@/commonapi/Commonapi'
-// import IndiaMap from "@/Grocery/India"
 import { toast } from 'react-toastify'
 import Link from 'next/link'
 import CountUp from 'react-countup';
@@ -36,7 +35,6 @@ interface Alldetails {
 }
 
 const Dashboard = () => {
-  const [orders, setOrders] = useState<number>(0);
   const [dashboard, setDashboard] = useState<Alldetails>({
     brands_count: 0,
     category_count: 0,
@@ -112,9 +110,6 @@ const Dashboard = () => {
   ))}
 </div>
 
-  <div>
-    {/* <IndiaMap/> */}
-  </div>
   <div className='flex flex-row justify-center items-center space-x-7'>
   <div className="w-full min-w-2xl mt-20 bg-white p-6 rounded-lg shadow-lg">
   <h2 className="text-2xl font-bold mb-4 text-black">Overview Chart</h2>
@@ -177,15 +172,15 @@ const Dashboard = () => {
 </div>
 
 </div>
-{/* <div className="w-full max-w-3xl mt-20 bg-white p-6 rounded-lg shadow-lg">
+<div className="w-full max-w-3xl mt-20 bg-white p-6 rounded-lg shadow-lg">
   <h2 className="text-2xl font-bold mb-4 text-black">Trend Over Time</h2>
   <Line
     data={{
-      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'], // Example months
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'], 
       datasets: [
         {
           label: 'Orders Trend',
-          data: [5, 10, 6, 12, 8, 15, dashboard.order_count], // Simulated data with latest order count
+          data: [5, 10, 6, 12, 8, 15, dashboard.order_count], 
           borderColor: '#3b82f6',
           backgroundColor: 'rgba(59, 130, 246, 0.2)',
           tension: 0.3,
@@ -211,7 +206,7 @@ const Dashboard = () => {
       },
     }}
   />
-</div> */}
+</div>
 
 </div>
   )

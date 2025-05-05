@@ -1,9 +1,7 @@
 'use client'
-import { Dialog, DialogActions, DialogContent, Pagination, Stack, TextField } from '@mui/material';
+import { Pagination, Stack, TextField } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { IoSearchSharp } from "react-icons/io5";
-import { SlArrowRight } from "react-icons/sl";
 import { MdEdit } from "react-icons/md";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import Image from 'next/image';
@@ -25,37 +23,17 @@ interface Product {
   Product_var_id: number;
 }
 
-interface ApiResponse {
-  data: Product[];
-}
-
 interface Newproduct {
   Category_Name: string;
-  Image: any;
+  Image: boolean;
 }
 const Products = () => {
   const [input, setInput] = useState<string>("");
   const [adds, setAdds] = useState<Product[]>([]);
-  const [scroll, setScroll] = useState<boolean>(false);
-  const [product, setProduct] = useState(false);
   const [productIdData, setProductIdData] = useState<Newproduct | null>(null);
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState("");
-  const [inputss, setInputss] = useState({
-    name: "",
-    category: "",
-    description: "",
-    variation: "",
-    price: "",
-    stock: "",
-  })
-  const [image, setImage] = useState<File | null>(null);
   const route = useRouter();
-
-  const handleScroll = (e: React.WheelEvent) => {
-    e.preventDefault();
-    setScroll(!scroll);
-  };
 
   const fetchCategories = async () => {
 
@@ -117,7 +95,9 @@ const Products = () => {
         }
       );
   
-      toast.success("Stock status updated successfully");
+      if(res.data){
+        toast.success("Stock status updated successfully");
+      }
     } catch (error) {
       console.error("Error updating status:", error);
       toast.error("Failed to update stock status.");
@@ -129,15 +109,10 @@ const Products = () => {
     }
   };
   
-
-
-  const handleProductEdit = async (Id: any) => {
+  const handleProductEdit = async (Id: number) => {
     try {
       const res = await commonGetApis(`get_product_by_id?id=${Id}`)
       setProductIdData(res?.data?.DATA);
-      if (productIdData) {
-        setProduct(true)
-      }
     } catch (error) {
       console.log(error)
       toast.error("Something went Wrong")
@@ -145,12 +120,8 @@ const Products = () => {
   };
 
   console.log("products121", productIdData)
-  const handleProductPosts = (e: any) => {
-    const { name, value } = e.target
-    setInputss({ ...inputss, [name]: value, })
-  }
 
-  const handleIdDelete = async (id: any) => {
+  const handleIdDelete = async (id: number) => {
     try {
       const res = await deleteApi(`deleteproductvariation?id=${id}`)
       if (res.data) {
@@ -200,7 +171,7 @@ const Products = () => {
             {adds
               .filter((item) => input === "" || item.Product_Name.toLowerCase().includes(input.toLowerCase()))
               .map((curval, index) => {
-                const { Product_Name, Description, Price, Stock_Status, Variation, Category_Name, Id, Product_var_id } = curval;
+                const { Product_Name, Description, Price, Stock_Status, Variation, Category_Name, Product_var_id } = curval;
                 return (
                   <tr key={index} className=''>
                     <td className='px-2 py-2'>{curval.Image && <img src={curval.Image} alt={Product_Name} width={50} height={50} />}</td>

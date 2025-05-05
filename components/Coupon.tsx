@@ -102,8 +102,8 @@ const Coupons = () => {
       } else {
         toast.error("Failed to update status");
       }
-    } catch (error: any) {
-      console.error("Error updating status:", error.response?.data || error.message);
+    } catch (error) {
+      console.error(error);
       toast.error("Something went wrong");
     }
   };
@@ -141,13 +141,8 @@ const Coupons = () => {
     onSubmit: () => { },
   });
   const {
-    values,
     errors,
-    touched,
-    handleBlur,
-    handleChange,
-    handleSubmit,
-    resetForm
+    touched
   } = formik;
   const handleCouponSubmit = async () => {
     const token = localStorage.getItem("token");

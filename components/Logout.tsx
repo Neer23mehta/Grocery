@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 const Logout = () => {
   const [logout, setLogout] = useState(true)
   const route = useRouter();
-  const handleLogout = (e:any) => {
+  const handleLogout = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault(); 
     localStorage.removeItem('token');
     localStorage.removeItem('usertoken');

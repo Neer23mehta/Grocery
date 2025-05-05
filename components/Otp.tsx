@@ -13,7 +13,7 @@ const Otp = () => {
 
     const route = useRouter();
 
-    const handlesubmits = async (e: any) => {
+    const handlesubmits = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         try {
@@ -36,9 +36,9 @@ const Otp = () => {
         }
     }
 
-    const handleChange = (newValue:any) => {
+    const handleChange = (newValue: string) => {
         setOtp(newValue);
-      };
+      };      
 
     return (
         <div className='relative flex items-center justify-center w-full h-screen bg-black'>

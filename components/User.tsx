@@ -6,7 +6,6 @@ import axios from 'axios';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
-import { IoSearchSharp } from "react-icons/io5";
 import { toast } from 'react-toastify';
 
 interface Users {
@@ -19,7 +18,6 @@ interface Users {
 
 const User = () => {
     const [input, setInput] = useState("")
-    const [adds, setAdds] = useState(0)
     const [page, setPage] = useState(1)
     const [totalCount, setTotalCount] = useState(0)
     const [users, setUsers] = useState<Users[]>([])
@@ -111,7 +109,7 @@ const User = () => {
                             users?.filter(item => input == "" || item.FullName.toLowerCase().includes(input.toLowerCase())).map((curval, index) => {
                                 const { User_id,Email,Status,Mobile_no,FullName } = curval;
                                 return (
-                                    <tr key={User_id} className='space-y-2 px-2 py-2'>
+                                    <tr key={index} className='space-y-2 px-2 py-2'>
                                         <td className='px-4 py-3'>{User_id}</td>
                                         <td className='px-4 py-3'><Link href={`/admin/user/${User_id}`}>{FullName}</Link></td>
                                         <td className='px-4 py-3'>{Mobile_no}</td>

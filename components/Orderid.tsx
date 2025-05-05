@@ -1,15 +1,9 @@
 'use client'
-import { TextField } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import { IoSearchSharp } from "react-icons/io5";
-import { FaSortDown } from "react-icons/fa";
 import Image from 'next/image';
 import { assets } from '@/assests/assets';
 import commonGetApis from '@/commonapi/Commonapi';
 import Link from 'next/link';
-import Stepper from '@mui/material/Stepper';
-import Step from '@mui/material/Step';
-import StepLabel from '@mui/material/StepLabel';
 
 interface Orderdetail {
     Total: number;
@@ -34,10 +28,6 @@ interface All {
     total_tax: number;
 }
 
-interface Status {
-    order_status: number;
-}
-
 interface Address {
     address_line1: string;
     address_line2: string;
@@ -48,9 +38,11 @@ interface User {
     mobile_no: string;
     email: string;
 }
+interface OrderidProps {
+    id: number;
+}
 
-const Orderid = ({ id }: any) => {
-    const [input, setinput] = useState("")
+const Orderid = ( {id} : OrderidProps) => {
     const [adds, setadds] = useState<Orderdetail[]>([])
     const [grandTotal, setGrandTotal] = useState("")
     const [all, setAll] = useState<All | null>(null)
@@ -58,7 +50,6 @@ const Orderid = ({ id }: any) => {
     const [user, setUser] = useState<User | null>(null);
     const [status, setStatus] = useState<number>(0); 
     const [address, setAddress] = useState<Address | null>(null);
-    const [currentStatus, setCurrentStatus] = useState('');
 
     const steps = [
         { label: "New Order", icon: assets.ordernew, key: "new" },

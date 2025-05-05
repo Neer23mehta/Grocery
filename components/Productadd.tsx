@@ -44,7 +44,10 @@ interface Brand {
   No: number;
 }
 
-const Productadd = ({ id }: any) => {
+interface ProductProp {
+  id:number
+}
+const Productadd = ({ id }: ProductProp) => {
   const initialValues: ProductFormValues = {
     name: "",
     category: "",
@@ -75,7 +78,6 @@ const Productadd = ({ id }: any) => {
     try {
       const res = await commonGetApis(`get_product_by_variation?id=${id}`);
       const data = res?.data?.DATA;
-      const dt = res?.data?.result?.[0]; 
 
       setDatas(data); 
       if (data && data.length > 0) {
@@ -250,7 +252,7 @@ const Productadd = ({ id }: any) => {
     setOrderFields([{ title: '', description: '' }]);
   }
 
-  const handleChanges = (index: number, e: any) => {
+  const handleChanges = (e: any, index: number,) => {
     const { name, value } = e.target;
     const updatedFields = [...productFields];
     updatedFields[index][name as keyof ProductFormValuess] = value;
@@ -337,7 +339,7 @@ const Productadd = ({ id }: any) => {
                 <TextField
                   name={name}
                   value={field[name as keyof ProductFormValuess]}
-                  onChange={(e) => handleChanges(index, e)}
+                  onChange={(e) => handleChanges(e,index)}
                   label={label}
                   variant='outlined'
                 />

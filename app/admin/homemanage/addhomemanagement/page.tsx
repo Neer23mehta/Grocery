@@ -6,7 +6,6 @@ import Shopbycategory from '@/homemanage/Shopbycategory';
 import Advertise from '@/homemanage/Advertise';
 import Shopbybrand from '@/homemanage/Shopbybrand';
 import axios from 'axios';
-import commonGetApis, { commonPostApis } from '@/commonapi/Commonapi';
 import Link from 'next/link';
 
 const Page = () => {

@@ -263,7 +263,7 @@ const Category = () => {
                           alt={Category_Name}
                           width={56} 
                           height={52} 
-                          className="object-cover rounded-md"
+                          className="object-cover rounded-md h-[60px] w-[60px]"
                           unoptimized 
                         />                     
                         </td>

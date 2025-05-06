@@ -237,16 +237,16 @@ const Coupons = () => {
         <tbody>
           {users.map(({ No, Coupon_Name, Min_Purchase, Discount_Price, Coupon_Code, Date, Status }) => (
             <tr key={No}>
-              <td className='px-4 py-2'>{No}</td>
-              <td className='px-4'>{Coupon_Name}</td>
-              <td className='px-4'>{Min_Purchase}</td>
-              <td className='px-4'>{Discount_Price}</td>
-              <td className='px-4'>{Coupon_Code}</td>
-              <td className='px-4'>{Date}</td>
-              <td className='px-4 cursor-pointer' onClick={() => handleStatusChange(No, Status)}>
+              <td className='px-4 py-4'>{No}</td>
+              <td className='px-4 py-4'>{Coupon_Name}</td>
+              <td className='px-4 py-4'>{Min_Purchase}</td>
+              <td className='px-4 py-4'>{Discount_Price}</td>
+              <td className='px-4 py-4'>{Coupon_Code}</td>
+              <td className='px-4 py-4'>{Date}</td>
+              <td className='px-4 cursor-pointer py-4' onClick={() => handleStatusChange(No, Status)}>
                 <Image src={Status === 1 ? assets.scrollon : assets.scrolloff} alt='status' />
               </td>
-              <td className='px-4'>
+              <td className='px-4 py-4'>
                 <button onClick={() => handleEditById(No)} className="mr-3"><MdEdit size={18} /></button>
                 <button onClick={() => handleCouponDelete(No)}><RiDeleteBin5Fill size={18} /></button>
               </td>

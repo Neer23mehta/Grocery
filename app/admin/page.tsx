@@ -51,16 +51,19 @@ const Page = () => {
     { label: 'Home Management', href: '/admin/homemanage', color: 'bg-teal-500' },
     { label: 'Pages', href: '/admin/pages', color: 'bg-cyan-500' },
     { label: 'FAQ', href: '/admin/faq', color: 'bg-lime-500' },
+    { label: 'Admin', href: '/admin', color: 'bg-sky-700' },
+    { label: 'Login', href: '/', color: 'bg-pink-700' },
+    { label: 'Change-Password', href: '/changepassword', color: 'bg-rose-700' },
+    { label: 'Forget-Password', href: '/forget', color: 'bg-purple-700' },
+    { label: 'Verify', href: '/verify', color: 'bg-violet-700' },
   ];
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <h1 className="text-4xl font-bold text-gray-800 mb-6">Admin Dashboard</h1>
         <p className="text-gray-600 mb-10">Manage everything from this control panel.</p>
 
-        {/* Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
           <div className="bg-white rounded-xl p-5 shadow hover:shadow-lg transition">
             <h2 className="text-lg font-semibold text-gray-700">Users</h2>

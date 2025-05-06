@@ -174,7 +174,7 @@ const Products = () => {
                           alt={Product_Name}
                           width={50}
                           height={50}
-                          className="object-cover"
+                          className="object-cover h-[50px] w-[70px]"
                         />
                       )}
                     </td>

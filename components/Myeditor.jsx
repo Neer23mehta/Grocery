@@ -6,11 +6,11 @@ import TextStyle from '@tiptap/extension-text-style'
 import Color from '@tiptap/extension-color'
 import Highlight from '@tiptap/extension-highlight'
 import TextAlign from '@tiptap/extension-text-align'
-import ListItem from '@tiptap/extension-list-item'
 import Link from 'next/link'
 import axios from 'axios'
-import commonGetApis from '@/commonapi/Commonapi'
+import commonGetApis, { deleteApi } from '@/commonapi/Commonapi'
 import { toast } from 'react-toastify'
+import { RiDeleteBin5Fill } from "react-icons/ri";
 
 const extensions = [
   StarterKit.configure({
@@ -40,8 +40,17 @@ export default function MyEditor() {
     }
   };
 
-
-  console.log("neersdaer", data)
+  const handleDelTanC = async (id) => {
+    try {
+      const res = await deleteApi(`delete_terms_condition?id=${id}`)
+      if(res.data){
+        setData((prev) => prev.filter((items) => items.terms_and_condition_id !== id))
+        toast.success("Terms and Conditions deleted successfully")
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   useEffect(() => {
     fetchTandC();
@@ -129,21 +138,28 @@ export default function MyEditor() {
           <EditorContent editor={editor} className='' />
         </div>
       </div>
-      <div className='bg-white flex flex-col mt-5 justify-center'>
-        <div className='bg-white flex flex-col mt-5 justify-center'>
+      <div className="bg-white p-6 rounded-md shadow-md mt-6">
+        <div className="flex flex-col space-y-4">
           {Array.isArray(data) && data.length > 0 ? (
             data.map((curElem, idx) => {
               const { Terms_and_Conditions, terms_and_condition_id } = curElem;
               return (
-                <div key={terms_and_condition_id} className='flex flex-row justify-start items-center'>
-                  <h1 className='mt-3'>
-                    <span className='mr-5'>({idx + 1})</span>{Terms_and_Conditions}
-                  </h1>
+                <div
+                  key={terms_and_condition_id}
+                  className="flex items-start justify-between bg-gray-50 p-4 rounded-md border hover:shadow-sm transition-shadow"
+                >
+                  <div className="text-gray-800 text-sm leading-relaxed">
+                    <span className="font-semibold text-gray-600 mr-2">({idx + 1})</span>
+                    {Terms_and_Conditions}
+                  </div>
+                  <button onClick={() => handleDelTanC(terms_and_condition_id)} className="text-gray-500 hover:text-gray-700 transition-colors">
+                    <RiDeleteBin5Fill size={20} />
+                  </button>
                 </div>
               );
             })
           ) : (
-            <p>No terms and conditions available</p>
+            <p className="text-gray-500 text-sm">No terms and conditions available.</p>
           )}
         </div>
       </div>

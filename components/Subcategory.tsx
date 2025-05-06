@@ -146,7 +146,7 @@ const Subcategory = () => {
     formdata.append("subcategory_name", inputs.subcategory);
     formdata.append("fk_category_id", inputs.category);
     formdata.append("status", inputs.status);
-    formdata.append("id", String(editSubcategory?.No)); // this is key!
+    formdata.append("id", String(editSubcategory?.No)); // this is key
 
     if (image) {
       formdata.append("image", image);
@@ -244,11 +244,8 @@ const Subcategory = () => {
   useEffect(() => {
     fetchGetCategory();
     fetchCategories();
-  }, [page]);
-
-  useEffect(() => {
     document.title = "Admin Subcategory";
-  }, []);
+  }, [page]);
 
   console.log("adds123", adds)
   const count = Math.ceil(Number(totalCount) / 10)
@@ -298,7 +295,7 @@ const Subcategory = () => {
                       width={56}
                       height={52}
                       objectFit="cover"
-                      className="rounded"
+                      className="rounded h-[52px] w-[56px]"
                     />
                   </td>
                   <td>{SubCategory_Name}</td>

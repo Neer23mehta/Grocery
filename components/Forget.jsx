@@ -13,7 +13,7 @@ import { toast } from 'react-toastify';
 const Forget = () => {
 
     const initialValues = {
-        email:""
+        email: ""
     }
     const route = useRouter();
     const handleBack = () => {
@@ -21,14 +21,14 @@ const Forget = () => {
     }
 
     const validation = Yup.object({
-        email:Yup.string().email().required("Please Enter Your Email"),
+        email: Yup.string().email().required("Please Enter Your Email"),
     })
 
-    const {values,errors,touched,handleBlur,handleChange,handleSubmit} = useFormik({
-        initialValues:initialValues,
-        validationSchema:validation,
-        onSubmit: (value,action) => {
-            console.log("Form Data",value);
+    const { values, errors, touched, handleBlur, handleChange, handleSubmit } = useFormik({
+        initialValues: initialValues,
+        validationSchema: validation,
+        onSubmit: (value, action) => {
+            console.log("Form Data", value);
             action.resetForm()
         }
     })
@@ -36,15 +36,25 @@ const Forget = () => {
     const handleSubmits = async (e) => {
         e.preventDefault();
 
+        const token = localStorage.getItem("token");
+        const refreshToken = localStorage.getItem("usertoken");
+
+        const formdata = new URLSearchParams();
+        formdata.append("email", values.email);
         try {
-            const res = await axios.post("http://192.168.2.181:3000/admin/forgot_password",{
-                email:values.email
+            const res = await axios.post("http://192.168.2.181:3000/admin/forgot_password", formdata, {
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "Authorizations": token,
+                    "language": "en",
+                    "refresh_token": refreshToken,
+                }
             });
 
-            if(res.status == 200){
+            if (res.status == 200) {
                 route.push("/verify")
             }
-            else{
+            else {
                 toast.error(res.data.message)
             }
         } catch (error) {
@@ -53,8 +63,8 @@ const Forget = () => {
     }
 
     useEffect(() => {
-        document.title="Admin ForgetPassword"
-    },[])
+        document.title = "Admin ForgetPassword"
+    }, [])
     return (
         <div className='relative flex items-center justify-center w-full h-screen bg-black'>
             <Image
@@ -85,26 +95,26 @@ const Forget = () => {
                     alt='symb'
                     className='mt-1 mb-7'
                 />
-               <div className="flex items-center rounded-lg p-2 h-[34px]">
-                           <Image
-                             src={assets.mail}
-                             alt='email'
-                             width={16}
-                             height={16}
-                             className='mr-2 mt-4'
-                           />
-                           <TextField
-                             id="email"
-                             label="Email"
-                             variant="standard"
-                             className='ml-5 px-5 w-full'
-                             value={values.email}
-                             onChange={handleChange}
-                             onBlur={handleBlur}
-                             error={Boolean(errors.email && touched.email)}
-                             helperText={touched.email && errors.email}
-                           />
-                         </div>
+                <div className="flex items-center rounded-lg p-2 h-[34px]">
+                    <Image
+                        src={assets.mail}
+                        alt='email'
+                        width={16}
+                        height={16}
+                        className='mr-2 mt-4'
+                    />
+                    <TextField
+                        id="email"
+                        label="Email"
+                        variant="standard"
+                        className='ml-5 px-5 w-full'
+                        value={values.email}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        error={Boolean(errors.email && touched.email)}
+                        helperText={touched.email && errors.email}
+                    />
+                </div>
                 <button type="submit" className="bg-amber-400 w-[335px] h-[55px] text-[20px] mt-15">Submit</button>
 
                 <span className='mt-5 text-[16px]'><Link href="/">Login</Link></span>

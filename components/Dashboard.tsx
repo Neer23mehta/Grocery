@@ -172,11 +172,11 @@ const Dashboard = () => {
         <h2 className="text-2xl font-bold mb-4 text-black">Trend Over Time</h2>
         <Line
           data={{
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+            labels: ['Users', 'Brands', 'Products', 'Categories', 'Sub-categories', 'Orders', 'Coupons'],
             datasets: [
               {
                 label: 'Orders Trend',
-                data: [5, 10, 6, 12, 8, 15, dashboard.order_count],
+                data: [dashboard.user_count, dashboard.brands_count, dashboard.product_count, dashboard.category_count, dashboard.sub_category_count, dashboard.order_count, dashboard.coupon_count],
                 borderColor: '#3b82f6',
                 backgroundColor: 'rgba(59, 130, 246, 0.2)',
                 tension: 0.3,

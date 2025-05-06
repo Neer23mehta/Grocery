@@ -7,6 +7,11 @@ import { toast } from 'react-toastify'
 import axios from 'axios'
 import { Dialog, DialogActions } from '@mui/material'
 
+type CategoryItem = {
+  category_name: string;
+  image: boolean;
+};
+
 interface Category {
   id: number;
   shop_by_category: {
@@ -14,11 +19,9 @@ interface Category {
     image: string;
     offer: string;
     category_name: string;
+    category: CategoryItem[];
   }[];
-  category: {
-    category_name:string
-    image:boolean
-  }[];
+  category: CategoryItem[];
 }
 
 interface Add {
@@ -122,6 +125,7 @@ const Shopbycategory = () => {
     fetchShopByCategory()
     fetchCategories()
   }, [])
+  console.log("ct",category)
 
   return (
     <div className='w-full'>
@@ -150,16 +154,16 @@ const Shopbycategory = () => {
                     alt="banner"
                     width={120}
                     height={120}
-                    className="object-cover border border-gray-300 rounded-md shadow-sm hover:shadow-md transition-shadow duration-200"
+                    className="object-cover border w-[120px] h-[120px] border-gray-300 rounded-md shadow-sm hover:shadow-md transition-shadow duration-200"
                     unoptimized
                   />
-                  <p className='text-sm mt-2'>{ad.category_name}</p>
+                  <p className='text-sm mt-2'>{ad.category?.category_name}</p>
                   <p className='text-sm text-gray-500'>{ad.offer}</p>
                 </div>
               ))
             )}
             <div
-              className='h-[120px] w-[120px] border border-gray-300 rounded-md flex-shrink-0 flex items-center justify-center cursor-pointer hover:bg-gray-50 transition'
+              className='h-[120px] w-[120px] mb-5 border border-gray-300 rounded-md flex-shrink-0 flex items-center justify-center cursor-pointer hover:bg-gray-50 transition'
               onClick={handleToggleCategory}
             >
               <div className="flex items-center justify-center rounded-lg">
@@ -177,15 +181,15 @@ const Shopbycategory = () => {
       </div>
 
       <Dialog open={newCategory} onClose={() => setNewCategory(false)}>
-        <div className='flex flex-col justify-center items-center'>
-          <div className='mt-1 flex justify-end items-end'>
+      <div className='flex flex-col justify-center px-10 bg-white shadow-md'>
+      <div className='mt-1 flex justify-end items-end '>
             <button onClick={() => setNewCategory(false)} className='text-2xl text-gray-400 hover:text-red-500'>X</button>
           </div>
           <h1 className='text-2xl font-bold'>Add Shop by Category</h1>
 
           <form onSubmit={handleSubmit} className='py-5 flex flex-col items-center'>
             <p className='mt-3 text-start'>Add Image of Category</p>
-            <div className='w-[120px] h-[120px] px-10 py-2 border border-gray-300 rounded-md flex items-center justify-center cursor-pointer hover:bg-gray-50 transition'>
+            <div className='w-[120px] h-[120px] px-5 py-2 border border-gray-300 rounded-md flex items-center justify-center cursor-pointer hover:bg-gray-50 transition'>
               <label htmlFor="thumbnail" className="cursor-pointer text-center text-gray-300">
                 <div className="flex items-center justify-center rounded-lg">
                   <Image

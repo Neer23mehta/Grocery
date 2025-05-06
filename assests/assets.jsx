@@ -52,6 +52,7 @@ import can from "../assests/Group 351/Group 351.png"
 import admin from "../assests/Group 1461/Group 1461.png"
 import backs from "../assests/back-icon/back-icon.png"
 import prepares from "../assests/Ellipse 56 (2)/Ellipse 56.png"
+import errors from "../assests/ers.png"
 
 export const assets = {
     bgimg,
@@ -71,5 +72,5 @@ export const assets = {
     hm,
     brands,
     category,products,order,user,dash,coupon,bimg,eyeClosed,use,mails,location,mobile,ud,dp,prepare,ordernew,ready,timer,
-    done,upload,upimg,basket,scrolloff,scrollon,del,banner,imj,edit,cancel,newimg,add,simg,ad,can,admin,backs,prepares
+    done,upload,upimg,basket,scrolloff,scrollon,del,banner,imj,edit,cancel,newimg,add,simg,ad,can,admin,backs,prepares,errors
 };

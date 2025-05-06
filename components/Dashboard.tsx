@@ -10,6 +10,8 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, ArcElement, T
 import { Skeleton } from '@mui/material'
 import { LineElement, PointElement, LineController } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import { MapContainer, TileLayer } from 'react-leaflet'
+import 'leaflet/dist/leaflet.css'
 
 ChartJS.register(
   CategoryScale,
@@ -44,7 +46,6 @@ const Dashboard = () => {
     user_count: 0,
     order_count: 0,
   });
-
 
   const fetchDashboard = async () => {
     try {
@@ -168,42 +169,61 @@ const Dashboard = () => {
         </div>
 
       </div>
-      <div className="w-full max-w-3xl mt-20 bg-white p-6 rounded-lg shadow-lg">
-        <h2 className="text-2xl font-bold mb-4 text-black">Trend Over Time</h2>
-        <Line
-          data={{
-            labels: ['Users', 'Brands', 'Products', 'Categories', 'Sub-categories', 'Orders', 'Coupons'],
-            datasets: [
-              {
-                label: 'Orders Trend',
-                data: [dashboard.user_count, dashboard.brands_count, dashboard.product_count, dashboard.category_count, dashboard.sub_category_count, dashboard.order_count, dashboard.coupon_count],
-                borderColor: '#3b82f6',
-                backgroundColor: 'rgba(59, 130, 246, 0.2)',
-                tension: 0.3,
-                fill: true,
-              },
-            ],
-          }}
-          options={{
-            responsive: true,
-            plugins: {
-              legend: {
-                display: true,
-                position: 'top',
-              },
-              title: {
-                display: false,
-              },
-            },
-            scales: {
-              y: {
-                beginAtZero: true,
-              },
-            },
-          }}
-        />
-      </div>
 
+      <div className="flex flex-col md:flex-row justify-between items-start w-full max-w-7xl gap-6 mt-20">
+        <div className="w-full md:w-1/2 bg-white p-6 rounded-lg shadow-lg">
+          <h2 className="text-2xl font-bold mb-4 text-black">Trends per Module</h2>
+          <Line
+            data={{
+              labels: ['Users', 'Brands', 'Products', 'Categories', 'Sub-categories', 'Orders', 'Coupons'],
+              datasets: [
+                {
+                  label: 'Orders Trend',
+                  data: [dashboard.user_count, dashboard.brands_count, dashboard.product_count, dashboard.category_count, dashboard.sub_category_count, dashboard.order_count, dashboard.coupon_count],
+                  borderColor: '#3b82f6',
+                  backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                  tension: 0.3,
+                  fill: true,
+                },
+              ],
+            }}
+            options={{
+              responsive: true,
+              plugins: {
+                legend: {
+                  display: true,
+                  position: 'top',
+                },
+                title: {
+                  display: false,
+                },
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                },
+              },
+            }}
+          />
+        </div>
+
+        <div className="w-full md:w-1/2 h-[400px] bg-white p-6 rounded-lg shadow-lg">
+          <h2 className="text-2xl font-bold mb-4 text-black">Map</h2>
+          <div className="h-[calc(100%-2rem)] w-full"> {/* 2rem = mb-4 for h2 */}
+            <MapContainer
+              center={[22.9734, 78.6569]}
+              zoom={5}
+              style={{ height: '100%', width: '100%' }}
+              className="rounded-md overflow-hidden"
+            >
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+              />
+            </MapContainer>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

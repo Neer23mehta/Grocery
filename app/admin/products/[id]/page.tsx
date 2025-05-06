@@ -1,15 +1,12 @@
+'use client'
 import React from 'react'
 import Productadd from '@/components/Productadd'
+import { useParams } from 'next/navigation'
 
-type ParamProp = {
-  params:{
-    id:number
-  }
-}
-
-const Page = ({params}:ParamProp) => {
+const Page = () => {
+  const params = useParams();
   return (
-    <div><Productadd id={params.id}/></div>
+    <div><Productadd id={Number(params.id)}/></div>
   )
 }
 

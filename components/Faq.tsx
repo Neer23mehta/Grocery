@@ -44,7 +44,7 @@ const Faq = () => {
     initialValues: initialValues,
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      addFaqs(values);  // Pass the form values to addFaqs
+      addFaqs(values);
     }
   });
 
@@ -61,17 +61,16 @@ const Faq = () => {
           Authorizations: token,
           language: "en",
           refresh_token: refreshToken,
-          'Content-Type' : 'application/x-www-form-urlencoded'
+          'Content-Type': 'application/x-www-form-urlencoded'
         }
       });
       if (res.data) {
-        fetchFaq(); 
-        setOpen(false); 
+        fetchFaq();
+        setOpen(false);
         toast.success("FAQ Added Successfully");
       }
     } catch (error) {
       console.log(error);
-      // toast.error("Something went Wrong");
     }
   }
 
@@ -94,6 +93,7 @@ const Faq = () => {
 
   useEffect(() => {
     fetchFaq();
+    document.title="Admin faq"
   }, [])
 
   return (
@@ -115,7 +115,7 @@ const Faq = () => {
               <div className='flex flex-row justify-between items-center'>
                 <p className='text-2xl'><span className='mr-5'>({idx + 1})</span>{curVal.Question}</p>
                 <div className='flex flex-row justify-center items-center gap-2.5'>
-                <RiDeleteBin6Line size={25} onClick={() => handleDeleteFaq(curVal.Faq_id)} />
+                  <RiDeleteBin6Line size={25} onClick={() => handleDeleteFaq(curVal.Faq_id)} />
                 </div>
               </div>
               <div className='flex flex-row justify-start items-center mt-5'>

@@ -92,12 +92,15 @@ const Subcategory = () => {
     }
   };
 
-  const handleSubCategoryChange = (e: any) => {
-    const { name, value } = e.target;
+  const handleSubCategoryChange = (
+    e: React.ChangeEvent<HTMLElement>
+  ) => {
+    const target = e.target as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
+    const { name, value } = target;
     setInputs({ ...inputs, [name]: value });
-  };
+  };  
 
-  const handleSubCategorySubmit = async (e: any) => {
+  const handleSubCategorySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const refreshtoken = localStorage.getItem("usertoken");

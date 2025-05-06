@@ -114,7 +114,7 @@ const Shopbybrand = () => {
         <div className='w-full overflow-x-auto'>
           <div className='flex mb-3 gap-5 min-w-max'>
             {brand?.map((curval, index) => (
-              <div key={index} className='flex gap-5'>
+              <div key={index} className='flex gap-2'>
                 {curval.section_brand.map((brandImage, imageIndex) => (
                   <div key={imageIndex} className="relative">
                     <button onClick={() => handleDeleteBrand(brandImage.id)}>
@@ -131,7 +131,7 @@ const Shopbybrand = () => {
                       alt={`brand-${brandImage.id}`}
                       width={110} 
                       height={110} 
-                      className="object-cover rounded-md shadow-sm hover:shadow-md transition-shadow duration-200"
+                      className="object-cover rounded-md h-[110px] w-[110px] border border-gray-300 shadow-sm hover:shadow-md transition-shadow duration-200"
                       onClick={() => fetchGetById(brandImage.id)}
                       unoptimized 
                     />

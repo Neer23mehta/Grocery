@@ -76,9 +76,6 @@ const Orderid = ( {id} : OrderidProps) => {
             console.log(error)
         }
     }
-
-    console.log("123", all)
-
     useEffect(() => {
         document.title = "Admin Orderdetails"
         fetchDetails();

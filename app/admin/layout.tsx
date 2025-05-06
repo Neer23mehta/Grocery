@@ -151,7 +151,7 @@ const Layout = ({ children }: LayoutProps) => {
                     <div className="flex flex-row items-center justify-between w-full relative">
                         <div className="flex justify-start">
                         {
-                           pathname == "/admin/products/addproduct" ? <button onClick={handleBackClick} className="ml-5"><Image src={assets.backs} alt="back" height={25} width={20} /></button> : null
+                           pathname == "/admin/addproduct" ? <button onClick={handleBackClick} className="ml-5"><Image src={assets.backs} alt="back" height={25} width={20} /></button> : null
                         }
                         </div>
                         <div className="flex justify-end items-center">

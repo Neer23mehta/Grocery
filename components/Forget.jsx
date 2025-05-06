@@ -1,5 +1,5 @@
 'use client'
-import React from 'react';
+import React, { useEffect } from 'react';
 import { assets } from "../assests/assets";
 import Image from 'next/image';
 import Link from 'next/link';
@@ -51,6 +51,10 @@ const Forget = () => {
             console.log(error)
         }
     }
+
+    useEffect(() => {
+        document.title="Admin ForgetPassword"
+    },[])
     return (
         <div className='relative flex items-center justify-center w-full h-screen bg-black'>
             <Image

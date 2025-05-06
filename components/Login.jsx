@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { TextField } from '@mui/material';
-import axios from 'axios'; 
+import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 
@@ -48,12 +48,10 @@ const Login = () => {
             headers: {
               Authorizations: `@#Slsjpoq$S1o08#MnbAiB%UVUV&Y*5EU@exS1o!08L9TSlsjpo#FKDFJSDLFJSDLFJSDLFJSDQY `,
               Language: "en",
-              'Content-Type' : 'application/x-www-form-urlencoded',
+              'Content-Type': 'application/x-www-form-urlencoded',
             },
           }
         );
-
-        console.log("responsess",res)
         if (res) {
           toast.success("Login Successfully");
           localStorage.setItem("usertoken", res.data.data.refresh_token);
@@ -71,9 +69,10 @@ const Login = () => {
     }
   });
 
-    useEffect(() => {
-              document.title = "Admin Login";
-        }, []);
+  useEffect(() => {
+    document.title = "Admin Login";
+  }, []);
+  
   return (
     <div className='relative flex items-center justify-center w-full h-screen bg-black'>
       <Image

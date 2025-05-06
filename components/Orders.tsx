@@ -26,13 +26,12 @@ const Orders = () => {
       }
     } catch (error) {
       console.log(error)
-      // toast.error("Something went Wrong")
     }
   }
 
-  console.log("ads121",adds)
   useEffect(() => {
     fetchOrders();
+    document.title="Admin Orders"
   }, [])
 
   const getStatusText = (status: number) => {

@@ -120,17 +120,6 @@ const Productadd = ({ id }: ProductProp) => {
     }
   };
 
-  console.log("uyhvkjhkvjkvb", datas)
-
-  console.log("prroihbecde32c", product)
-  useEffect(() => {
-    fetchCategories();
-    fetchSubCategories();
-    fetchProductId();
-    fetchBrands();
-    document.title = "Admin addproduct";
-  }, []);
-
   const fetchCategories = async () => {
     try {
       const res = await commonGetApis('getcategories?pageNumber=1&pageLimit=10');
@@ -243,8 +232,6 @@ const Productadd = ({ id }: ProductProp) => {
     }
   };
 
-
-
   const handleCancel = () => {
     resetForm();
     setImage(null);
@@ -252,15 +239,18 @@ const Productadd = ({ id }: ProductProp) => {
     setOrderFields([{ title: '', description: '' }]);
   }
 
-  const handleChanges = (e: any, index: number,) => {
-    const { name, value } = e.target;
+  const handleChanges = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    index: number
+  ) => {
+    const { name, value } = e.currentTarget;
     const updatedFields = [...productFields];
     updatedFields[index][name as keyof ProductFormValuess] = value;
     setProductFields(updatedFields);
   };
-
-  const handleOrderInfo = (index: number, e: any) => {
-    const { name, value } = e.target;
+  
+  const handleOrderInfo = (index: number, e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.currentTarget;
     const updatedFields = [...orderFields];
     updatedFields[index][name as keyof Orderinfo] = value;
     setOrderFields(updatedFields);
@@ -280,6 +270,15 @@ const Productadd = ({ id }: ProductProp) => {
     ]);
   };
 
+  useEffect(() => {
+    fetchCategories();
+    fetchSubCategories();
+    fetchProductId();
+    fetchBrands();
+    document.title = "Admin addproduct";
+  }, []);
+
+  console.log("dts",datas)
   return (
     <form onSubmit={handleSubmit} className='bg-white shadow-md p-5 flex flex-col space-y-4'>
       <h1 className='font-bold text-xl'>Add Product</h1>

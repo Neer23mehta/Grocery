@@ -98,7 +98,7 @@ const Banner = () => {
 
         {/* Horizontal Scroll Section */}
         <div className="w-full overflow-x-auto">
-          <div className="flex gap-5 items-center min-w-fit">
+          <div className="flex gap-2 items-center min-w-fit">
             {banner?.map((curval, index) => (
               <div key={index} className='relative flex-shrink-0'>
                 <button onClick={() => handleRemoveBanner(curval.id)}>
@@ -113,9 +113,9 @@ const Banner = () => {
                 <Image
                   src={curval.image} 
                   alt="banner"
-                  width={310}  
-                  height={170}
-                  className="object-cover rounded-md shadow-sm hover:shadow-md transition-shadow duration-200"
+                  width={250}  
+                  height={100}
+                  className="h-[170px] w-[310px] object-cover border border-gray-300 rounded-md shadow-sm hover:shadow-md transition-shadow duration-200"
                 />
               </div>
             ))}

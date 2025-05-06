@@ -209,11 +209,8 @@ const Category = () => {
 
   useEffect(() => {
     fetchCategories();
-  }, [page]);
-
-  useEffect(() => {
     document.title = "Admin Category";
-  }, []);
+  }, [page]);
 
   return (
     <div className="">

@@ -67,13 +67,6 @@ const Coupons = () => {
       console.log("error", error);
     }
   };
-
-  const count = Math.ceil(Number(totalCount) / 1)
-
-  useEffect(() => {
-    fetchGet();
-  }, [page]);
-
   const handleStatusChange = async (id: number, currentStatus: number) => {
     const token = localStorage.getItem("token");
     const refreshtoken = localStorage.getItem("usertoken");
@@ -181,7 +174,6 @@ const Coupons = () => {
         setSubmit(false);
         setIsEditing(false);
         setOpenCoupon(false);
-        // toast.error("Failed to submit coupon");
       }
     } catch (error) {
       console.log("Submit Error:", error);
@@ -211,12 +203,13 @@ const Coupons = () => {
     }
   };
 
-
   useEffect(() => {
+    fetchGet();
     document.title = "Admin Coupon-Management";
-  }, []);
+  }, [page]);
 
-  console.log("coupons", coupon)
+  const count = Math.ceil(Number(totalCount) / 1)
+
   return (
     <div className='p-5'>
       <div className={`flex justify-between items-center ${submit ? "opacity-30" : "opacity-100"}`}>

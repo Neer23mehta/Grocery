@@ -128,11 +128,11 @@ const Shopbycategory = () => {
       <div className='flex flex-col mt-5 px-6 py-4 bg-white shadow-md rounded-md'>
         <div className='flex justify-between items-center mb-4'>
           <h1 className='mt-5 font-bold text-xl'>Shop by Category</h1>
-          <Image src={assets.edit} alt='edit' className='mt-5 ml-4' width={17} height={25} />
+          <Image src={assets.del} alt='edit' className='mt-5 ml-4' width={21} height={25} />
         </div>
 
         <div className="w-full overflow-x-auto">
-          <div className="flex gap-5 items-center min-w-fit">
+          <div className="flex gap-2 items-center min-w-fit">
             {category?.map((curval) =>
               curval.shop_by_category.map((ad, idx) => (
                 <div key={idx} className='relative flex-shrink-0'>
@@ -150,7 +150,7 @@ const Shopbycategory = () => {
                     alt="banner"
                     width={120}
                     height={120}
-                    className="object-cover rounded-md shadow-sm hover:shadow-md transition-shadow duration-200"
+                    className="object-cover border border-gray-300 rounded-md shadow-sm hover:shadow-md transition-shadow duration-200"
                     unoptimized
                   />
                   <p className='text-sm mt-2'>{ad.category_name}</p>

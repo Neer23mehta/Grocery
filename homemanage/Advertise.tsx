@@ -115,9 +115,9 @@ const Advertise: React.FC = () => {
         </div>
 
         <div className="w-full overflow-x-auto">
-          <div className="flex gap-5 items-center min-w-fit">
+          <div className="flex gap-2 items-center min-w-fit">
             {ads?.map((curval, index) => (
-              <div key={index} className="flex gap-5">
+              <div key={index} className="flex gap-2">
                 {curval.section_advertisements.map((ad, idx) => (
                   <div key={ad.id} className="relative">
                     <button
@@ -137,7 +137,7 @@ const Advertise: React.FC = () => {
                       alt={`banner-${idx}`} 
                       width={250}  
                       height={140}
-                      className="mb-5 object-cover rounded-md shadow-sm mt-6 hover:shadow-md transition-shadow duration-200"
+                      className="mb-5 h-[140px] w-[250px] border border-gray-300 object-cover rounded-md shadow-sm mt-6 hover:shadow-md transition-shadow duration-200"
                       onClick={() => fetchGetById(ad.id)} 
                     />
                   </div>

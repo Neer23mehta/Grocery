@@ -191,8 +191,6 @@ const Brand = () => {
         }
       );
 
-      console.log('Status Change Response:', res.data);
-
       if (res.data) {
         toast.success('Status updated successfully');
         fetchCategories();

@@ -37,7 +37,6 @@ const Setpassword = () => {
     setShowPasswords(!showPasswords);
   };
 
-
   const { values, errors, touched, handleBlur, handleChange } = useFormik({
     initialValues: initialValues,
     validationSchema: validationSchema,
@@ -48,7 +47,6 @@ const Setpassword = () => {
 
   const handleSubmits = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     try {
       const res = await axios.post("http://192.168.2.181:3000/admin/reset-password", {
         password: values.password,
@@ -66,7 +64,6 @@ const Setpassword = () => {
       console.error("Error:", error);
     }
   }
-
   return (
     <div className='relative flex items-center justify-center w-full h-screen bg-black'>
       <Image

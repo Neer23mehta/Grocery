@@ -8,9 +8,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 
 const Otp = () => {
-
     const [otp, setOtp] = useState("")
-
     const route = useRouter();
 
     const handlesubmits = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -28,10 +26,8 @@ const Otp = () => {
             else {
                 toast.error("invalid otp")
             }
-
-
-
-        } catch (error) {
+        } 
+        catch (error) {
             console.log(error)
         }
     }

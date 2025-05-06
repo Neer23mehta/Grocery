@@ -36,7 +36,6 @@ const Products = () => {
   const route = useRouter();
 
   const fetchCategories = async () => {
-
     try {
       const res = await commonGetApis(`get_products?pageNumber=${page}&pageLimit=10`);
       setTotalCount(res.data.Total_Count)
@@ -46,18 +45,10 @@ const Products = () => {
     }
   };
 
-  console.log("pr123", adds)
   const count = Math.ceil(Number(totalCount) / 1)
 
-  useEffect(() => {
-    fetchCategories();
-  }, [page]);
-
-  useEffect(() => {
-    document.title = "Admin Products"
-  }, [])
   const handleAddProduct = () => {
-    route.push("/admin/products/addproduct");
+    route.push("/admin/addproduct");
   };
 
   const handleStatusChange = async (id: number, currentStatus: number) => {
@@ -118,9 +109,6 @@ const Products = () => {
       toast.error("Something went Wrong")
     }
   };
-
-  console.log("products121", productIdData)
-
   const handleIdDelete = async (id: number) => {
     try {
       const res = await deleteApi(`deleteproductvariation?id=${id}`)
@@ -132,7 +120,12 @@ const Products = () => {
       console.log(error)
     }
   }
-  console.log("proid", productIdData)
+  useEffect(() => {
+    fetchCategories();
+    document.title = "Admin Products"
+  }, [page]);
+
+  console.log("priddata",productIdData)
   return (
     <div className="">
       <div className="flex flex-row justify-between items-center">

@@ -14,8 +14,7 @@ const Logout = () => {
     localStorage.removeItem('renderedSections');
     
     route.push("/");
-  }
-  
+  }  
 
   const handleLogoutPage = () => {
     setLogout(!logout)

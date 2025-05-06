@@ -1,15 +1,15 @@
 'use client'
-
 import React from 'react'
 import { useParams } from 'next/navigation'
-import Orderid from '@/components/Orderid'
+import Productadd from '@/components/Productadd'
 
 const Page = () => {
   const params = useParams()
+  const id = Number(params.id)
 
   return (
     <div>
-      <Orderid id={Number(params.id)} />
+      <Productadd id={id} />
     </div>
   )
 }

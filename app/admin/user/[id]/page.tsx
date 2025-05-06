@@ -1,15 +1,13 @@
+'use client'
 import React from 'react'
 import Userid from '@/Grocery/Userid'
+import { useParams } from 'next/navigation'
 
-type Pageprop = {
-  params : {
-    id:number
-  }
-}
 
-const Page = ({params}:Pageprop) => {
+const Page = () => {
+  const params = useParams();
   return (
-    <div><Userid id={params.id}/></div>
+    <div><Userid id={Number(params.id)}/></div>
   )
 }
 

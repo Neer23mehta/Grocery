@@ -1,13 +1,11 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import { TextField, Dialog, DialogActions, DialogContent, Stack, Pagination } from '@mui/material';
-import axios from 'axios';
 import { MdEdit } from "react-icons/md";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import Image from 'next/image';
-
 import { toast } from 'react-toastify';
-import commonGetApis from '@/commonapi/Commonapi';
+import commonGetApis, { commonPostApis, deleteApi } from '@/commonapi/Commonapi';
 import { assets } from '@/assests/assets';
 import Link from 'next/link';
 
@@ -38,55 +36,32 @@ const Subcategory = () => {
   });
 
   const fetchCategories = async () => {
-    const refreshtoken = localStorage.getItem("usertoken");
-    const token = localStorage.getItem("token");
 
     try {
-      const res = await axios.get(`http://192.168.2.181:3000/admin/get_subcategories?pageNumber=${page}&pageLimit=10`, {
-        headers: {
-          Authorizations: token,
-          language: "en",
-          refresh_token: refreshtoken,
-        },
-      });
-      setTotalCount(res?.data?.data?.Total_Count);
-      setAdds(res?.data?.data?.result || []);
+      const res = await commonGetApis(`get_subcategories?pageNumber=${page}&pageLimit=10&search=${input}`);
+      setTotalCount(res?.data?.Total_Count);
+      setAdds(res?.data?.result || []);
     } catch (error) {
       console.error("Error fetching subcategories:", error);
     }
   };
 
   const handleSubCategoryDelete = async (id: number) => {
-    const refreshtoken = localStorage.getItem("usertoken");
-    const token = localStorage.getItem("token");
-
     try {
-      await axios.delete(`http://192.168.2.181:3000/admin/delete_subcategory?id=${id}`, {
-        headers: {
-          Authorizations: token,
-          language: "en",
-          refresh_token: refreshtoken,
-        },
-      });
+      const res = await deleteApi(`delete_subcategory?id=${id}`);
       setAdds(prev => prev.filter(items => items.No !== id));
+      if(res.data){
+        toast.success("Deleted Successfully")
+      }
     } catch (error) {
       console.error("Error deleting subcategory:", error);
     }
   };
 
   const fetchGetCategory = async () => {
-    const refreshtoken = localStorage.getItem('usertoken');
-    const token = localStorage.getItem('token');
-
     try {
-      const res = await axios.get('http://192.168.2.181:3000/admin/getcategories?pageNumber=1&pageLimit=10', {
-        headers: {
-          Authorizations: token,
-          language: 'en',
-          refresh_token: refreshtoken,
-        },
-      });
-      setBrand(res.data.data.result || []);
+      const res = await commonGetApis('getcategories?pageNumber=1&pageLimit=10');
+      setBrand(res.data.result || []);
     } catch (error) {
       console.log(error);
     }
@@ -103,9 +78,6 @@ const Subcategory = () => {
   const handleSubCategorySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const refreshtoken = localStorage.getItem("usertoken");
-    const token = localStorage.getItem("token");
-
     const formdata = new FormData();
     formdata.append("subcategory_name", inputs.subcategory);
     formdata.append("fk_category_id", inputs.category);
@@ -115,15 +87,8 @@ const Subcategory = () => {
     }
 
     try {
-      const res = await axios.post("http://192.168.2.181:3000/admin/add_subCategory", formdata, {
-        headers: {
-          Authorizations: token,
-          language: 'en',
-          refresh_token: refreshtoken,
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      if (res.data.message == "SUCCESS") {
+      const res = await commonPostApis("add_subCategory", formdata);
+      if (res.data) {
         toast.success("Successfully Added");
       } else {
         toast.error("Failed To Add");
@@ -139,30 +104,20 @@ const Subcategory = () => {
   const handleSubCategoryUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const refreshtoken = localStorage.getItem("usertoken");
-    const token = localStorage.getItem("token");
-
     const formdata = new FormData();
     formdata.append("subcategory_name", inputs.subcategory);
     formdata.append("fk_category_id", inputs.category);
     formdata.append("status", inputs.status);
-    formdata.append("id", String(editSubcategory?.No)); // this is key
+    formdata.append("id", String(editSubcategory?.No)); 
 
     if (image) {
       formdata.append("image", image);
     }
 
     try {
-      const res = await axios.post("http://192.168.2.181:3000/admin/add_subCategory", formdata, {
-        headers: {
-          Authorizations: token,
-          language: "en",
-          refresh_token: refreshtoken,
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const res = await commonPostApis("add_subCategory", formdata);
 
-      if (res.data.message === "SUCCESS") {
+      if (res.data) {
         toast.success("Successfully updated subcategory");
         setEditSub(false);
         fetchCategories();
@@ -181,9 +136,6 @@ const Subcategory = () => {
   // }
 
   const handleStatusChange = async (id: number, currentStatus: number) => {
-    const refreshtoken = localStorage.getItem("usertoken");
-    const token = localStorage.getItem("token");
-
     const newStatus = currentStatus === 1 ? 0 : 1;
 
     const formData = new URLSearchParams();
@@ -191,20 +143,7 @@ const Subcategory = () => {
     formData.append("status", String(newStatus));
 
     try {
-      const res = await axios.post(
-        "http://192.168.2.181:3000/admin/status_change2",
-        formData,
-        {
-          headers: {
-            Authorizations: token,
-            language: "en",
-            refresh_token: refreshtoken,
-          },
-        }
-      );
-
-      console.log("Status Change Response:", res.data);
-
+      const res = await commonPostApis("status_change2",formData,);
       if (res.data) {
         toast.success("Status updated successfully");
         fetchCategories();
@@ -216,8 +155,6 @@ const Subcategory = () => {
       toast.error("Something went wrong");
     }
   };
-
-
 
   const handleEditButton = async (No: number) => {
     try {
@@ -235,8 +172,6 @@ const Subcategory = () => {
       console.log(error);
     }
   };
-  console.log("ids", editSubcategory)
-
   const toggleStatus = () => {
     setStatus(!status)
   }
@@ -245,11 +180,9 @@ const Subcategory = () => {
     fetchGetCategory();
     fetchCategories();
     document.title = "Admin Subcategory";
-  }, [page]);
+  }, [input,page]);
 
-  console.log("adds123", adds)
   const count = Math.ceil(Number(totalCount) / 10)
-  console.log("count123", count)
   return (
     <div>
       <div className="flex flex-row justify-between items-center">
@@ -266,7 +199,7 @@ const Subcategory = () => {
             onChange={(e) => setInput(e.target.value)}
             className="ml-50"
           />
-          <button className="px-2 py-2 bg-amber-300 ml-5 w-40 h-13" onClick={() => setOpenModal(true)}>Add Sub Category</button>
+          <button className="px-2 py-2 bg-amber-300 ml-5 w-40 h-13 cursor-pointer" onClick={() => setOpenModal(true)}>Add Sub Category</button>
         </div>
       </div>
 
@@ -295,12 +228,12 @@ const Subcategory = () => {
                       width={56}
                       height={52}
                       objectFit="cover"
-                      className="rounded h-[52px] w-[56px]"
+                      className="rounded h-[52px] w-[56px] cursor-zoom-in"
                     />
                   </td>
                   <td>{SubCategory_Name}</td>
                   <td>{Category_Name}</td>
-                  <td onClick={() => handleStatusChange(No, Status)} className='px-2 py-2'>
+                  <td onClick={() => handleStatusChange(No, Status)} className='px-2 py-2 cursor-pointer'>
                     <div>
                       {Status === 1 ? (
                         <Image src={assets.scrollon} alt='In-Stock' />
@@ -310,8 +243,8 @@ const Subcategory = () => {
                     </div>
                   </td>
                   <td>
-                    <button onClick={() => handleEditButton(No)}><MdEdit size={18} /></button>
-                    <button className="ml-5" onClick={() => handleSubCategoryDelete(No)}><RiDeleteBin5Fill size={18} /></button>
+                    <button onClick={() => handleEditButton(No)} className='cursor-pointer'><MdEdit size={18} /></button>
+                    <button className="ml-5 cursor-pointer" onClick={() => handleSubCategoryDelete(No)}><RiDeleteBin5Fill size={18} /></button>
                   </td>
                 </tr>
               ))

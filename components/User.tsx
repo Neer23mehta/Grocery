@@ -1,8 +1,7 @@
 'use client'
 import { assets } from '@/assests/assets';
-import commonGetApis from '@/commonapi/Commonapi';
+import commonGetApis, { commonPostApis } from '@/commonapi/Commonapi';
 import { Pagination, Stack, TextField } from '@mui/material'
-import axios from 'axios';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
@@ -32,15 +31,7 @@ const User = () => {
         }
     }
 
-    console.log("use12343",users)
     const handleStatusChange = async (id:number, currentStatus:number) => {
-        const token = localStorage.getItem("token");
-        const refreshToken = localStorage.getItem("usertoken");
-    
-        if (!token || !refreshToken) {
-          toast.error("Missing authentication tokens.");
-          return;
-        }
     
         const newStatus = currentStatus === 1 ? 0 : 1;
     
@@ -49,18 +40,7 @@ const User = () => {
         formData.append("status", String(newStatus));
     
         try {
-          const res = await axios.post(
-            "http://192.168.2.181:3000/admin/updateuserstatus",
-            formData,
-            {
-              headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-                "Authorizations": token,
-                "language": "en",
-                "refresh_token": refreshToken,
-              },
-            }
-          );
+          const res = await commonPostApis("updateuserstatus",formData,);
     
           if (res.data) {
             toast.success("Status updated successfully");
@@ -76,14 +56,10 @@ const User = () => {
 
     useEffect(() => {
         fetchGet();
-    }, [page])
-
-    useEffect(() => {
         document.title = "Admin User";
-    }, []);
+    }, [page])
     
-    const count = Math.ceil(Number(totalCount) / 1)
-    console.log("users123", users)
+    const count = Math.ceil(Number(totalCount) / 10)
     return (
         <div className=''>
             <div className='flex flex-row justify-between items-center'>
@@ -114,7 +90,7 @@ const User = () => {
                                         <td className='px-4 py-3'><Link href={`/admin/user/${User_id}`}>{FullName}</Link></td>
                                         <td className='px-4 py-3'>{Mobile_no}</td>
                                         <td className='px-4 py-3'>{Email}</td>
-                                        <td onClick={() => handleStatusChange(User_id, Status)} className='px-2 py-2'>
+                                        <td onClick={() => handleStatusChange(User_id, Status)} className='px-2 py-2 cursor-pointer'>
                                             {
                                                 Status == 1 ? <span><Image src={assets.scrollon} alt='ON' /></span> : <span><Image src={assets.scrolloff} alt='OFF' /></span>
                                             }

@@ -4,9 +4,8 @@ import { assets } from '@/assests/assets'
 import Image from 'next/image'
 import { MdEdit } from "react-icons/md";
 import { toast } from 'react-toastify';
-import commonGetApis, { deleteApi } from '@/commonapi/Commonapi';
+import commonGetApis, { commonPostApis, deleteApi } from '@/commonapi/Commonapi';
 import { Dialog, DialogActions } from '@mui/material';
-import axios from 'axios';
 
 interface Brands {
   Image: string;
@@ -57,22 +56,13 @@ const Shopbybrand = () => {
   };
 
   const handleNewBrand = async () => {
-    const refreshtoken = localStorage.getItem('usertoken');
-    const token = localStorage.getItem('token');
     const formdata = new FormData();
 
     formdata.append("fk_section_id", "3");
     if (image) formdata.append("image", image);
 
     try {
-      const res = await axios.post("http://192.168.2.181:3000/admin/add_home_management", formdata, {
-        headers: {
-          Authorizations: token!,
-          language: 'en',
-          refresh_token: refreshtoken!,
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const res = await commonPostApis("add_home_management", formdata);
       if (res.data) {
         toast.success("Successfully Added");
         fetchGetBrands();

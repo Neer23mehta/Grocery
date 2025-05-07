@@ -111,7 +111,7 @@ const Page = () => {
           <p className='text-gray-500 mt-2'><Link href={`/admin/dashboard`}>Dashboard</Link> <span className='ml-2.5'>{`>`}</span><span className='text-black ml-2.5'>Home Management</span> </p>
         </div>
         <div className='flex flex-col justify-end items-end'>
-          <button className='bg-amber-300 px-5 py-2 font-bold' onClick={toggleSection}>Add Section</button>
+          <button className='bg-amber-300 px-5 py-2 font-bold cursor-pointer' onClick={toggleSection}>Add Section</button>
         </div>
       </div>
 
@@ -143,7 +143,7 @@ const Page = () => {
                 </div>
               </div>
               <DialogActions>
-                <div className='flex justify-center items-center mt-5'>
+                <div className='flex justify-center items-center mt-5 cursor-pointer'>
                   <button type='submit' className='px-6 py-2 bg-amber-400 font-bold'>Submit</button>
                 </div>
               </DialogActions>

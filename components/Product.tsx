@@ -7,7 +7,7 @@ import { RiDeleteBin5Fill } from "react-icons/ri";
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { assets } from '@/assests/assets';
-import commonGetApis, { deleteApi } from '@/commonapi/Commonapi';
+import commonGetApis, { commonPostApis, deleteApi } from '@/commonapi/Commonapi';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
 
@@ -37,7 +37,7 @@ const Products = () => {
 
   const fetchCategories = async () => {
     try {
-      const res = await commonGetApis(`get_products?pageNumber=${page}&pageLimit=10`);
+      const res = await commonGetApis(`get_products?pageNumber=${page}&pageLimit=10&search=${input}`);
       setTotalCount(res.data.Total_Count)
       setAdds(res?.data?.result || []);
     } catch (error) {
@@ -45,21 +45,13 @@ const Products = () => {
     }
   };
 
-  const count = Math.ceil(Number(totalCount) / 1)
+  const count = Math.ceil(Number(totalCount) / 10)
 
   const handleAddProduct = () => {
     route.push("/admin/addproduct");
   };
 
   const handleStatusChange = async (id: number, currentStatus: number) => {
-    const token = localStorage.getItem('token');
-    const refreshToken = localStorage.getItem('usertoken');
-
-    if (!token || !refreshToken) {
-      toast.error("Missing authentication tokens.");
-      return;
-    }
-
     const newStatus = currentStatus === 1 ? 0 : 1;
 
     setAdds((prevAdds) =>
@@ -73,18 +65,7 @@ const Products = () => {
     formData.append('stock_status', String(newStatus));
 
     try {
-      const res = await axios.post(
-        "http://192.168.2.181:3000/admin/status_change",
-        formData,
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Language': 'en',
-            'Authorizations': token,
-            'refresh_token': refreshToken,
-          },
-        }
-      );
+      const res = await commonPostApis("status_change",formData);
 
       if (res.data) {
         toast.success("Stock status updated successfully");
@@ -123,9 +104,8 @@ const Products = () => {
   useEffect(() => {
     fetchCategories();
     document.title = "Admin Products"
-  }, [page]);
+  }, [input,page]);
 
-  console.log("priddata",productIdData)
   return (
     <div className="">
       <div className="flex flex-row justify-between items-center">
@@ -142,7 +122,7 @@ const Products = () => {
             onChange={(e) => setInput(e.target.value)}
             className="ml-12 bg-white"
           />
-          <button className="px-3 font-bold py-2 bg-amber-300 ml-5 w-auto h-13 " onClick={handleAddProduct}>Add Product</button>
+          <button className="px-3 font-bold py-2 bg-amber-300 ml-5 w-auto h-13 cursor-pointer" onClick={handleAddProduct}>Add Product</button>
         </div>
       </div>
 
@@ -183,7 +163,7 @@ const Products = () => {
                     <td className='px-2 py-2'>{Description}</td>
                     <td className='px-2 py-2'>{Variation}</td>
                     <td className='px-2 py-2'>{Price}</td>
-                    <td onClick={() => handleStatusChange(Product_var_id, Stock_Status)} className='px-2 py-2'>
+                    <td onClick={() => handleStatusChange(Product_var_id, Stock_Status)} className='px-2 py-2 cursor-pointer'>
                       <div>
                         {Stock_Status === 1 ? (
                           <Image src={assets.scrollon} alt='In-Stock' />
@@ -194,7 +174,7 @@ const Products = () => {
                     </td>
                     <td>
                       <button onClick={() => handleProductEdit(Product_var_id)} className='ml-2 text-gray-500'> <Link href={`/admin/products/${Product_var_id}`}><MdEdit /></Link></button>
-                      <button onClick={() => handleIdDelete(Product_var_id)} className='ml-3 text-gray-500'><RiDeleteBin5Fill /></button>
+                      <button onClick={() => handleIdDelete(Product_var_id)} className='ml-3 text-gray-500 cursor-pointer'><RiDeleteBin5Fill /></button>
                     </td>
                   </tr>
                 );

@@ -5,8 +5,7 @@ import Image from 'next/image';
 import { MdEdit } from "react-icons/md";
 import { Dialog, DialogActions } from '@mui/material';
 import { toast } from 'react-toastify';
-import commonGetApis, { deleteApi } from '@/commonapi/Commonapi';
-import axios from 'axios';
+import commonGetApis, { commonPostApis, deleteApi } from '@/commonapi/Commonapi';
 
 interface Advertise {
   image: string;
@@ -41,22 +40,13 @@ const Advertise: React.FC = () => {
   };
 
   const handleNewAdvertise = async () => {
-    const refreshtoken = localStorage.getItem('usertoken');
-    const token = localStorage.getItem('token');
 
     const formdata = new FormData();
     formdata.append("fk_section_id", "4");
     if (image) formdata.append("image", image);
 
     try {
-      const res = await axios.post("http://192.168.2.181:3000/admin/add_home_management", formdata, {
-        headers: {
-          Authorizations: token!,
-          language: 'en',
-          refresh_token: refreshtoken!,
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const res = await commonPostApis("add_home_management", formdata);
 
       if (res.data) {
         toast.success("Successfully Added");
@@ -145,7 +135,7 @@ const Advertise: React.FC = () => {
               </div>
             ))}
             <div className="flex justify-center items-center w-[250px] mb-5 h-[140px] border border-gray-300 mt-6 rounded-md">
-              <Image src={assets.add} alt="banner" onClick={handleToggleAdd} />
+              <Image src={assets.add} alt="banner" onClick={handleToggleAdd} className='cursor-pointer'/>
             </div>
           </div>
         </div>

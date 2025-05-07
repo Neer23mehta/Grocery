@@ -5,7 +5,7 @@ import React from 'react'
 
 const Page = () => {
   return (
-    <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
+    <div style={{ width: '100vw', height: '100vh' }}>
       <Image
         src={assets.errors.src}
         alt="Full screen error image"

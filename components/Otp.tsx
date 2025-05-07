@@ -15,7 +15,7 @@ const Otp = () => {
         e.preventDefault();
 
         try {
-            const res = await axios.post("http://192.168.2.181:3000/admin/otp-verify", {
+            const res = await axios.post("http://192.168.2.180:3000/admin/otp-verify", {
                 otp
             });
 

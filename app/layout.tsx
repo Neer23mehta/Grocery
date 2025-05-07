@@ -35,9 +35,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${poppins.variable} ${geistMono.variable} ${geistSans.variable}antialiased`}
-      >
+      <body className={`${poppins.variable} ${geistMono.variable} ${geistSans.variable}antialiased`}>
         <ToastContainer theme="dark"/>
         {children}
       </body>

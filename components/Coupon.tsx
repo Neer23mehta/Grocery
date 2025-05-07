@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import { assets } from '@/assests/assets';
-import commonGetApis, { deleteApi } from '@/commonapi/Commonapi';
+import commonGetApis, { commonPostApis, deleteApi } from '@/commonapi/Commonapi';
 import { Dialog, DialogActions, DialogContent, Pagination, Stack } from '@mui/material';
 import axios from 'axios';
 import Image from 'next/image';
@@ -77,17 +77,7 @@ const Coupons = () => {
     formData.append("status", String(newStatus));
 
     try {
-      const res = await axios.post(
-        "http://192.168.2.181:3000/admin/status_change4",
-        formData,
-        {
-          headers: {
-            Authorizations: token || "",
-            language: "en",
-            refresh_token: refreshtoken || "",
-          },
-        }
-      );
+      const res = await commonPostApis("status_change4",formData);
 
       if (res.data) {
         toast.success("Status updated successfully");
@@ -138,8 +128,6 @@ const Coupons = () => {
     touched
   } = formik;
   const handleCouponSubmit = async () => {
-    const token = localStorage.getItem("token");
-    const refreshToken = localStorage.getItem("usertoken");
 
     const formdata = new URLSearchParams();
     formdata.append("coupon_name", formik.values.name);
@@ -154,18 +142,7 @@ const Coupons = () => {
     }
 
     try {
-      const res = await axios.post(
-        "http://192.168.2.181:3000/admin/add_coupon",
-        formdata,
-        {
-          headers: {
-            Authorizations: token || "",
-            language: "en",
-            refresh_token: refreshToken || "",
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        }
-      );
+      const res = await commonPostApis("add_coupon",formdata);
 
       if (res.data) {
         toast.success(isEditing ? "Coupon updated successfully!" : "Coupon added successfully!");
@@ -208,7 +185,7 @@ const Coupons = () => {
     document.title = "Admin Coupon-Management";
   }, [page]);
 
-  const count = Math.ceil(Number(totalCount) / 1)
+  const count = Math.ceil(Number(totalCount) / 10)
 
   return (
     <div className='p-5'>
@@ -217,10 +194,9 @@ const Coupons = () => {
           <h1 className='text-3xl font-bold'>Coupon Management</h1>
           <p className='text-gray-500 mt-2'><Link href={`/admin/dashboard`}>Dashboard</Link> <span className='ml-2.5'>{`>`}</span><span className='text-black ml-2.5'>Coupon Management</span> </p>
         </div>
-        <button onClick={handleAddSubmit} className='py-2 px-7 bg-amber-300 font-bold'>Add Coupon</button>
+        <button onClick={handleAddSubmit} className='py-2 px-7 bg-amber-300 font-bold cursor-pointer'>Add Coupon</button>
       </div>
 
-      {/* Table */}
       <table className={`min-w-full bg-white shadow-md rounded-lg mt-5 ${submit ? "opacity-30" : "opacity-100"}`}>
         <thead>
           <tr>
@@ -247,8 +223,8 @@ const Coupons = () => {
                 <Image src={Status === 1 ? assets.scrollon : assets.scrolloff} alt='status' />
               </td>
               <td className='px-4 py-4'>
-                <button onClick={() => handleEditById(No)} className="mr-3"><MdEdit size={18} /></button>
-                <button onClick={() => handleCouponDelete(No)}><RiDeleteBin5Fill size={18} /></button>
+                <button onClick={() => handleEditById(No)} className="mr-3 cursor-pointer"><MdEdit size={18} /></button>
+                <button onClick={() => handleCouponDelete(No)} className='cursor-pointer'><RiDeleteBin5Fill size={18} /></button>
               </td>
             </tr>
           ))}
@@ -476,7 +452,7 @@ const Coupons = () => {
                   </div>
 
                   <DialogActions>
-                    <button type='submit' className='w-full py-2 bg-amber-400 font-bold'>Submit</button>
+                    <button type='submit' className='w-full py-2 bg-amber-400 font-bold cursor-pointer'>Submit</button>
                   </DialogActions>
                 </form>
               )}

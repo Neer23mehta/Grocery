@@ -1,12 +1,11 @@
 'use client'
-import { Dialog, DialogActions, DialogContent, Pagination, Stack, TextField } from '@mui/material';
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import { Dialog, DialogActions, DialogContent, Pagination, Stack, TextField } from '@mui/material';
 import { MdEdit } from "react-icons/md";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import Image from 'next/image';
 import { toast } from 'react-toastify';
-import commonGetApis, { deleteApi } from '@/commonapi/Commonapi';
+import commonGetApis, { commonPostApis, deleteApi } from '@/commonapi/Commonapi';
 import { assets } from '@/assests/assets';
 import Link from 'next/link';
 
@@ -44,7 +43,7 @@ const Category = () => {
 
   const fetchCategories = async () => {
     try {
-      const res = await commonGetApis(`getcategories?pageNumber=${page}&pageLimit=10`);
+      const res = await commonGetApis(`getcategories?pageNumber=${page}&pageLimit=10&search=${input}`);
       setTotalCount(res?.data?.Total_Count || 0);
       const result = res?.data?.result || [];
       setAdds(result);
@@ -53,12 +52,10 @@ const Category = () => {
     }
   };
 
-  const count = Math.ceil(totalCount / 10);  // Assuming 10 items per page
+  const count = Math.ceil(totalCount / 10);  
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const refreshtoken = localStorage.getItem("usertoken");
-    const token = localStorage.getItem("token");
 
     const formdata = new FormData();
     formdata.append("category_name", inputs.category);
@@ -68,14 +65,7 @@ const Category = () => {
     }
 
     try {
-      const res = await axios.post("http://192.168.2.181:3000/admin/addcategory", formdata, {
-        headers: {
-          Authorizations: token,
-          language: "en",
-          refresh_token: refreshtoken,
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      });
+      const res = await commonPostApis("addcategory", formdata);
       if (res.data) {
         toast.success("Added Successfully");
         fetchCategories();
@@ -92,8 +82,6 @@ const Category = () => {
 
   const handleIdDataSubmit = async (e: React.FormEvent<HTMLFormElement>, id: number) => {
     e.preventDefault();
-    const token = localStorage.getItem("token");
-    const refreshToken = localStorage.getItem("usertoken");
 
     const formdata = new FormData();
     formdata.append("id", String(id));
@@ -104,14 +92,7 @@ const Category = () => {
     }
 
     try {
-      const res = await axios.post("http://192.168.2.181:3000/admin/addcategory", formdata, {
-        headers: {
-          "Authorizations": token,
-          "language": "en",
-          "refresh_token": refreshToken,
-          "Content-Type": "application/x-www-form-urlencoded"
-        }
-      });
+      const res = await commonPostApis("addcategory", formdata);
 
       if (res.data) {
         toast.success("Category updated successfully");
@@ -139,13 +120,6 @@ const Category = () => {
   };
 
   const handleStatusChange = async (id: number, currentStatus: number) => {
-    const token = localStorage.getItem("token");
-    const refreshToken = localStorage.getItem("usertoken");
-
-    if (!token || !refreshToken) {
-      toast.error("Missing authentication tokens.");
-      return;
-    }
 
     const newStatus = currentStatus === 1 ? 0 : 1;
 
@@ -154,18 +128,7 @@ const Category = () => {
     formData.append("status", String(newStatus));
 
     try {
-      const res = await axios.post(
-        "http://192.168.2.181:3000/admin/status_change1",
-        formData,
-        {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            "Authorizations": token,
-            "language": "en",
-            "refresh_token": refreshToken,
-          },
-        }
-      );
+      const res = await commonPostApis("status_change1",formData,);
 
       if (res.data) {
         toast.success("Status updated successfully");
@@ -208,9 +171,12 @@ const Category = () => {
   };
 
   useEffect(() => {
-    fetchCategories();
-    document.title = "Admin Category";
-  }, [page]);
+    const delayDebounce = setTimeout(() => {
+      fetchCategories();
+    }, 500); 
+    return () => clearTimeout(delayDebounce);
+  }, [input, page]);
+
 
   return (
     <div className="">
@@ -231,7 +197,7 @@ const Category = () => {
             onChange={(e) => setInput(e.target.value)}
             className="ml-12"
           />
-          <button className="px-2 py-2 bg-amber-300 ml-5 w-40 h-13" onClick={() => setAddCategory(true)}>Add Category</button>
+          <button className="px-2 py-2 bg-amber-300 ml-5 w-40 h-13 cursor-pointer" onClick={() => setAddCategory(true)}>Add Category</button>
         </div>
       </div>
 
@@ -279,8 +245,8 @@ const Category = () => {
                         )}
                       </td>
                       <td>
-                        <button onClick={() => handleEditButton(No)} className="ml-2 text-gray-600 rounded"><MdEdit size={18} /></button>
-                        <button onClick={() => handleDelete(No)} className="ml-5 text-gray-600 rounded"><RiDeleteBin5Fill size={18} /></button>
+                        <button onClick={() => handleEditButton(No)} className="ml-2 text-gray-600 rounded cursor-pointer"><MdEdit size={18} /></button>
+                        <button onClick={() => handleDelete(No)} className="ml-5 text-gray-600 rounded cursor-pointer"><RiDeleteBin5Fill size={18} /></button>
                       </td>
                     </tr>
                   );
@@ -378,7 +344,7 @@ const Category = () => {
                   <div className='flex justify-end ml-25'>
                     <button
                       type="button"
-                      className='text-gray-500 h-9 mb-9 text-2xl flex justify-end right-0 left-20 hover:text-red-700'
+                      className='text-gray-500 cursor-pointer h-9 mb-9 text-2xl flex justify-end right-0 left-20 hover:text-red-700'
                       onClick={() => setToggleCategory(false)}
                     >
                       X
@@ -447,7 +413,7 @@ const Category = () => {
                 </div>
 
                 <DialogActions>
-                  <button type='submit' className='bg-amber-300 w-xs h-12 mb-8 mr-2.5'>Save</button>
+                  <button type='submit' className='bg-amber-300 w-xs h-12 mb-8 mr-2.5 cursor-pointer'>Save</button>
                 </DialogActions>
               </form>
             )}

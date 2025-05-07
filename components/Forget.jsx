@@ -7,8 +7,8 @@ import { useRouter } from 'next/navigation';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { TextField } from '@mui/material';
-import axios from 'axios';
 import { toast } from 'react-toastify';
+import { commonPostApis } from '@/commonapi/Commonapi';
 
 const Forget = () => {
 
@@ -36,20 +36,10 @@ const Forget = () => {
     const handleSubmits = async (e) => {
         e.preventDefault();
 
-        const token = localStorage.getItem("token");
-        const refreshToken = localStorage.getItem("usertoken");
-
         const formdata = new URLSearchParams();
         formdata.append("email", values.email);
         try {
-            const res = await axios.post("http://192.168.2.181:3000/admin/forgot_password", formdata, {
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                    "Authorizations": token,
-                    "language": "en",
-                    "refresh_token": refreshToken,
-                }
-            });
+            const res = await commonPostApis("forgot_password", formdata);
 
             if (res.status == 200) {
                 route.push("/verify")

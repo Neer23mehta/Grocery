@@ -6,7 +6,7 @@ import { useFormik } from 'formik'
 import Image from 'next/image'
 import * as Yup from 'yup'
 import axios from 'axios'
-import commonGetApis from '@/commonapi/Commonapi'
+import commonGetApis, { commonPostApis } from '@/commonapi/Commonapi'
 import { toast } from 'react-toastify'
 
 interface ProductFormValues {
@@ -208,18 +208,8 @@ const Productadd = ({ id }: ProductProp) => {
       formdata.append(`products[${index}][description]`, info.description || 'No description');
     });
 
-    const token = localStorage.getItem('token');
-    const refreshToken = localStorage.getItem('usertoken');
-
     try {
-      const url = 'http://192.168.2.181:3000/admin/add_product';
-      const res = await axios.post(url, formdata, {
-        headers: {
-          Authorizations: token || '',
-          language: "en",
-          refresh_token: refreshToken || ''
-        }
-      });
+      const res = await commonPostApis("add_product", formdata);
 
       if (res.data) {
         toast.success(isEditMode ? "Product Updated Successfully" : "Product Added Successfully");
@@ -323,7 +313,7 @@ const Productadd = ({ id }: ProductProp) => {
       <div>
         <div className='flex w-full justify-between items-center'>
           <h1 className='text-xl font-bold'>Product Details</h1>
-          <Image src={assets.add} alt='Add' onClick={handleAddFields} />
+          <Image src={assets.add} alt='Add' onClick={handleAddFields} className='cursor-pointer'/>
         </div>
         {productFields.map((field, index) => (
           <div key={index} className='flex flex-wrap gap-5 mb-4'>
@@ -350,7 +340,7 @@ const Productadd = ({ id }: ProductProp) => {
 
       <div className='flex w-full justify-between items-center'>
         <h1 className='text-xl font-bold'>Other Info</h1>
-        <Image src={assets.add} alt='Add' onClick={handleAddField} />
+        <Image src={assets.add} alt='Add' onClick={handleAddField} className='cursor-pointer'/>
       </div>
       {orderFields.map((field, idx) => (
         <div className='flex flex-col md:flex-row gap-5' key={idx}>
@@ -416,8 +406,8 @@ const Productadd = ({ id }: ProductProp) => {
       </div>
 
       <div className='flex flex-col sm:flex-row justify-center items-center space-y-3 sm:space-y-0 sm:space-x-5'>
-        <button type='submit' className='px-6 py-3 font-bold bg-amber-400 text-white rounded-md'>Save</button>
-        <button type='button' onClick={handleCancel} className='px-6 py-3 font-bold border border-gray-300 bg-white rounded-md'>Cancel</button>
+        <button type='submit' className='cursor-pointer px-6 py-3 font-bold bg-amber-400 text-white rounded-md'>Save</button>
+        <button type='button' onClick={handleCancel} className='cursor-pointer px-6 py-3 font-bold border border-gray-300 bg-white rounded-md'>Cancel</button>
       </div>
     </form>
   )

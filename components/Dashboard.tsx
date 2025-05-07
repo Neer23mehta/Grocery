@@ -10,8 +10,8 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, ArcElement, T
 import { Skeleton } from '@mui/material'
 import { LineElement, PointElement, LineController } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import { MapContainer, TileLayer } from 'react-leaflet'
-import 'leaflet/dist/leaflet.css'
+// import { MapContainer, TileLayer } from 'react-leaflet'
+// import 'leaflet/dist/leaflet.css'
 
 ChartJS.register(
   CategoryScale,
@@ -79,7 +79,8 @@ const Dashboard = () => {
           { title: 'Categories', value: dashboard.category_count, name: 'category/categories', image: "🗂️" },
           { title: 'Sub-Categories', value: dashboard.sub_category_count, name: 'category/subcategories', image: "📁" },
           { title: 'Orders', value: dashboard.order_count, name: 'orders', image: "🧾" },
-          { title: 'Coupon', value: dashboard.coupon_count, name: 'couponmanage', image: "🎟️" }
+          { title: 'Coupon', value: dashboard.coupon_count, name: 'couponmanage', image: "🎟️" },
+          { title: 'Admin-Monitor', value: 1, name: '', image: "👤" }
         ].map((item, index) => (
           <Link href={`/admin/${item.name}`} key={index}>
             <div
@@ -207,10 +208,10 @@ const Dashboard = () => {
           />
         </div>
 
-        <div className="w-full md:w-1/2 h-[400px] bg-white p-6 rounded-lg shadow-lg">
+        {/* <div className="w-full md:w-1/2 h-[400px] bg-white p-6 rounded-lg shadow-lg">
           <h2 className="text-2xl font-bold mb-4 text-black">Map</h2>
           <div className="h-[calc(100%-2rem)] w-full"> {/* 2rem = mb-4 for h2 */}
-            <MapContainer
+            {/* <MapContainer
               center={[22.9734, 78.6569]}
               zoom={5}
               style={{ height: '100%', width: '100%' }}
@@ -222,7 +223,7 @@ const Dashboard = () => {
               />
             </MapContainer>
           </div>
-        </div>
+        </div> */} 
       </div>
     </div>
   )

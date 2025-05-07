@@ -84,7 +84,7 @@ const Orderid = ( {id} : OrderidProps) => {
     const handlePrint = () => {
         window.print();
     }
-
+    console.log("neer123",adds)
     return (
         <div className=''>
             <div className='flex flex-row justify-between items-center'>

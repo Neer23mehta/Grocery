@@ -48,7 +48,7 @@ const Setpassword = () => {
   const handleSubmits = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://192.168.2.181:3000/admin/reset-password", {
+      const res = await axios.post("http://192.168.2.180:3000/admin/reset-password", {
         password: values.password,
         confirmpassword: values.confirmpassword,
       });

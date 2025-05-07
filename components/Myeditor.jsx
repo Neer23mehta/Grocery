@@ -7,8 +7,7 @@ import Color from '@tiptap/extension-color'
 import Highlight from '@tiptap/extension-highlight'
 import TextAlign from '@tiptap/extension-text-align'
 import Link from 'next/link'
-import axios from 'axios'
-import commonGetApis, { deleteApi } from '@/commonapi/Commonapi'
+import commonGetApis, { commonPostApis, deleteApi } from '@/commonapi/Commonapi'
 import { toast } from 'react-toastify'
 import { RiDeleteBin5Fill } from "react-icons/ri";
 
@@ -57,8 +56,6 @@ export default function MyEditor() {
   }, []);
 
   const handleAddPage = async () => {
-    const token = localStorage.getItem('token');
-    const refreshToken = localStorage.getItem('usertoken');
 
     const formdata = new URLSearchParams();
     const editorContent = editor.getHTML();
@@ -66,14 +63,7 @@ export default function MyEditor() {
     // formdata.append("id", "2"); 
 
     try {
-      const res = await axios.post("http://192.168.2.181:3000/admin/terms_and_condition", formdata, {
-        headers: {
-          Authorizations: token || '',
-          language: "en",
-          refresh_token: refreshToken || '',
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      });
+      const res = await commonPostApis("terms_and_condition", formdata);
       console.log("Response:", res.data);
       toast.success("Successfully Added")
     } catch (error) {
@@ -93,7 +83,7 @@ export default function MyEditor() {
           <h2 className="text-xl font-semibold mt-4">Terms & Conditions</h2>
         </div>
         <div>
-          <button className="px-3 font-bold py-2 bg-amber-300 ml-5 w-auto h-13 " onClick={handleAddPage}>Add Pages</button>
+          <button className="px-3 font-bold py-2 bg-amber-300 ml-5 w-auto h-13 cursor-pointer" onClick={handleAddPage}>Add Pages</button>
         </div>
       </div>
       <div className="max-w-full p-2 bg-white rounded-lg shadow space-y-4">
@@ -152,7 +142,7 @@ export default function MyEditor() {
                     <span className="font-semibold text-gray-600 mr-2">({idx + 1})</span>
                     {Terms_and_Conditions}
                   </div>
-                  <button onClick={() => handleDelTanC(terms_and_condition_id)} className="text-gray-500 hover:text-gray-700 transition-colors">
+                  <button onClick={() => handleDelTanC(terms_and_condition_id)} className="cursor-pointer text-gray-500 hover:text-gray-700 transition-colors">
                     <RiDeleteBin5Fill size={20} />
                   </button>
                 </div>

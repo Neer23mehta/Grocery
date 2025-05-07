@@ -27,7 +27,7 @@ const Home = () => {
         <Image src={assets.basket} alt='Basket-img' className='grayscale-100'/>
       </div>
       <div className='py-3'>
-        <button onClick={handleSectionClick} className='bg-amber-400 px-9 py-3 font-bold mt-2'>Add Section</button>
+        <button onClick={handleSectionClick} className='bg-amber-400 px-9 py-3 font-bold mt-2 cursor-pointer'>Add Section</button>
       </div>
       </div>
     </div>

@@ -2,9 +2,8 @@
 import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { assets } from '@/assests/assets'
-import commonGetApis, { deleteApi } from '@/commonapi/Commonapi'
+import commonGetApis, { commonPostApis, deleteApi } from '@/commonapi/Commonapi'
 import { toast } from 'react-toastify'
-import axios from 'axios'
 import { Dialog, DialogActions } from '@mui/material'
 
 type CategoryItem = {
@@ -88,8 +87,6 @@ const Shopbycategory = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const refreshtoken = localStorage.getItem('usertoken')
-    const token = localStorage.getItem('token')
 
     const formdata = new FormData()
     formdata.append("fk_section_id", "2")
@@ -98,14 +95,7 @@ const Shopbycategory = () => {
     if (image) formdata.append("image", image)
 
     try {
-      const res = await axios.post("http://192.168.2.181:3000/admin/add_home_management", formdata, {
-        headers: {
-          Authorizations: token!,
-          language: 'en',
-          refresh_token: refreshtoken!,
-          'Content-Type': 'multipart/form-data',
-        },
-      })
+      const res = await commonPostApis("add_home_management", formdata)
       if (res.data) {
         toast.success("Category added successfully")
         fetchShopByCategory()
@@ -119,51 +109,48 @@ const Shopbycategory = () => {
     }
   }
 
-  console.log("neer ",category)
-
   useEffect(() => {
     fetchShopByCategory()
     fetchCategories()
   }, [])
-  console.log("ct",category)
 
   return (
-    <div className='w-full'>
-      <div className='flex flex-col mt-5 px-6 py-4 bg-white shadow-md rounded-md'>
-        <div className='flex justify-between items-center mb-4'>
-          <h1 className='mt-5 font-bold text-xl'>Shop by Category</h1>
-          <Image src={assets.del} alt='edit' className='mt-5 ml-4' width={21} height={25} />
+    <div className="w-full max-w-7xl mx-auto">
+      <div className="flex flex-col mt-5 px-6 py-4 bg-white shadow-md rounded-md">
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="font-bold text-xl">Shop by Category</h1>
+          <Image src={assets.del} alt="edit" width={21} height={25} />
         </div>
 
         <div className="w-full overflow-x-auto">
           <div className="flex gap-2 items-center min-w-fit">
             {category?.map((curval) =>
               curval.shop_by_category.map((ad, idx) => (
-                <div key={idx} className='relative flex-shrink-0'>
+                <div key={idx} className="relative flex-shrink-0">
                   <button onClick={() => handleRemoveCategory(ad.id)}>
                     <Image
                       src={assets.cancel}
-                      alt='remove'
+                      alt="remove"
                       width={20}
                       height={20}
-                      className='absolute top-6 right-0 z-10 cursor-pointer hover:text-red-700'
+                      className="absolute top-6 right-0 z-10 cursor-pointer hover:text-red-700"
                     />
                   </button>
                   <Image
-                    src={ad.image || '/placeholder.png'}
+                    src={ad.image || "/placeholder.png"}
                     alt="banner"
                     width={120}
                     height={120}
                     className="object-cover border w-[120px] h-[120px] border-gray-300 rounded-md shadow-sm hover:shadow-md transition-shadow duration-200"
                     unoptimized
                   />
-                  <p className='text-sm mt-2'>{ad.category?.category_name}</p>
-                  <p className='text-sm text-gray-500'>{ad.offer}</p>
+                  <p className="text-sm mt-2">{ad.category?.category_name}</p>
+                  <p className="text-sm text-gray-500">{ad.offer}</p>
                 </div>
               ))
             )}
             <div
-              className='h-[120px] w-[120px] mb-5 border border-gray-300 rounded-md flex-shrink-0 flex items-center justify-center cursor-pointer hover:bg-gray-50 transition'
+              className="h-[120px] w-[120px] mb-5 border border-gray-300 rounded-md flex-shrink-0 flex items-center justify-center cursor-pointer hover:bg-gray-50 transition"
               onClick={handleToggleCategory}
             >
               <div className="flex items-center justify-center rounded-lg">
@@ -181,15 +168,20 @@ const Shopbycategory = () => {
       </div>
 
       <Dialog open={newCategory} onClose={() => setNewCategory(false)}>
-      <div className='flex flex-col justify-center px-10 bg-white shadow-md'>
-      <div className='mt-1 flex justify-end items-end '>
-            <button onClick={() => setNewCategory(false)} className='text-2xl text-gray-400 hover:text-red-500'>X</button>
+        <div className="flex flex-col justify-center px-10 bg-white shadow-md">
+          <div className="mt-1 flex justify-end items-end">
+            <button
+              onClick={() => setNewCategory(false)}
+              className="text-2xl text-gray-400 hover:text-red-500"
+            >
+              X
+            </button>
           </div>
-          <h1 className='text-2xl font-bold'>Add Shop by Category</h1>
+          <h1 className="text-2xl font-bold">Add Shop by Category</h1>
 
-          <form onSubmit={handleSubmit} className='py-5 flex flex-col items-center'>
-            <p className='mt-3 text-start'>Add Image of Category</p>
-            <div className='w-[120px] h-[120px] px-5 py-2 border border-gray-300 rounded-md flex items-center justify-center cursor-pointer hover:bg-gray-50 transition'>
+          <form onSubmit={handleSubmit} className="py-5 flex flex-col items-center">
+            <p className="mt-3 text-start">Add Image of Category</p>
+            <div className="w-[120px] h-[120px] px-5 py-2 border border-gray-300 rounded-md flex items-center justify-center cursor-pointer hover:bg-gray-50 transition">
               <label htmlFor="thumbnail" className="cursor-pointer text-center text-gray-300">
                 <div className="flex items-center justify-center rounded-lg">
                   <Image
@@ -209,35 +201,39 @@ const Shopbycategory = () => {
               />
             </div>
 
-            <div className='mt-4 w-full'>
-              <label className='text-gray-400'>Select Category</label>
+            <div className="mt-4 w-full">
+              <label className="text-gray-400">Select Category</label>
               <select
                 value={input.category}
-                name='category'
-                className='font-bold px-3 py-2 mt-2 border border-gray-300 text-black w-full'
+                name="category"
+                className="font-bold px-3 py-2 mt-2 border border-gray-300 text-black w-full"
                 onChange={handleCategoryChange}
               >
                 <option value="">Select</option>
                 {adds.map((curVal, index) => (
-                  <option key={index} value={curVal.No}>{curVal.Category_Name}</option>
+                  <option key={index} value={curVal.No}>
+                    {curVal.Category_Name}
+                  </option>
                 ))}
               </select>
             </div>
 
-            <div className='mt-4 w-full'>
-              <label className='text-gray-400'>Offer</label>
+            <div className="mt-4 w-full">
+              <label className="text-gray-400">Offer</label>
               <input
-                type='text'
-                name='offer'
+                type="text"
+                name="offer"
                 value={input.offer}
                 onChange={handleCategoryChange}
-                placeholder='e.g. 10% Off'
-                className='font-bold border border-gray-300 mt-2 py-2 px-3 text-black w-full'
+                placeholder="e.g. 10% Off"
+                className="font-bold border border-gray-300 mt-2 py-2 px-3 text-black w-full"
               />
             </div>
 
             <DialogActions>
-              <button type='submit' className='px-6 py-2 bg-amber-400 font-bold mt-5'>Save</button>
+              <button type="submit" className="px-6 py-2 bg-amber-400 font-bold mt-5">
+                Save
+              </button>
             </DialogActions>
           </form>
         </div>

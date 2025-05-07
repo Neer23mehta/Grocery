@@ -1,12 +1,11 @@
 'use client';
 import { Dialog, DialogActions, DialogContent, Pagination, Stack } from '@mui/material';
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { MdEdit } from 'react-icons/md';
 import { RiDeleteBin5Fill } from 'react-icons/ri';
 import { toast } from 'react-toastify';
 import Image from 'next/image';
-import commonGetApis, { deleteApi } from '@/commonapi/Commonapi';
+import commonGetApis, { commonPostApis, deleteApi } from '@/commonapi/Commonapi';
 import { assets } from '@/assests/assets';
 import Link from 'next/link';
 import { AxiosError } from 'axios';
@@ -57,8 +56,7 @@ const Brand = () => {
 
   const fetchCategories = async () => {
     try {
-      const res = await commonGetApis(
-        `get_brands?pageNumber=${page}&pageLimit=10`);
+      const res = await commonGetApis(`get_brands?pageNumber=${page}&pageLimit=10&search=${input}`);
       setAdds(res?.data?.result || []);
       setTotalCount(res?.data?.Total_Count);
     } catch (error) {
@@ -96,9 +94,6 @@ const Brand = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const refreshtoken = localStorage.getItem('usertoken');
-    const token = localStorage.getItem('token');
-
     const formdata = new FormData();
     formdata.append('brand_name', inputs.brand);
     formdata.append('fk_category_id', inputs.category);
@@ -107,27 +102,17 @@ const Brand = () => {
 
     if (image) formdata.append('image', image);
 
-    const headers = {
-      Authorizations: token,
-      language: 'en',
-      refresh_token: refreshtoken,
-      'Content-Type': 'multipart/form-data',
-    };
-
+    if (inputs.No) {
+      formdata.append('id', String(inputs.No));
+     } 
     try {
-      let res;
-
-      if (inputs.No) {
-        formdata.append('id', String(inputs.No));
-        res = await axios.post('http://192.168.2.181:3000/admin/add_brand', formdata, { headers });
+       const res = await commonPostApis('add_brand', formdata);
         if (res.data) {
           toast.success("Added")
         }
-        toast.success("Brand Updated Successfully");
-      } else {
-        toast.success("Brand Added Successfully");
-      }
-
+        else{
+          toast.error("Unsuccessfull")
+        }
       setAddSub(false);
       setToggleBrand(false);
       setInputs({
@@ -146,9 +131,7 @@ const Brand = () => {
   };
 
 
-  const handleBrandPost = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleBrandPost = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setInputs((prevInputs) => ({
       ...prevInputs,
@@ -172,24 +155,12 @@ const Brand = () => {
     }
   };
   const handleStatusChange = async (id: number, currentStatus: number) => {
-    const refreshtoken = localStorage.getItem('usertoken');
-    const token = localStorage.getItem('token');
     const newStatus = currentStatus === 1 ? 0 : 1;
     const formData = new URLSearchParams();
     formData.append('id', String(id));
     formData.append('status', String(newStatus));
     try {
-      const res = await axios.post(
-        'http://192.168.2.181:3000/admin/status_change3',
-        formData,
-        {
-          headers: {
-            Authorizations: token,
-            Language: 'en',
-            refresh_token: refreshtoken,
-          },
-        }
-      );
+      const res = await commonPostApis('status_change3',formData);
 
       if (res.data) {
         toast.success('Status updated successfully');
@@ -199,9 +170,7 @@ const Brand = () => {
       }
     } catch (error) {
       const axiosError = error as AxiosError;
-
       console.error('Full Error:', axiosError);
-
       if (axiosError.response) {
         console.error('Response Error:', axiosError.response);
         console.error('Response Data:', axiosError.response.data);
@@ -212,11 +181,10 @@ const Brand = () => {
     fetchCategories();
     fetchGetCategory();
     fetchSubCategories();
-  }, [page]);
-  useEffect(() => {
     document.title = "Admin Brands"
-  }, [])
-  const count = Math.ceil(Number(totalCount) / 1)
+  }, [input,page]);
+
+  const count = Math.ceil(Number(totalCount) / 10)
   return (
     <div className="">
       <div className="flex flex-row justify-between items-center">
@@ -232,7 +200,7 @@ const Brand = () => {
             className="ml-50 h-12 py-2 px-2 border-1 border-gray-400 bg-white sm:w-[80px] md:w-[120px] lg:w-[190px]"
           />
           <button
-            className="px-2 py-2 bg-amber-300 ml-5 w-40 h-12 font-bold"
+            className="px-2 py-2 bg-amber-300 ml-5 w-40 h-12 font-bold cursor-pointer"
             onClick={() => setAddSub(true)}
           >
             Add Brand
@@ -293,13 +261,13 @@ const Brand = () => {
                     </td>
                     <td>
                       <button
-                        className="ml-2 text-gray-600 rounded"
+                        className="ml-2 text-gray-600 rounded cursor-pointer"
                         onClick={() => handleEdit(No)}
                       >
                         <MdEdit size={18} />
                       </button>
                       <button
-                        className="ml-5 text-gray-600 rounded"
+                        className="ml-5 text-gray-600 rounded cursor-pointer"
                         onClick={() => handleDelete(No)}
                       >
                         <RiDeleteBin5Fill size={18} />

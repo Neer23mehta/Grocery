@@ -156,8 +156,8 @@ const Layout = ({ children }: LayoutProps) => {
                         </div>
                         <div className="flex justify-end items-center">
                         <Image src={assets.admin} alt="Admin" className="mt-2" />
-                        <button onClick={handleClick} ref={anchorRef} className={`mr-2 text-xl text-black`}>Admin</button>
-                        <SlArrowDown size={12} onClick={handleClick} className={`mr-5 text-black`}/>
+                        <button onClick={handleClick} ref={anchorRef} className={`mr-2 text-xl text-black cursor-pointer`}>Admin</button>
+                        <SlArrowDown size={12} onClick={handleClick} className={`mr-5 text-black cursor-pointer`}/>
                         </div>
 
                         <Popper open={logout} anchorEl={anchorRef.current} placement="bottom-end" style={{ zIndex: 1300 }}>

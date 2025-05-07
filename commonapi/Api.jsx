@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useState } from 'react';
 
 const api = axios.create({
-  baseURL: 'http://192.168.2.181:3000/admin',
+  baseURL: 'http://192.168.2.180:3000/admin',
 });
 
 // Refresh access token
@@ -19,7 +19,7 @@ const refreshAccessToken = async () => {
 
   try {
     const response = await axios.post(
-      "http://192.168.2.181:3000/admin/refresh_token", 
+      "http://192.168.2.180:3000/admin/refresh_token", 
       null, 
       {
         headers: {

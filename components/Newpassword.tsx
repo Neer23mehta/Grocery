@@ -6,9 +6,9 @@ import {useFormik } from 'formik';
 import * as Yup from 'yup';
 import { FaRegEyeSlash } from "react-icons/fa6";
 import { FaRegEye } from "react-icons/fa";
-import axios from 'axios'; 
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
+import { commonPostApis } from '@/commonapi/Commonapi';
 
 interface Values {
   oldpassword: string;
@@ -60,19 +60,8 @@ const Newpassword = () => {
       formdata.append("new_password",values.password);
       formdata.append("confirm_password",values.confirmpassword);
 
-      const refreshtoken = localStorage.getItem('usertoken');
-      const token = localStorage.getItem('token');
       try {
-        const res = await axios.post("http://192.168.2.181:3000/admin/change_password", 
-          formdata, {
-            headers : {
-              Authorizations: token,
-              language: 'en',
-              refresh_token: refreshtoken,
-              'Content-Type': 'application/x-www-form-urlencoded',
-            }
-          }
-        );
+        const res = await commonPostApis("change_password", formdata);
 
         if (res.data) {
           toast.success("Password Changed Successfully");

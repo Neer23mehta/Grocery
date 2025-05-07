@@ -39,7 +39,7 @@ const Login = () => {
 
       try {
         const res = await axios.post(
-          "http://192.168.2.181:3000/admin/login",
+          "http://192.168.2.180:3000/admin/login",
           {
             email: values.email,
             password: values.password,

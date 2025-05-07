@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { assets } from '@/assests/assets'
-import commonGetApis, { deleteApi } from '@/commonapi/Commonapi'
+import commonGetApis, { commonPostApis, deleteApi } from '@/commonapi/Commonapi'
 import { toast } from 'react-toastify'
 import axios from 'axios'
 import { Dialog, DialogActions } from '@mui/material'
@@ -34,22 +34,13 @@ const Banner = () => {
   }, [])
 
   const handleNewBanner = async () => {
-    const refreshtoken = localStorage.getItem('usertoken')
-    const token = localStorage.getItem('token')
 
     const formdata = new FormData()
     if (image) formdata.append("image", image)
     formdata.append("fk_section_id", "1")
 
     try {
-      const res = await axios.post("http://192.168.2.181:3000/admin/add_home_management", formdata, {
-        headers: {
-          Authorizations: token,
-          language: 'en',
-          refresh_token: refreshtoken,
-          'Content-Type': 'multipart/form-data',
-        },
-      })
+      const res = await commonPostApis("add_home_management", formdata)
       if (res.data) {
         toast.success("Banner Added Successfully")
         fetchGetBanner()

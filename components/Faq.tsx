@@ -1,11 +1,10 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import commonGetApis, { deleteApi } from '@/commonapi/Commonapi'
+import commonGetApis, { commonPostApis, deleteApi } from '@/commonapi/Commonapi'
 import { GoArrowRight } from "react-icons/go";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { toast } from 'react-toastify';
 import { Dialog, DialogContent, TextField } from '@mui/material';
-import axios from 'axios';
 import { useFormik } from 'formik';
 import * as Yup from 'yup'
 import Link from 'next/link';
@@ -49,21 +48,12 @@ const Faq = () => {
   });
 
   const addFaqs = async (values: { Question: string, Answer: string }) => {
-    const token = localStorage.getItem("token");
-    const refreshToken = localStorage.getItem("usertoken");
 
     const formData = new URLSearchParams();
     formData.append("question", values.Question);
     formData.append("answer", values.Answer);
     try {
-      const res = await axios.post("http://192.168.2.181:3000/admin/add_faqs", formData, {
-        headers: {
-          Authorizations: token,
-          language: "en",
-          refresh_token: refreshToken,
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      });
+      const res = await commonPostApis("add_faqs", formData);
       if (res.data) {
         fetchFaq();
         setOpen(false);
@@ -104,7 +94,7 @@ const Faq = () => {
           <p className='text-gray-500 mt-2'><Link href={`/admin/dashboard`}>Dashboard</Link> <span className='ml-2.5'>{`>`}</span><span className='text-black ml-2.5'>Faqs</span> </p>
         </div>
         <div>
-          <button onClick={handleOpenModal} className="px-2 py-2 bg-amber-300 ml-5 w-25 h-13 font-bold">Add Faq</button>
+          <button onClick={handleOpenModal} className="px-2 py-2 bg-amber-300 ml-5 w-25 h-13 font-bold cursor-pointer">Add Faq</button>
         </div>
       </div>
 
@@ -114,7 +104,7 @@ const Faq = () => {
             <li className='flex flex-col justify-center bg-white shadow-md space-x-5 mt-3 py-3' key={idx}>
               <div className='flex flex-row justify-between items-center'>
                 <p className='text-2xl'><span className='mr-5'>({idx + 1})</span>{curVal.Question}</p>
-                <div className='flex flex-row justify-center items-center gap-2.5'>
+                <div className='flex flex-row justify-center items-center gap-2.5 cursor-pointer'>
                   <RiDeleteBin6Line size={25} onClick={() => handleDeleteFaq(curVal.Faq_id)} />
                 </div>
               </div>

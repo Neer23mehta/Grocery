@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import { TextField, Dialog, DialogActions, DialogContent, Stack, Pagination } from '@mui/material';
+import { TextField, Dialog, DialogActions, DialogContent, Stack, Pagination, InputAdornment } from '@mui/material';
 import { MdEdit } from "react-icons/md";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import Image from 'next/image';
@@ -8,6 +8,9 @@ import { toast } from 'react-toastify';
 import commonGetApis, { commonPostApis, deleteApi } from '@/commonapi/Commonapi';
 import { assets } from '@/assests/assets';
 import Link from 'next/link';
+import { IoSearchSharp } from "react-icons/io5";
+import { useRouter } from 'next/navigation';
+import orderBy from 'lodash/orderBy';
 
 interface Category {
   No: number;
@@ -28,12 +31,23 @@ const Subcategory = () => {
   const [editSub, setEditSub] = useState(false);
   const [status, setStatus] = useState(false);
   const [page, setPage] = useState(1);
+  const [sortField, setSortField] = useState<string>('');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [totalCount, setTotalCount] = useState(0)
   const [inputs, setInputs] = useState({
     subcategory: "",
     category: "",
     status: "1"
   });
+
+  const route = useRouter();
+
+  useEffect(() => {
+    const refreshToken = localStorage.getItem("usertoken");
+    if (!refreshToken) {
+      route.replace('/');
+    }
+  }, []);
 
   const fetchCategories = async () => {
 
@@ -50,7 +64,7 @@ const Subcategory = () => {
     try {
       const res = await deleteApi(`delete_subcategory?id=${id}`);
       setAdds(prev => prev.filter(items => items.No !== id));
-      if(res.data){
+      if (res.data) {
         toast.success("Deleted Successfully")
       }
     } catch (error) {
@@ -73,7 +87,7 @@ const Subcategory = () => {
     const target = e.target as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
     const { name, value } = target;
     setInputs({ ...inputs, [name]: value });
-  };  
+  };
 
   const handleSubCategorySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -108,7 +122,7 @@ const Subcategory = () => {
     formdata.append("subcategory_name", inputs.subcategory);
     formdata.append("fk_category_id", inputs.category);
     formdata.append("status", inputs.status);
-    formdata.append("id", String(editSubcategory?.No)); 
+    formdata.append("id", String(editSubcategory?.No));
 
     if (image) {
       formdata.append("image", image);
@@ -143,7 +157,7 @@ const Subcategory = () => {
     formData.append("status", String(newStatus));
 
     try {
-      const res = await commonPostApis("status_change2",formData,);
+      const res = await commonPostApis("status_change2", formData,);
       if (res.data) {
         toast.success("Status updated successfully");
         fetchCategories();
@@ -175,12 +189,56 @@ const Subcategory = () => {
   const toggleStatus = () => {
     setStatus(!status)
   }
+  const setExportData = () => {
+    if (!adds.length) {
+      toast.warning("No data to export");
+      return;
+    }
+
+    const headers = ["No", "Category_Name", "Status", " SubCategory_Name"];
+    const rows = adds.map(item => [
+      item.No,
+      item.Category_Name,
+      item.SubCategory_Name,
+      item.Status === 1 ? "Active" : "Inactive"
+    ]);
+
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "brands_export.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleSortItems = (field: keyof Category) => {
+    const newOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+    const sortedData = orderBy([...adds], [field], [newOrder]);
+    setAdds(sortedData);
+    setSortField(field);
+    setSortOrder(newOrder);
+    toast.info(`${newOrder.toLocaleUpperCase()}ENDING ORDER`, {
+      position: "top-center",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
+  };
 
   useEffect(() => {
     fetchGetCategory();
     fetchCategories();
     document.title = "Admin Subcategory";
-  }, [input,page]);
+  }, [input, page]);
 
   const count = Math.ceil(Number(totalCount) / 10)
   return (
@@ -193,25 +251,58 @@ const Subcategory = () => {
         <div>
           <TextField
             id="outlined-basic"
-            label="Search Sub Category"
+            label="Search Sub-Category"
             variant="outlined"
             value={input}
-            onChange={(e) => setInput(e.target.value)}
-            className="ml-50"
+            onChange={(e) => setInput(e.target.value.trim())}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <IoSearchSharp size={20} />
+                </InputAdornment>
+              ),
+            }}
           />
           <button className="px-2 py-2 bg-amber-300 ml-5 w-40 h-13 cursor-pointer" onClick={() => setOpenModal(true)}>Add Sub Category</button>
+          <button
+            className="px-2 py-2 bg-green-700 ml-1 w-20 h-12 font-bold cursor-pointer"
+            onClick={() => setExportData()}
+          >
+            Export
+          </button>
         </div>
       </div>
 
       <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden mt-5">
         <thead>
           <tr>
-            <th className="px-2 py-2 text-left text-md font-semibold text-black">No.</th>
-            <th className="py-2 px-2 text-left text-md font-semibold text-black">Image</th>
-            <th className="py-2 px-2 text-left text-md font-semibold text-black">Name</th>
-            <th className="py-2 px-2 text-left text-md font-semibold text-black">Category</th>
-            <th className="py-2 px-2 text-left text-md font-semibold text-black">Status</th>
-            <th className="py-2 px-2 text-left text-md font-semibold text-black">Action</th>
+            <th className="px-7 py-4 text-left text-md font-semibold text-black">
+              <div className="flex items-center">
+                No.
+                <Image src={assets.sort} alt="sort" height={13} width={13} className="ml-1" onClick={() => handleSortItems("No")} />
+              </div>
+            </th>
+            <th className="py-4 px-2 text-left text-md font-semibold text-black">
+              Image
+            </th>
+            <th className="py-4 px-2 text-left text-md font-semibold text-black">
+              <div className="flex items-center">
+                Name
+                <Image src={assets.sort} alt="sort" height={13} width={13} className="ml-1" onClick={() => handleSortItems("SubCategory_Name")} />
+              </div>
+            </th>
+            <th className="py-4 px-2 text-left text-md font-semibold text-black">
+              <div className="flex items-center">
+                Category
+                <Image src={assets.sort} alt="sort" height={13} width={13} className="ml-1" onClick={() => handleSortItems("Category_Name")} />
+              </div>
+            </th>
+            <th className="py-4 px-2 text-left text-md font-semibold text-black">
+              Status
+            </th>
+            <th className="py-4 px-2 text-left text-md font-semibold text-black">
+              Action
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -220,8 +311,8 @@ const Subcategory = () => {
               .filter(item => input === "" || item.SubCategory_Name.toLowerCase().includes(input.toLowerCase()))
               .map(({ No, Image: ImgUrl, Category_Name, Status, SubCategory_Name }) => (
                 <tr key={No}>
-                  <td className="px-2 py-2">{No}</td>
-                  <td className='px-2 py-2'>
+                  <td className="px-7 py-2">{No}</td>
+                  <td className='px-1 py-3'>
                     <Image
                       src={ImgUrl}
                       alt={Category_Name}
@@ -231,8 +322,8 @@ const Subcategory = () => {
                       className="rounded h-[52px] w-[56px] cursor-zoom-in"
                     />
                   </td>
-                  <td>{SubCategory_Name}</td>
-                  <td>{Category_Name}</td>
+                  <td className='px-3'>{SubCategory_Name}</td>
+                  <td className='px-3'>{Category_Name}</td>
                   <td onClick={() => handleStatusChange(No, Status)} className='px-2 py-2 cursor-pointer'>
                     <div>
                       {Status === 1 ? (
@@ -243,7 +334,7 @@ const Subcategory = () => {
                     </div>
                   </td>
                   <td>
-                    <button onClick={() => handleEditButton(No)} className='cursor-pointer'><MdEdit size={18} /></button>
+                    <button onClick={() => handleEditButton(No)} className='ml-1 cursor-pointer'><MdEdit size={18} /></button>
                     <button className="ml-5 cursor-pointer" onClick={() => handleSubCategoryDelete(No)}><RiDeleteBin5Fill size={18} /></button>
                   </td>
                 </tr>
@@ -387,7 +478,10 @@ const Subcategory = () => {
         <Stack spacing={2}>
           <Pagination variant='outlined' shape='rounded' page={page}
             onChange={(e, page) => setPage(page)}
-            count={count} />
+            count={count}
+            hideNextButton={!!input}
+            hidePrevButton={!!input}
+          />
         </Stack>
       </div>
 

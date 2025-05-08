@@ -11,11 +11,18 @@ import { toast } from 'react-toastify';
 import { commonPostApis } from '@/commonapi/Commonapi';
 
 const Forget = () => {
+    const route = useRouter();
+
+    // useEffect(() => {
+    //     const refreshToken = localStorage.getItem("usertoken");
+    //     if (!refreshToken) {
+    //         route.replace('/');
+    //     }
+    // }, []);
 
     const initialValues = {
         email: ""
     }
-    const route = useRouter();
     const handleBack = () => {
         route.push("/")
     }

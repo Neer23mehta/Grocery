@@ -74,7 +74,7 @@ const Login = () => {
   }, []);
   
   return (
-    <div className='relative flex items-center justify-center w-full h-screen bg-black'>
+    <div className='relative flex items-center justify-center w-full h-screen bg-gray-300'>
       <Image
         src={assets.bgimg}
         alt="Background image"
@@ -151,8 +151,8 @@ const Login = () => {
         <Image src={assets.left} alt="Left Image" className="opacity-70" />
       </div>
 
-      <div className="absolute bottom-0 right-0 mt-10 ml-5">
-        <Image src={assets.rimg} alt="Right Image" className="opacity-70 lg:w-[525px] lg:h-[415px]" />
+      <div className="absolute bottom-0 right-0 mt-25">
+        <Image src={assets.rimg} alt="Right Image" className="opacity-70 lg:w-[575px] lg:h-[515px]" />
       </div>
     </div>
   );

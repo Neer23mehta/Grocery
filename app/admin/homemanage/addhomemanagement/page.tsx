@@ -7,6 +7,7 @@ import Advertise from '@/homemanage/Advertise';
 import Shopbybrand from '@/homemanage/Shopbybrand';
 import axios from 'axios';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const Page = () => {
   const [section, setSection] = useState(false);
@@ -14,13 +15,22 @@ const Page = () => {
   const [renderedSections, setRenderedSections] = useState<string[]>([]);
   const [temp, setTemp] = useState("");
 
+  const router = useRouter();
+
+  useEffect(() => {
+    const refreshToken = localStorage.getItem("usertoken");
+    if (!refreshToken) {
+      router.replace('/');
+    }
+  }, []);
+
   const toggleSection = () => {
     setSection(!section);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name } = e.target;
-    setSelectedSection(name); 
+    setSelectedSection(name);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -29,12 +39,12 @@ const Page = () => {
     if (selectedSection && !renderedSections.includes(selectedSection)) {
       setRenderedSections(prev => [...prev, selectedSection]);
     }
-    setSection(false); 
+    setSection(false);
 
     let sectionId;
     switch (selectedSection) {
       case 'banner':
-        sectionId = 1; 
+        sectionId = 1;
         break;
       case 'category':
         sectionId = 2;
@@ -43,18 +53,18 @@ const Page = () => {
         sectionId = 3;
         break;
       case 'brand':
-        sectionId = 4; 
+        sectionId = 4;
         break;
       default:
-        sectionId = 1; 
+        sectionId = 1;
         break;
     }
 
     const token = localStorage.getItem("token");
     const refreshToken = localStorage.getItem("usertoken");
     const formdata = new URLSearchParams();
-    formdata.append("id", sectionId.toString()); 
-    formdata.append("fk_section_id",sectionId.toString());
+    formdata.append("id", sectionId.toString());
+    formdata.append("fk_section_id", sectionId.toString());
 
     try {
       const res = await axios.post("http://192.168.2.181:3000/admin/add_section", formdata, {
@@ -62,7 +72,7 @@ const Page = () => {
           Authorizations: token,
           language: "en",
           refresh_token: refreshToken,
-          'Content-Type' : 'application/x-www-form-urlencoded'
+          'Content-Type': 'application/x-www-form-urlencoded'
         }
       });
 
@@ -102,7 +112,7 @@ const Page = () => {
 
   return (
     <div className=''>
-       {/* <Helmet>
+      {/* <Helmet>
         <title>Admin Addhomemanagement</title>
       </Helmet> */}
       <div className="flex flex-row justify-between items-center">
@@ -126,19 +136,19 @@ const Page = () => {
               <h1 className='text-2xl font-bold'>Add Section</h1>
               <div className='flex flex-col justify-start mt-5 space-y-5'>
                 <div className='flex flex-row space-x-5 justify-start'>
-                  <input type='radio' name='banner' id='1' value='banner'checked={selectedSection === "banner"}  onChange={handleChange} />
+                  <input type='radio' name='banner' id='1' value='banner' checked={selectedSection === "banner"} onChange={handleChange} />
                   <label htmlFor='banner'>Slider with Banner</label>
                 </div>
                 <div className='flex flex-row space-x-5 justify-start'>
-                  <input type='radio' name='category' id='2' value='category' checked={selectedSection === "category"}  onChange={handleChange} />
+                  <input type='radio' name='category' id='2' value='category' checked={selectedSection === "category"} onChange={handleChange} />
                   <label htmlFor='category'>Slider with Category</label>
                 </div>
                 <div className='flex flex-row space-x-5 justify-start'>
-                  <input type='radio' name='advertise' id='3' value='advertise' checked={selectedSection === "advertise"}  onChange={handleChange} />
+                  <input type='radio' name='advertise' id='3' value='advertise' checked={selectedSection === "advertise"} onChange={handleChange} />
                   <label htmlFor='advertise'>Slider with Advertisement</label>
                 </div>
                 <div className='flex flex-row space-x-5 justify-start'>
-                  <input type='radio' name='brand' id='4' value='brand' checked={selectedSection === "brand"}  onChange={handleChange} />
+                  <input type='radio' name='brand' id='4' value='brand' checked={selectedSection === "brand"} onChange={handleChange} />
                   <label htmlFor='brand'>Slider with Brand</label>
                 </div>
               </div>

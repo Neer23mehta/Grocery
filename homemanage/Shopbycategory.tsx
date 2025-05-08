@@ -115,7 +115,7 @@ const Shopbycategory = () => {
   }, [])
 
   return (
-    <div className="w-full max-w-7xl mx-auto">
+    <div className="w-full max-w-8xl mx-auto">
       <div className="flex flex-col mt-5 px-6 py-4 bg-white shadow-md rounded-md">
         <div className="flex justify-between items-center mb-4">
           <h1 className="font-bold text-xl">Shop by Category</h1>
@@ -144,7 +144,7 @@ const Shopbycategory = () => {
                     className="object-cover border w-[120px] h-[120px] border-gray-300 rounded-md shadow-sm hover:shadow-md transition-shadow duration-200"
                     unoptimized
                   />
-                  <p className="text-sm mt-2">{ad.category?.category_name}</p>
+                  <p className="text-sm mt-2">{ad.category_name}</p>
                   <p className="text-sm text-gray-500">{ad.offer}</p>
                 </div>
               ))

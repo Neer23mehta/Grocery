@@ -1,7 +1,12 @@
 'use client'
+import { assets } from '@/assests/assets';
 import commonGetApis from '@/commonapi/Commonapi'
+import Image from 'next/image';
 import Link from 'next/link'
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
+import orderBy from 'lodash/orderBy';
+import { toast } from 'react-toastify';
 
 interface Orders {
   Date: string;
@@ -11,11 +16,21 @@ interface Orders {
   Payment_type: number;
   Status: number;
   Total_Amount: number;
-  Order_id:number;
+  Order_id: number;
 }
 
 const Orders = () => {
   const [adds, setAdds] = useState<Orders[]>([])
+  const [sortField, setSortField] = useState<string>('');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const router = useRouter();
+
+  useEffect(() => {
+    const refreshToken = localStorage.getItem("usertoken");
+    if (!refreshToken) {
+      router.replace('/');
+    }
+  }, []);
 
   const fetchOrders = async () => {
     try {
@@ -29,9 +44,27 @@ const Orders = () => {
     }
   }
 
+  const handleSortItems = (field: keyof Orders) => {
+      const newOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+      const sortedData = orderBy([...adds], [field], [newOrder]);
+      setAdds(sortedData);
+      setSortField(field);
+      setSortOrder(newOrder);
+      toast.info(`${newOrder.toLocaleUpperCase()}ENDING ORDER` , {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        });
+    };
+
   useEffect(() => {
     fetchOrders();
-    document.title="Admin Orders"
+    document.title = "Admin Orders"
   }, [])
 
   const getStatusText = (status: number) => {
@@ -46,8 +79,8 @@ const Orders = () => {
   }
 
   useEffect(() => {
-    document.title="Admin Orders"
-  },[])
+    document.title = "Admin Orders"
+  }, [])
 
   return (
     <div className=''>
@@ -55,33 +88,48 @@ const Orders = () => {
         <div className='flex flex-col px-2'>
           <h1 className='text-3xl font-bold'>Orders</h1>
           <p className='text-gray-500 mt-2'><Link href={`/admin/dashboard`}>Dashboard</Link> <span className='ml-2.5'>{`>`}</span><span className='text-black ml-2.5'>Orders</span> </p>
-          </div>
+        </div>
       </div>
       <div>
-        <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden mt-5">
+        <table className="min-w-full bg-white shadow-md overflow-hidden mt-5">
           <thead className="">
             <tr>
-              <th className="py-3 px-4 text-left text-md font-semibold text-black">Order No.</th>
-              <th className="py-3 px-4 text-left text-md font-semibold text-black">Date</th>
-              <th className="py-3 px-4 text-left text-md font-semibold text-black">User Details</th>
-              <th className="py-3 px-4 text-left text-md font-semibold text-black">Amount</th>
-              <th className="py-3 px-4 text-left text-md font-semibold text-black">Payment Type</th>
-              <th className="py-3 px-4 text-left text-md font-semibold text-black">Status</th>
+              <th className="py-4 px-7 text-left text-md font-semibold text-black">
+                <div className='flex items-center'>
+                  Order No.
+                  <Image src={assets.sort} alt="sort" height={13} width={13} className="ml-1" onClick={() => handleSortItems("Order_no")} />
+                </div>
+              </th>
+              <th className="py-4 px-7 text-left text-md font-semibold text-black">
+                <div className='flex items-center'>
+                  Date
+                  <Image src={assets.sort} alt="sort" height={13} width={13} className="ml-1" onClick={() => handleSortItems("Date")} />
+                </div>
+              </th>
+              <th className="py-4 px-5 text-left text-md font-semibold text-black">User Details</th>
+              <th className="py-4 px-4 text-left text-md font-semibold text-black">Amount</th>
+              <th className="py-4 px-4 text-left text-md font-semibold text-black">Payment Type</th>
+              <th className="py-4 px-4 text-left text-md font-semibold text-black">
+                <div className='flex items-center'>
+                  Status
+                  <Image src={assets.sort} alt="sort" height={13} width={13} className="ml-1" onClick={() => handleSortItems("Status")} />
+                </div>
+              </th>
             </tr>
           </thead>
           <tbody>
             {
               adds.map((curVal, index) => {
-                const { Date, Firstname, Lastname, Order_no, Payment_type, Status, Total_Amount,Order_id } = curVal;
+                const { Date, Firstname, Lastname, Order_no, Payment_type, Status, Total_Amount, Order_id } = curVal;
                 const { text, class: statusClass } = getStatusText(Status);
 
                 return (
                   <tr key={index}>
-                    <td className='px-4 py-3'><Link href={`/admin/orders/${Order_id}`}>{Order_no}</Link></td>
+                    <td className='px-7 py-3'><Link href={`/admin/orders/${Order_id}`}>{Order_no}</Link></td>
                     <td className='px-4 py-3'>{Date.slice(0, 10)}</td>
                     <td className='px-4 py-3'>{`${Firstname} ${Lastname}`}</td>
                     <td className='px-4 py-3'>{Total_Amount}</td>
-                    <td className='px-4 py-3'>{Payment_type === 0 ? "Cash" : "Card"}</td>
+                    <td className='px-4 py-5'>{Payment_type === 0 ? "Cash" : "Card"}</td>
                     <td className={`px-4 py-3 ${statusClass}`}>{text}</td>
                   </tr>
                 )

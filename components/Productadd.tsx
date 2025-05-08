@@ -5,9 +5,9 @@ import { TextField } from '@mui/material'
 import { useFormik } from 'formik'
 import Image from 'next/image'
 import * as Yup from 'yup'
-import axios from 'axios'
 import commonGetApis, { commonPostApis } from '@/commonapi/Commonapi'
 import { toast } from 'react-toastify'
+import { useRouter } from 'next/navigation'
 
 interface ProductFormValues {
   name: string;
@@ -71,6 +71,15 @@ const Productadd = ({ id }: ProductProp) => {
   const [orderFields, setOrderFields] = useState<Orderinfo[]>([
     { title: 'Something', description: '' }
   ]);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    const refreshToken = localStorage.getItem("usertoken");
+    if (!refreshToken) {
+      router.replace('/');
+    }
+  }, []);
 
   const fetchProductId = async () => {
     if (!id) return;
@@ -238,7 +247,7 @@ const Productadd = ({ id }: ProductProp) => {
     updatedFields[index][name as keyof ProductFormValuess] = value;
     setProductFields(updatedFields);
   };
-  
+
   const handleOrderInfo = (index: number, e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.currentTarget;
     const updatedFields = [...orderFields];
@@ -268,7 +277,7 @@ const Productadd = ({ id }: ProductProp) => {
     document.title = "Admin addproduct";
   }, []);
 
-  console.log("dts",datas)
+  console.log("dts", datas)
   return (
     <form onSubmit={handleSubmit} className='bg-white shadow-md p-5 flex flex-col space-y-4'>
       <h1 className='font-bold text-xl'>Add Product</h1>
@@ -313,7 +322,7 @@ const Productadd = ({ id }: ProductProp) => {
       <div>
         <div className='flex w-full justify-between items-center'>
           <h1 className='text-xl font-bold'>Product Details</h1>
-          <Image src={assets.add} alt='Add' onClick={handleAddFields} className='cursor-pointer'/>
+          <Image src={assets.add} alt='Add' onClick={handleAddFields} className='cursor-pointer' />
         </div>
         {productFields.map((field, index) => (
           <div key={index} className='flex flex-wrap gap-5 mb-4'>
@@ -340,7 +349,7 @@ const Productadd = ({ id }: ProductProp) => {
 
       <div className='flex w-full justify-between items-center'>
         <h1 className='text-xl font-bold'>Other Info</h1>
-        <Image src={assets.add} alt='Add' onClick={handleAddField} className='cursor-pointer'/>
+        <Image src={assets.add} alt='Add' onClick={handleAddField} className='cursor-pointer' />
       </div>
       {orderFields.map((field, idx) => (
         <div className='flex flex-col md:flex-row gap-5' key={idx}>
@@ -373,21 +382,21 @@ const Productadd = ({ id }: ProductProp) => {
             {image ? (
               <p>{image.name}</p>
             ) : product ? (
-            <Image
-              src={product}
-              alt="Product"
-              width={310}
-              height={140}
-              className="object-cover"
-            />
+              <Image
+                src={product}
+                alt="Product"
+                width={310}
+                height={140}
+                className="object-cover"
+              />
             ) : (
-            <Image
-              src={assets.upimg}
-              alt="Upload Thumbnail"
-              className="object-cover rounded-lg"
-              width={310}
-              height={140}
-            />
+              <Image
+                src={assets.upimg}
+                alt="Upload Thumbnail"
+                className="object-cover rounded-lg"
+                width={310}
+                height={140}
+              />
             )}
             <input
               id="thumbnail"

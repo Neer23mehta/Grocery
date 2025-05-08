@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import { Dialog, DialogActions, DialogContent, Pagination, Stack, TextField } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, InputAdornment, Pagination, Stack, TextField } from '@mui/material';
 import { MdEdit } from "react-icons/md";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import Image from 'next/image';
@@ -8,6 +8,9 @@ import { toast } from 'react-toastify';
 import commonGetApis, { commonPostApis, deleteApi } from '@/commonapi/Commonapi';
 import { assets } from '@/assests/assets';
 import Link from 'next/link';
+import { IoSearchSharp } from "react-icons/io5";
+import { useRouter } from 'next/navigation';
+import orderBy from 'lodash/orderBy';
 
 interface Category {
   Category_Name: string;
@@ -32,37 +35,37 @@ const Category = () => {
   const [toggleCategory, setToggleCategory] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
   const [totalCount, setTotalCount] = useState<number>(0);
-  const [inputss, setInputss] = useState({
-    category: "",
-    status: "1"
-  });
-  const [inputs, setInputs] = useState({
-    category: "",
-    status: "1"
-  });
+  const [inputss, setInputss] = useState({ category: "", status: "1" });
+  const [inputs, setInputs] = useState({ category: "", status: "1" });
+  const [sortField, setSortField] = useState<string>('');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const router = useRouter();
 
-  const fetchCategories = async () => {
+  useEffect(() => {
+    const refreshToken = localStorage.getItem("usertoken");
+    if (!refreshToken) {
+      router.replace('/');
+    }
+  }, []);
+
+  const fetchCategories = async (searchText: string = '') => {
     try {
       const res = await commonGetApis(`getcategories?pageNumber=${page}&pageLimit=10&search=${input}`);
       setTotalCount(res?.data?.Total_Count || 0);
-      const result = res?.data?.result || [];
-      setAdds(result);
+      setAdds(res?.data?.result || []);
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
   };
 
-  const count = Math.ceil(totalCount / 10);  
+  const count = Math.ceil(totalCount / 10);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     const formdata = new FormData();
     formdata.append("category_name", inputs.category);
     formdata.append("status", inputs.status);
-    if (image) {
-      formdata.append("image", image);
-    }
+    if (image) formdata.append("image", image);
 
     try {
       const res = await commonPostApis("addcategory", formdata);
@@ -87,13 +90,10 @@ const Category = () => {
     formdata.append("id", String(id));
     formdata.append("category_name", inputss.category);
     formdata.append("status", inputss.status);
-    if (image) {
-      formdata.append("image", image);
-    }
+    if (image) formdata.append("image", image);
 
     try {
       const res = await commonPostApis("addcategory", formdata);
-
       if (res.data) {
         toast.success("Category updated successfully");
         fetchCategories();
@@ -120,16 +120,13 @@ const Category = () => {
   };
 
   const handleStatusChange = async (id: number, currentStatus: number) => {
-
     const newStatus = currentStatus === 1 ? 0 : 1;
-
     const formData = new URLSearchParams();
     formData.append("id", String(id));
     formData.append("status", String(newStatus));
 
     try {
-      const res = await commonPostApis("status_change1",formData,);
-
+      const res = await commonPostApis("status_change1", formData);
       if (res.data) {
         toast.success("Status updated successfully");
         fetchCategories();
@@ -156,27 +153,65 @@ const Category = () => {
     try {
       const res = await commonGetApis(`getcategory?id=${No}`);
       const data = res?.data?.DATA;
-
       if (data) {
         setCategoryId(data);
-        setInputss({
-          category: data.category,
-          status: String(data.status),
-        });
+        setInputss({ category: data.category, status: String(data.status) });
         setToggleCategory(true);
       }
     } catch (error) {
       console.error("Error fetching category:", error);
     }
   };
+  const setExportData = () => {
+    if (!adds.length) {
+      toast.warning("No data to export");
+      return;
+    }
+
+    const headers = ["No", "Category_Name", "Status"];
+    const rows = adds.map(item => [
+      item.No,
+      item.Category_Name,
+      item.Status === 1 ? "Active" : "Inactive"
+    ]);
+
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "brands_export.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleSortItems = (field: keyof Category) => {
+    const newOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+    const sortedData = orderBy([...adds], [field], [newOrder]);
+    setAdds(sortedData);
+    setSortField(field);
+    setSortOrder(newOrder);
+    toast.info(`${newOrder.toLocaleUpperCase()}ENDING ORDER`, {
+      position: "top-center",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
+  };
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
-      fetchCategories();
-    }, 500); 
+      fetchCategories(input.trim());
+    }, 500);
     return () => clearTimeout(delayDebounce);
   }, [input, page]);
-
 
   return (
     <div className="">
@@ -184,7 +219,8 @@ const Category = () => {
         <div className="flex flex-col px-2">
           <h1 className="text-3xl font-bold">Category</h1>
           <p className='text-gray-500 mt-2'>
-            <Link href={`/admin/dashboard`}>Dashboard</Link> <span className='ml-2.5'>{`>`}</span>
+            <Link href={`/admin/dashboard`}>Dashboard</Link>
+            <span className='ml-2.5'>{`>`}</span>
             <span className='text-black ml-2.5'>Category</span>
           </p>
         </div>
@@ -194,10 +230,28 @@ const Category = () => {
             label="Search Category"
             variant="outlined"
             value={input}
-            onChange={(e) => setInput(e.target.value)}
-            className="ml-12"
+            onChange={(e) => setInput(e.target.value.trim())}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <IoSearchSharp size={20} />
+                </InputAdornment>
+              ),
+            }}
           />
-          <button className="px-2 py-2 bg-amber-300 ml-5 w-40 h-13 cursor-pointer" onClick={() => setAddCategory(true)}>Add Category</button>
+
+          <button
+            className="px-2 py-2 bg-amber-300 ml-5 w-35 h-13 cursor-pointer font-bold"
+            onClick={() => setAddCategory(true)}
+          >
+            Add Category
+          </button>
+          <button
+            className="px-2 py-2 bg-green-700 ml-1 w-20 h-13 font-bold cursor-pointer"
+            onClick={() => setExportData()}
+          >
+            Export
+          </button>
         </div>
       </div>
 
@@ -205,9 +259,9 @@ const Category = () => {
         <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden mt-5">
           <thead>
             <tr>
-              <th className="px-2 py-2 text-left text-md font-semibold text-black">No.</th>
+              <th className="px-7 py-2 text-left text-md font-semibold text-black flex flex-row items-center">No.<span><Image src={assets.sort} alt='sort' height={13} width={13} className='ml-1' onClick={() => handleSortItems("No")} /></span></th>
               <th className="py-2 px-2 text-left text-md font-semibold text-black">Image</th>
-              <th className="py-2 px-2 text-left text-md font-semibold text-black">Category</th>
+              <th className="py-2 px-2 text-left text-md font-semibold text-black flex flex-row items-center">Category<span><Image src={assets.sort} alt='sort' height={13} width={13} className='ml-1' onClick={() => handleSortItems("Category_Name")} /></span></th>
               <th className="py-2 px-2 text-left text-md font-semibold text-black">Status</th>
               <th className="py-2 px-2 text-left text-md font-semibold text-black">Action</th>
             </tr>
@@ -215,219 +269,122 @@ const Category = () => {
           <tbody className="space-y-5">
             {
               adds
-                .filter(item =>
-                  input === "" || (item?.Category_Name?.toLowerCase().includes(input.toLowerCase()))
-                )
-                .map((curval) => {
-                  const { No, Image: Img, Category_Name, Status } = curval;
-                  return (
-                    <tr key={No} className="space-y-5">
-                      <td className='px-2 py-3'>{No}</td>
-                      <td className='py-2 px-2'>
-                        <Image
-                          src={Img}
-                          alt={Category_Name}
-                          width={56} 
-                          height={52} 
-                          className="object-cover rounded-md h-[60px] w-[60px]"
-                          unoptimized 
-                        />                     
-                        </td>
-                      <td>{Category_Name}</td>
-                      <td
-                        onClick={() => handleStatusChange(No, Status)}
-                        className='px-2 py-2 cursor-pointer'
-                      >
-                        {Status === 1 ? (
-                          <Image src={assets.scrollon} alt='Active' width={42} height={42} />
-                        ) : (
-                          <Image src={assets.scrolloff} alt='Inactive' width={42} height={42} />
-                        )}
-                      </td>
-                      <td>
-                        <button onClick={() => handleEditButton(No)} className="ml-2 text-gray-600 rounded cursor-pointer"><MdEdit size={18} /></button>
-                        <button onClick={() => handleDelete(No)} className="ml-5 text-gray-600 rounded cursor-pointer"><RiDeleteBin5Fill size={18} /></button>
-                      </td>
-                    </tr>
-                  );
-                })
+                .filter(item => input.trim() === "" || item.Category_Name.toLowerCase().includes(input.trim().toLowerCase()))
+                .map(({ No, Image: Img, Category_Name, Status }) => (
+                  <tr key={No}>
+                    <td className='px-7 py-3'>{No}</td>
+                    <td className='py-2 px-2'>
+                      <Image
+                        src={Img}
+                        alt={Category_Name}
+                        width={56}
+                        height={52}
+                        className="object-cover rounded-md h-[60px] w-[60px]"
+                        unoptimized
+                      />
+                    </td>
+                    <td className='px-2 py-2'>{Category_Name}</td>
+                    <td
+                      onClick={() => handleStatusChange(No, Status)}
+                      className='px-2 py-2 cursor-pointer'
+                    >
+                      <Image
+                        src={Status === 1 ? assets.scrollon : assets.scrolloff}
+                        alt={Status === 1 ? 'Active' : 'Inactive'}
+                        width={42}
+                        height={42}
+                      />
+                    </td>
+                    <td>
+                      <button onClick={() => handleEditButton(No)} className="ml-2 text-gray-600 rounded cursor-pointer"><MdEdit size={18} /></button>
+                      <button onClick={() => handleDelete(No)} className="ml-5 text-gray-600 rounded cursor-pointer"><RiDeleteBin5Fill size={18} /></button>
+                    </td>
+                  </tr>
+                ))
             }
           </tbody>
         </table>
       </div>
 
-      <Dialog open={addCategory} onClose={() => setAddCategory(false)}>
-        <div className='flex flex-col justify-center bg-white shadow-md'>
-          <DialogContent>
-            <form onSubmit={handleSubmit} className='bg-white z-[1] flex flex-col px-3'>
-              <div className='flex flex-row'>
-                <h1 className='items-center text-2xl ml-20'>Add Category</h1>
-                <div className='flex justify-end ml-25'>
-                  <button
-                    type="button"
-                    className='text-gray-500 h-9 mb-9 text-2xl flex justify-end right-0 left-20 hover:text-red-700'
-                    onClick={() => setAddCategory(false)}
-                  >
-                    X
-                  </button>
-                </div>
-              </div>
-              <div className='flex flex-col justify-start items-start mt-10'>
-                <label className='py-2 text-gray-400'>Category Name</label>
-                <input
-                  type='text'
-                  name='category'
-                  onChange={handleCategoryPost}
-                  value={inputs.category}
-                  placeholder='Category Name'
-                  required
-                  className='border border-gray-200 px-2.5 py-2 w-full'
-                />
-              </div>
-
-              <div className="flex flex-row justify-between px-2 mt-5">
-                <label className="text-gray-400">Status</label>
-                <div
-                  className="cursor-pointer w-fit"
-                  onClick={() =>
-                    setInputs((prev) => ({
-                      ...prev,
-                      status: prev.status === "1" ? "0" : "1",
-                    }))
-                  }
-                >
-                  <Image
-                    src={inputs.status === "1" ? assets.scrollon : assets.scrolloff}
-                    alt="Status"
-                    width={42}
-                    height={42}
-                  />
-                </div>
-              </div>
-
-              <div className='flex flex-row mt-7'>
-                <label htmlFor="thumbnail" className="flex items-center justify-center cursor-pointer mb-6">
-                  <div className="w-[355px] h-[125px] flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-300 transition-all duration-300 ease-in-out hover:border-gray-500 hover:shadow-lg">
-                    <Image
-                      src={image ? URL.createObjectURL(image) : assets.upimg}
-                      alt="Upload Thumbnail"
-                      width={110}
-                      height={100}
-                      className="object-cover rounded-lg"
-                    />
-                  </div>
-                </label>
-
-                <input
-                  type="file"
-                  id="thumbnail"
-                  className="hidden"
-                  onChange={(e) => setImage(e.target.files?.[0] || null)}
-                />
-              </div>
-
-              <DialogActions>
-                <button type='submit' className='bg-amber-300 w-xs h-12 mb-8 mr-2.5'>Save</button>
-              </DialogActions>
-            </form>
-          </DialogContent>
-        </div>
-      </Dialog>
-
-      <Dialog open={toggleCategory} onClose={() => setToggleCategory(false)}>
-        <div className='flex flex-col justify-center bg-white shadow-md'>
-          <DialogContent>
-            {categoryId && (
-              <form onSubmit={(e) => handleIdDataSubmit(e, categoryId.id)} className='bg-white z-[1] flex flex-col px-3'>
-                <div className='flex flex-row'>
-                  <h1 className='items-center text-2xl ml-20'>Edit Category</h1>
-                  <div className='flex justify-end ml-25'>
-                    <button
-                      type="button"
-                      className='text-gray-500 cursor-pointer h-9 mb-9 text-2xl flex justify-end right-0 left-20 hover:text-red-700'
-                      onClick={() => setToggleCategory(false)}
-                    >
-                      X
-                    </button>
-                  </div>
-                </div>
-                <div className='flex flex-col justify-start items-start mt-10'>
-                  <label className='py-2 text-gray-400'>Category Name</label>
-                  <input
-                    type='text'
-                    name='category'
-                    onChange={handleCategoryPosts}
-                    value={inputss.category}
-                    placeholder='Category Name'
-                    required
-                    className='border border-gray-200 px-2.5 py-2 w-full'
-                  />
-                </div>
-
-                <div className="flex flex-row justify-between mt-5">
-                  <label className="text-gray-400">Status</label>
-                  <div
-                    className="cursor-pointer w-fit"
-                    onClick={() =>
-                      setInputss((prev) => ({
-                        ...prev,
-                        status: prev.status === "1" ? "0" : "1",
-                      }))
-                    }
-                  >
-                    <Image
-                      src={inputss.status === "1" ? assets.scrollon : assets.scrolloff}
-                      alt="Status"
-                      width={42}
-                      height={42}
-                    />
-                  </div>
-                </div>
-
-                <div className='flex flex-row mt-7'>
-                  <label htmlFor="thumbnail" className="flex items-center justify-center cursor-pointer mb-6">
-                    <div className="w-[355px] h-[125px] flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-300 transition-all duration-300 ease-in-out hover:border-gray-500 hover:shadow-lg">
-                      {(image || categoryId?.image) && (
-                        <Image
-                          src={image ? URL.createObjectURL(image) : categoryId.image}
-                          alt="Upload Thumbnail"
-                          width={110}
-                          height={100}
-                          className="object-cover rounded-lg"
-                          unoptimized={!!image}
-                        />
-                      )}
-                    </div>
-                  </label>
-
-                  <input
-                    type="file"
-                    id="thumbnail"
-                    className="hidden"
-                    onChange={(e) => {
-                      if (e.target.files && e.target.files[0]) {
-                        setImage(e.target.files[0]);
-                      }
-                    }}
-                  />
-                </div>
-
-                <DialogActions>
-                  <button type='submit' className='bg-amber-300 w-xs h-12 mb-8 mr-2.5 cursor-pointer'>Save</button>
-                </DialogActions>
-              </form>
-            )}
-          </DialogContent>
-        </div>
-      </Dialog>
-
       <div className="flex justify-end bottom-0 mt-5 h-[20px] items-center">
         <Stack spacing={2}>
-          <Pagination variant='outlined' shape='rounded' page={page}
+          <Pagination variant='outlined' shape='rounded'
+            count={count}
+            page={page}
             onChange={(e, page) => setPage(page)}
-            count={count} />
+            hidePrevButton={!!input}
+            hideNextButton={!!input}
+          />
         </Stack>
       </div>
+
+      {/* ✅ Add Category Dialog */}
+      <Dialog open={addCategory} onClose={() => setAddCategory(false)}>
+        <DialogContent>
+          <form onSubmit={handleSubmit} className='flex flex-col px-3'>
+            <h1 className='text-2xl text-center'>Add Category</h1>
+            <input
+              type='text'
+              name='category'
+              onChange={handleCategoryPost}
+              value={inputs.category}
+              placeholder='Category Name'
+              required
+              className='border mt-5 border-gray-200 px-2.5 py-2 w-full'
+            />
+            <div className="flex flex-row justify-between px-2 mt-5">
+              <label className="text-gray-400">Status</label>
+              <div className="cursor-pointer" onClick={() => setInputs(prev => ({ ...prev, status: prev.status === "1" ? "0" : "1" }))}>
+                <Image src={inputs.status === "1" ? assets.scrollon : assets.scrolloff} alt="Status" width={42} height={42} />
+              </div>
+            </div>
+            <label htmlFor="thumbnail" className="mt-6 cursor-pointer">
+              <div className="w-[355px] h-[125px] bg-gray-100 rounded-lg border-2 border-gray-300 flex items-center justify-center">
+                <Image src={image ? URL.createObjectURL(image) : assets.upimg} alt="Upload" width={110} height={100} />
+              </div>
+            </label>
+            <input type="file" id="thumbnail" className="hidden" onChange={(e) => setImage(e.target.files?.[0] || null)} />
+            <DialogActions>
+              <button type='submit' className='bg-amber-300 w-xs h-12 mb-4 mt-4'>Save</button>
+            </DialogActions>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* ✅ Edit Category Dialog */}
+      <Dialog open={toggleCategory} onClose={() => setToggleCategory(false)}>
+        <DialogContent>
+          {categoryId && (
+            <form onSubmit={(e) => handleIdDataSubmit(e, categoryId.id)} className='flex flex-col px-3'>
+              <h1 className='text-2xl text-center'>Edit Category</h1>
+              <input
+                type='text'
+                name='category'
+                onChange={handleCategoryPosts}
+                value={inputss.category}
+                placeholder='Category Name'
+                required
+                className='border mt-5 border-gray-200 px-2.5 py-2 w-full'
+              />
+              <div className="flex flex-row justify-between mt-5">
+                <label className="text-gray-400">Status</label>
+                <div className="cursor-pointer" onClick={() => setInputss(prev => ({ ...prev, status: prev.status === "1" ? "0" : "1" }))}>
+                  <Image src={inputss.status === "1" ? assets.scrollon : assets.scrolloff} alt="Status" width={42} height={42} />
+                </div>
+              </div>
+              <label htmlFor="thumbnail" className="mt-6 cursor-pointer">
+                <div className="w-[355px] h-[125px] bg-gray-100 rounded-lg border-2 border-gray-300 flex items-center justify-center">
+                  <Image src={image ? URL.createObjectURL(image) : categoryId.image} alt="Upload" width={110} height={100} unoptimized={!!image} />
+                </div>
+              </label>
+              <input type="file" id="thumbnail" className="hidden" onChange={(e) => setImage(e.target.files?.[0] || null)} />
+              <DialogActions>
+                <button type='submit' className='bg-amber-300 w-xs h-12 mb-4 mt-4'>Save</button>
+              </DialogActions>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

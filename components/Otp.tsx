@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { assets } from "../assests/assets";
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -10,6 +10,13 @@ import { toast } from 'react-toastify';
 const Otp = () => {
     const [otp, setOtp] = useState("")
     const route = useRouter();
+
+    useEffect(() => {
+        const refreshToken = localStorage.getItem("usertoken");
+        if (!refreshToken) {
+            route.replace('/');
+        }
+    }, []);
 
     const handlesubmits = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -26,7 +33,7 @@ const Otp = () => {
             else {
                 toast.error("invalid otp")
             }
-        } 
+        }
         catch (error) {
             console.log(error)
         }
@@ -34,7 +41,7 @@ const Otp = () => {
 
     const handleChange = (newValue: string) => {
         setOtp(newValue);
-      };      
+    };
 
     return (
         <div className='relative flex items-center justify-center w-full h-screen bg-black'>
@@ -64,10 +71,10 @@ const Otp = () => {
                     <MuiOtpInput
                         value={otp}
                         onChange={handleChange}
-                        length={4} 
+                        length={4}
                         className='mx-10 mt-10 px-15'
                         TextFieldsProps={{
-                            placeholder: '-', 
+                            placeholder: '-',
                         }}
                     />
                 </div>

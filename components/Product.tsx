@@ -1,7 +1,6 @@
 'use client'
-import { Pagination, Stack, TextField } from '@mui/material';
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import { InputAdornment, Pagination, Stack, TextField } from '@mui/material';
 import { MdEdit } from "react-icons/md";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import Image from 'next/image';
@@ -10,6 +9,8 @@ import { assets } from '@/assests/assets';
 import commonGetApis, { commonPostApis, deleteApi } from '@/commonapi/Commonapi';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
+import { IoSearchSharp } from "react-icons/io5";
+import orderBy from 'lodash/orderBy';
 
 interface Product {
   Product_Name: string;
@@ -33,7 +34,16 @@ const Products = () => {
   const [productIdData, setProductIdData] = useState<Newproduct | null>(null);
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState("");
+  const [sortField, setSortField] = useState<string>('');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const route = useRouter();
+
+  useEffect(() => {
+    const refreshToken = localStorage.getItem("usertoken");
+    if (!refreshToken) {
+      route.replace('/');
+    }
+  }, []);
 
   const fetchCategories = async () => {
     try {
@@ -65,7 +75,7 @@ const Products = () => {
     formData.append('stock_status', String(newStatus));
 
     try {
-      const res = await commonPostApis("status_change",formData);
+      const res = await commonPostApis("status_change", formData);
 
       if (res.data) {
         toast.success("Stock status updated successfully");
@@ -90,6 +100,7 @@ const Products = () => {
       toast.error("Something went Wrong")
     }
   };
+  console.log("PrID", productIdData)
   const handleIdDelete = async (id: number) => {
     try {
       const res = await deleteApi(`deleteproductvariation?id=${id}`)
@@ -101,10 +112,58 @@ const Products = () => {
       console.log(error)
     }
   }
+  const setExportData = () => {
+    if (!adds.length) {
+      toast.warning("No data to export");
+      return;
+    }
+
+    const headers = ["Product_Name", "Description", "Price", "Stock_Status", "Variation", "Category_Name", "Product_var_id"];
+    const rows = adds.map(item => [
+      item.Product_var_id,
+      item.Product_Name,
+      item.Description,
+      item.Price,
+      item.Variation,
+      item.Category_Name,
+      item.Stock_Status === 1 ? "Active" : "Inactive"
+    ]);
+
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "brands_export.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleSortItems = (field: keyof Product) => {
+    const newOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+    const sortedData = orderBy([...adds], [field], [newOrder]);
+    setAdds(sortedData);
+    setSortField(field);
+    setSortOrder(newOrder);
+    toast.info(`${newOrder.toLocaleUpperCase()}ENDING ORDER`, {
+      position: "top-center",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
+  };
+
   useEffect(() => {
     fetchCategories();
     document.title = "Admin Products"
-  }, [input,page]);
+  }, [input, page]);
 
   return (
     <div className="">
@@ -119,25 +178,52 @@ const Products = () => {
             label="Search Product"
             variant="outlined"
             value={input}
-            onChange={(e) => setInput(e.target.value)}
-            className="ml-12 bg-white"
+            onChange={(e) => setInput(e.target.value.trim())}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <IoSearchSharp size={20} />
+                </InputAdornment>
+              ),
+            }}
           />
           <button className="px-3 font-bold py-2 bg-amber-300 ml-5 w-auto h-13 cursor-pointer" onClick={handleAddProduct}>Add Product</button>
+          <button
+            className="px-2 py-3 bg-green-700 ml-1 w-20 font-bold cursor-pointer"
+            onClick={() => setExportData()}
+          >
+            Export
+          </button>
         </div>
       </div>
 
       <div>
-        <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden mt-5">
+        <table className="min-w-full bg-white shadow-md overflow-hidden mt-5">
           <thead>
             <tr>
-              <th className="py-2 px-2 text-left text-md font-semibold text-black">Image</th>
-              <th className="px-2 py-2 text-left text-md font-semibold text-black">Product Name</th>
-              <th className="px-2 py-2 text-left text-md font-semibold text-black">Category</th>
-              <th className="px-2 py-2 text-left text-md font-semibold text-black">Description</th>
-              <th className="px-2 py-2 text-left text-md font-semibold text-black">Variation</th>
-              <th className="py-2 px-2 text-left text-md font-semibold text-black">Price</th>
-              <th className="py-2 px-2 text-left text-md font-semibold text-black">Stock</th>
-              <th className="py-2 px-2 text-left text-md font-semibold text-black">Action</th>
+              <th className="py-4 px-7 text-left text-md font-semibold text-black">Image</th>
+              <th className="px-2 py-4 text-left text-md font-semibold text-black">
+                <div className='flex items-center'>
+                  Product Name
+                  <Image src={assets.sort} alt="sort" height={13} width={13} className="ml-1" onClick={() => handleSortItems("Product_Name")} />
+                </div>
+              </th>
+              <th className="px-2 py-4 text-left text-md font-semibold text-black">
+                <div className='flex items-center'>
+                  Category
+                  <Image src={assets.sort} alt="sort" height={13} width={13} className="ml-1" onClick={() => handleSortItems("Category_Name")} />
+                </div>
+              </th>
+              <th className="px-4 py-4 text-left text-md font-semibold text-black">Description</th>
+              <th className="px-2 py-4 text-left text-md font-semibold text-black">Variation</th>
+              <th className="py-2 px-4 text-left text-md font-semibold text-black">
+                <div className='flex items-center'>
+                  Price
+                  <Image src={assets.sort} alt="sort" height={13} width={13} className="ml-1" onClick={() => handleSortItems("Price")} />
+                </div>
+              </th>
+              <th className="py-2 px-4 text-left text-md font-semibold text-black">Stock</th>
+              <th className="py-2 px-4 text-left text-md font-semibold text-black">Action</th>
             </tr>
           </thead>
           <tbody className="">
@@ -147,7 +233,7 @@ const Products = () => {
                 const { Product_Name, Description, Price, Stock_Status, Variation, Category_Name, Product_var_id } = curval;
                 return (
                   <tr key={index} className=''>
-                    <td className='px-2 py-2'>
+                    <td className='px-5 py-2'>
                       {curval.Image && (
                         <Image
                           src={curval.Image}
@@ -158,12 +244,12 @@ const Products = () => {
                         />
                       )}
                     </td>
-                    <td className='px-2 py-2'>{Product_Name}</td>
-                    <td className='px-2 py-2'>{Category_Name}</td>
-                    <td className='px-2 py-2'>{Description}</td>
-                    <td className='px-2 py-2'>{Variation}</td>
-                    <td className='px-2 py-2'>{Price}</td>
-                    <td onClick={() => handleStatusChange(Product_var_id, Stock_Status)} className='px-2 py-2 cursor-pointer'>
+                    <td className='px-3 py-2'>{Product_Name}</td>
+                    <td className='px-3 py-2'>{Category_Name}</td>
+                    <td className='px-3 py-2'>{Description}</td>
+                    <td className='px-3 py-2'>{Variation}</td>
+                    <td className='px-4 py-2'>{Price}</td>
+                    <td onClick={() => handleStatusChange(Product_var_id, Stock_Status)} className='px-3.5 py-2 cursor-pointer'>
                       <div>
                         {Stock_Status === 1 ? (
                           <Image src={assets.scrollon} alt='In-Stock' />
@@ -173,7 +259,7 @@ const Products = () => {
                       </div>
                     </td>
                     <td>
-                      <button onClick={() => handleProductEdit(Product_var_id)} className='ml-2 text-gray-500'> <Link href={`/admin/products/${Product_var_id}`}><MdEdit /></Link></button>
+                      <button onClick={() => handleProductEdit(Product_var_id)} className='ml-4 text-gray-500'> <Link href={`/admin/products/${Product_var_id}`}><MdEdit /></Link></button>
                       <button onClick={() => handleIdDelete(Product_var_id)} className='ml-3 text-gray-500 cursor-pointer'><RiDeleteBin5Fill /></button>
                     </td>
                   </tr>
@@ -187,6 +273,8 @@ const Products = () => {
               count={count}
               page={page}
               onChange={(e, page) => setPage(page)}
+              hideNextButton={!!input}
+              hidePrevButton={!!input}
             />
           </Stack>
         </div>

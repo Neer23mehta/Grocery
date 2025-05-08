@@ -8,6 +8,7 @@ import { Dialog, DialogContent, TextField } from '@mui/material';
 import { useFormik } from 'formik';
 import * as Yup from 'yup'
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface Faq {
   Answer: string;
@@ -18,6 +19,15 @@ interface Faq {
 const Faq = () => {
   const [faq, setFaq] = useState<Faq[]>([]);
   const [open, setOpen] = useState(false);
+
+  const route = useRouter();
+
+  useEffect(() => {
+    const refreshToken = localStorage.getItem("usertoken");
+    if (!refreshToken) {
+      route.replace('/');
+    }
+  }, []);
 
   const initialValues = {
     Question: "",
@@ -83,7 +93,7 @@ const Faq = () => {
 
   useEffect(() => {
     fetchFaq();
-    document.title="Admin faq"
+    document.title = "Admin faq"
   }, [])
 
   return (
@@ -101,7 +111,7 @@ const Faq = () => {
       <div className='flex flex-col justify-center w-full px-4 py-3'>
         <ul>
           {faq.map((curVal, idx) => (
-            <li className='flex flex-col justify-center bg-white shadow-md space-x-5 mt-3 py-3' key={idx}>
+            <li className='flex flex-col justify-center bg-white shadow-md space-x-5 mt-3 py-3 px-5' key={idx}>
               <div className='flex flex-row justify-between items-center'>
                 <p className='text-2xl'><span className='mr-5'>({idx + 1})</span>{curVal.Question}</p>
                 <div className='flex flex-row justify-center items-center gap-2.5 cursor-pointer'>

@@ -178,7 +178,7 @@ const Layout = ({ children }: LayoutProps) => {
                     </div>
                 </div>
 
-                <div className={`p-6 flex-1 overflow-y-auto bg-gray-100`}>
+                <div className={`p-9 flex-1 overflow-y-auto bg-gray-100`}>
                 {children}
 
                     <Dialog open={config} onClose={() => setConfig(false)}>

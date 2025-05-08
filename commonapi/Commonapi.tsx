@@ -5,6 +5,10 @@ const commonGetApis = async (params: string) => {
   const refreshtoken = typeof window !== "undefined" ? localStorage.getItem("usertoken") : null;
   const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
+  if(!refreshtoken && !token) {
+    return { status: 401, message: "Unauthorized" };
+  }
+
   try {
     const res = await axios.get(`http://192.168.2.180:3000/admin/${params}`, {
       headers: {

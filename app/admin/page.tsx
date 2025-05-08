@@ -51,11 +51,11 @@ const Page = () => {
     { label: 'Home Management', href: '/admin/homemanage', color: 'bg-teal-500' },
     { label: 'Pages', href: '/admin/pages', color: 'bg-cyan-500' },
     { label: 'FAQ', href: '/admin/faq', color: 'bg-lime-500' },
-    { label: 'Admin', href: '/admin', color: 'bg-sky-700' },
+    // { label: 'Admin', href: '/admin', color: 'bg-sky-700' },
     { label: 'Login', href: '/', color: 'bg-pink-700' },
-    { label: 'Change-Password', href: '/changepassword', color: 'bg-rose-700' },
-    { label: 'Forget-Password', href: '/forget', color: 'bg-purple-700' },
-    { label: 'Verify', href: '/verify', color: 'bg-violet-700' },
+    // { label: 'Change-Password', href: '/changepassword', color: 'bg-rose-700' },
+    // { label: 'Forget-Password', href: '/forget', color: 'bg-purple-700' },
+    // { label: 'Verify', href: '/verify', color: 'bg-violet-700' },
   ];
 
   return (

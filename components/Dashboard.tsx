@@ -10,6 +10,7 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, ArcElement, T
 import { Skeleton } from '@mui/material'
 import { LineElement, PointElement, LineController } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import { useRouter } from 'next/navigation'
 // import { MapContainer, TileLayer } from 'react-leaflet'
 // import 'leaflet/dist/leaflet.css'
 
@@ -47,6 +48,15 @@ const Dashboard = () => {
     order_count: 0,
   });
 
+  const router = useRouter();
+
+  useEffect(() => {
+    const refreshToken = localStorage.getItem("usertoken");
+    if (!refreshToken) {
+      router.replace('/');
+    }
+  }, []);
+
   const fetchDashboard = async () => {
     try {
       const res = await commonGetApis("get_dashboard_detail")
@@ -68,7 +78,7 @@ const Dashboard = () => {
   }, [])
 
   return (
-    <div className="flex flex-col items-center px-4 py-8 bg-gray-100 w-full h-full">
+    <div className="flex flex-col items-start px-4 py-8 bg-gray-100 w-full h-full">
       <h1 className="text-4xl font-bold mb-10 text-center text-black">Dashboard</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 w-full max-w-7xl">
@@ -80,7 +90,7 @@ const Dashboard = () => {
           { title: 'Sub-Categories', value: dashboard.sub_category_count, name: 'category/subcategories', image: "📁" },
           { title: 'Orders', value: dashboard.order_count, name: 'orders', image: "🧾" },
           { title: 'Coupon', value: dashboard.coupon_count, name: 'couponmanage', image: "🎟️" },
-          { title: 'Admin-Monitor', value: 1, name: '', image: "👤" }
+          { title: 'Admin-Monitor', value: 1, name: '', image: "🧑" }
         ].map((item, index) => (
           <Link href={`/admin/${item.name}`} key={index}>
             <div
@@ -211,7 +221,7 @@ const Dashboard = () => {
         {/* <div className="w-full md:w-1/2 h-[400px] bg-white p-6 rounded-lg shadow-lg">
           <h2 className="text-2xl font-bold mb-4 text-black">Map</h2>
           <div className="h-[calc(100%-2rem)] w-full"> {/* 2rem = mb-4 for h2 */}
-            {/* <MapContainer
+        {/* <MapContainer
               center={[22.9734, 78.6569]}
               zoom={5}
               style={{ height: '100%', width: '100%' }}
@@ -223,7 +233,7 @@ const Dashboard = () => {
               />
             </MapContainer>
           </div>
-        </div> */} 
+        </div> */}
       </div>
     </div>
   )

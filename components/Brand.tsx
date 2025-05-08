@@ -1,5 +1,5 @@
 'use client';
-import { Dialog, DialogActions, DialogContent, Pagination, Stack } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, InputAdornment, Pagination, Stack, TextField } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { MdEdit } from 'react-icons/md';
 import { RiDeleteBin5Fill } from 'react-icons/ri';
@@ -9,6 +9,9 @@ import commonGetApis, { commonPostApis, deleteApi } from '@/commonapi/Commonapi'
 import { assets } from '@/assests/assets';
 import Link from 'next/link';
 import { AxiosError } from 'axios';
+import { IoSearchSharp } from "react-icons/io5";
+import { useRouter } from 'next/navigation';
+import orderBy from 'lodash/orderBy';
 
 interface Category {
   No: number;
@@ -38,6 +41,8 @@ const Brand = () => {
   const [toggleBrand, setToggleBrand] = useState(false)
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState("");
+  const [sortField, setSortField] = useState<string>('');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [inputs, setInputs] = useState<{
     brand: string;
     category: string;
@@ -53,6 +58,13 @@ const Brand = () => {
   });
 
   const [image, setImage] = useState<File | null>(null);
+  const router = useRouter();
+  useEffect(() => {
+    const refreshToken = localStorage.getItem("usertoken");
+    if (!refreshToken) {
+      router.replace('/');
+    }
+  }, []);
 
   const fetchCategories = async () => {
     try {
@@ -104,15 +116,15 @@ const Brand = () => {
 
     if (inputs.No) {
       formdata.append('id', String(inputs.No));
-     } 
+    }
     try {
-       const res = await commonPostApis('add_brand', formdata);
-        if (res.data) {
-          toast.success("Added")
-        }
-        else{
-          toast.error("Unsuccessfull")
-        }
+      const res = await commonPostApis('add_brand', formdata);
+      if (res.data) {
+        toast.success("Added")
+      }
+      else {
+        toast.error("Unsuccessfull")
+      }
       setAddSub(false);
       setToggleBrand(false);
       setInputs({
@@ -160,7 +172,7 @@ const Brand = () => {
     formData.append('id', String(id));
     formData.append('status', String(newStatus));
     try {
-      const res = await commonPostApis('status_change3',formData);
+      const res = await commonPostApis('status_change3', formData);
 
       if (res.data) {
         toast.success('Status updated successfully');
@@ -177,12 +189,60 @@ const Brand = () => {
       }
     }
   }
+
+  const setExportData = () => {
+    if (!adds.length) {
+      toast.warning("No data to export");
+      return;
+    }
+
+    const headers = ["No", "Brand_Name", "Category_Name", "SubCategory_Name", "Status"];
+    const rows = adds.map(item => [
+      item.No,
+      item.Brand_Name,
+      item.Category_Name,
+      item.SubCategory_Name,
+      item.Status === 1 ? "Active" : "Inactive"
+    ]);
+
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "brands_export.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleSortItems = (field: keyof Category) => {
+    const newOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+    const sortedData = orderBy([...adds], [field], [newOrder]);
+    setAdds(sortedData);
+    setSortField(field);
+    setSortOrder(newOrder);
+    toast.info(`${newOrder.toLocaleUpperCase()}ENDING ORDER`, {
+      position: "top-center",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
+  };
+
+
   useEffect(() => {
     fetchCategories();
     fetchGetCategory();
     fetchSubCategories();
     document.title = "Admin Brands"
-  }, [input,page]);
+  }, [input, page]);
 
   const count = Math.ceil(Number(totalCount) / 10)
   return (
@@ -193,17 +253,31 @@ const Brand = () => {
           <p className='text-gray-500 mt-2'><Link href={`/admin/dashboard`}>Dashboard</Link> <span className='ml-2.5'>{`>`}</span><span className='text-black ml-2.5'>Brands</span> </p>
         </div>
         <div>
-          <input
-            placeholder="Search Brands..."
+          <TextField
+            id="outlined-basic"
+            label="Search User"
+            variant="outlined"
             value={input}
-            onChange={(e) => setInput(e.target.value)}
-            className="ml-50 h-12 py-2 px-2 border-1 border-gray-400 bg-white sm:w-[80px] md:w-[120px] lg:w-[190px]"
+            onChange={(e) => setInput(e.target.value.trim())}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <IoSearchSharp size={20} />
+                </InputAdornment>
+              ),
+            }}
           />
           <button
-            className="px-2 py-2 bg-amber-300 ml-5 w-40 h-12 font-bold cursor-pointer"
+            className="px-2 py-2 bg-amber-300 ml-5 w-30 h-12 font-bold cursor-pointer"
             onClick={() => setAddSub(true)}
           >
             Add Brand
+          </button>
+          <button
+            className="px-2 py-2 bg-green-700 ml-1 w-20 h-12 font-bold cursor-pointer"
+            onClick={() => setExportData()}
+          >
+            Export
           </button>
         </div>
       </div>
@@ -211,13 +285,33 @@ const Brand = () => {
         <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden mt-5">
           <thead>
             <tr>
-              <th className="px-2 py-2 text-left text-md font-semibold text-black">No.</th>
-              <th className="py-2 px-2 text-left text-md font-semibold text-black">Image</th>
-              <th className="py-2 px-2 text-left text-md font-semibold text-black">Name</th>
-              <th className="py-2 px-2 text-left text-md font-semibold text-black">Category</th>
-              <th className="py-2 px-2 text-left text-md font-semibold text-black">Sub-Category</th>
-              <th className="py-2 px-2 text-left text-md font-semibold text-black">Status</th>
-              <th className="py-2 px-2 text-left text-md font-semibold text-black">Action</th>
+              <th className="px-7 py-4 text-left text-md font-semibold text-black">
+                <div className='flex items-center'>
+                  No.
+                  <Image src={assets.sort} alt="sort" height={13} width={13} className="ml-1" onClick={() => handleSortItems("No")} />
+                </div>
+              </th>
+              <th className="py-4 px-2 text-left text-md font-semibold text-black">Image</th>
+              <th className="py-4 px-2 text-left text-md font-semibold text-black">
+                <div className="flex items-center cursor-pointer" onClick={() => handleSortItems('Brand_Name')}>
+                  Name
+                  <Image src={assets.sort} alt="sort" height={13} width={13} className="ml-1" />
+                </div>
+              </th>
+              <th className="py-4 px-2 text-left text-md font-semibold text-black">
+                <div className="flex items-center cursor-pointer" onClick={() => handleSortItems('Category_Name')}>
+                  Category
+                  <Image src={assets.sort} alt="sort" height={13} width={13} className="ml-1" />
+                </div>
+              </th>
+              <th className="py-4 px-2 text-left text-md font-semibold text-black">
+                <div className='flex items-center'>
+                  Sub-Category
+                  <Image src={assets.sort} alt="sort" height={13} width={13} className="ml-1" onClick={() => handleSortItems('SubCategory_Name')} />
+                </div>
+              </th>
+              <th className="py-4 px-2 text-left text-md font-semibold text-black">Status</th>
+              <th className="py-4 px-2 text-left text-md font-semibold text-black">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -231,8 +325,8 @@ const Brand = () => {
                 const { No, Image: img, Category_Name, Status, Brand_Name, SubCategory_Name, } = curval;
                 return (
                   <tr key={No}>
-                    <td className="px-2 py-2">{No}</td>
-                    <td className='px-2 py-2'>
+                    <td className="px-7 py-2">{No}</td>
+                    <td className='px-1 py-2'>
                       <Image
                         src={img}
                         alt={Category_Name}
@@ -246,7 +340,7 @@ const Brand = () => {
                     <td className="px-2 py-2">{Category_Name}</td>
                     <td className="px-2 py-2">{SubCategory_Name}</td>
                     <td
-                      className="cursor-pointer"
+                      className="cursor-pointer px-2"
                       onClick={() => handleStatusChange(No, Status)}
                     >
                       {Status === 1 ? (
@@ -281,7 +375,10 @@ const Brand = () => {
 
         <div className="flex justify-end mt-4">
           <Stack spacing={2}>
-            <Pagination count={count} page={page} onChange={(e, page) => setPage(page)} variant="outlined" shape="rounded" />
+            <Pagination count={count} page={page} onChange={(e, page) => setPage(page)} variant="outlined" shape="rounded"
+              hideNextButton={!!input}
+              hidePrevButton={!!input}
+            />
           </Stack>
         </div>
       </div>
@@ -490,7 +587,7 @@ const Brand = () => {
                       width={110}
                       height={100}
                       className="object-cover rounded-lg"
-                      unoptimized 
+                      unoptimized
                     />
                   </div>
                 </label>

@@ -10,6 +10,7 @@ import Link from 'next/link'
 import commonGetApis, { commonPostApis, deleteApi } from '@/commonapi/Commonapi'
 import { toast } from 'react-toastify'
 import { RiDeleteBin5Fill } from "react-icons/ri";
+import { useRouter } from 'next/navigation'
 
 const extensions = [
   StarterKit.configure({
@@ -26,8 +27,17 @@ export default function MyEditor() {
   const [data, setData] = useState("")
   const editor = useEditor({
     extensions,
-    content: '',
+    content: 'Write Here',
   })
+
+  const router = useRouter();
+
+  useEffect(() => {
+    const refreshToken = localStorage.getItem("usertoken");
+    if (!refreshToken) {
+      router.replace('/');
+    }
+  }, []);
 
   const fetchTandC = async () => {
     try {
@@ -42,7 +52,7 @@ export default function MyEditor() {
   const handleDelTanC = async (id) => {
     try {
       const res = await deleteApi(`delete_terms_condition?id=${id}`)
-      if(res.data){
+      if (res.data) {
         setData((prev) => prev.filter((items) => items.terms_and_condition_id !== id))
         toast.success("Terms and Conditions deleted successfully")
       }
@@ -86,7 +96,7 @@ export default function MyEditor() {
           <button className="px-3 font-bold py-2 bg-amber-300 ml-5 w-auto h-13 cursor-pointer" onClick={handleAddPage}>Add Pages</button>
         </div>
       </div>
-      <div className="max-w-full p-2 bg-white rounded-lg shadow space-y-4">
+      <div className="max-w-full p-2 bg-white shadow space-y-4">
         <div className="flex flex-wrap gap-2 border-b pb-3">
           <button onClick={() => editor.chain().focus().toggleBold().run()} className={btn(editor.isActive('bold'))}>Bold</button>
           <button onClick={() => editor.chain().focus().toggleItalic().run()} className={btn(editor.isActive('italic'))}>Italic</button>

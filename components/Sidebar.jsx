@@ -42,7 +42,7 @@ export const Sidebar = () => {
   const isActive = (href) => pathname.startsWith(href);
 
   return (
-    <div className="flex flex-col w-40 lg:w-75 h-screen">
+    <div>
       <button
         onClick={toggleSidebar}
         className="lg:hidden text-white bg-black fixed top-4 left-0 rounded-full z-20 w-6 h-6 flex items-center justify-center"
@@ -57,7 +57,7 @@ export const Sidebar = () => {
         onClose={toggleSidebar}
         PaperProps={{
           sx: {
-            width: { xs: 160, md: 180, lg: 260 },
+            width: { xs: 190, md: 180, lg: 290 },
             bgcolor: '#202020',
             overflowY: 'auto',
             overflowX: 'hidden',
@@ -83,14 +83,14 @@ export const Sidebar = () => {
         }}      >
 
         <div className="flex flex-col h-full">
-          <div className="py-4 px-5 flex items-center justify-center">
+          <div className="py-4 mr-15 flex items-center justify-center">
             <Image src={assets.nlogo} alt="logo" width={130} height={100} />
           </div>
 
           <nav className="flex flex-col space-y-2 px-4">
             <Link href="/admin/dashboard" className={`flex items-center gap-3 font-medium p-3 rounded-md transition-all ${isActive('/admin/dashboard') ? 'text-amber-300' : 'text-white'}`}>
               <Image src={assets.dash} alt="dashboard" />
-              <p>Dashboard</p>
+              <p className="underline-offset-1">Dashboard</p>
             </Link>
 
             <Link href="/admin/user" className={`flex items-center gap-3 font-medium p-3 rounded-md transition-all ${isActive('/admin/user') ? 'text-amber-300' : 'text-white'}`}>

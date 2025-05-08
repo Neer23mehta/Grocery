@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { assets } from '@/assests/assets';
 import commonGetApis from '@/commonapi/Commonapi';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface Orderdetail {
     Total: number;
@@ -58,6 +59,14 @@ const Orderid = ( {id} : OrderidProps) => {
         { label: "Pickup", icon: assets.timer, key: "pickup" },
         { label: "Completed", icon: assets.done, key: "completed" }
     ];
+    const router = useRouter();
+
+    useEffect(() => {
+        const refreshToken = localStorage.getItem("usertoken");
+        if (!refreshToken) {
+          router.replace('/');
+        }
+    }, []);
 
     const fetchDetails = async () => {
         try {

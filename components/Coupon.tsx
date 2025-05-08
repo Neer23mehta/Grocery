@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { assets } from '@/assests/assets';
 import commonGetApis, { commonPostApis, deleteApi } from '@/commonapi/Commonapi';
 import { Dialog, DialogActions, DialogContent, Pagination, Stack } from '@mui/material';
-import axios from 'axios';
 import Image from 'next/image';
 import { toast } from 'react-toastify';
 import { MdEdit } from 'react-icons/md';
@@ -11,6 +10,8 @@ import { RiDeleteBin5Fill } from 'react-icons/ri';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import orderBy from 'lodash/orderBy';
 
 interface Users {
   No: number;
@@ -57,6 +58,16 @@ const Coupons = () => {
   const [page, setPage] = useState(1)
   const [totalCount, setTotalCount] = useState('')
   const [isEditing, setIsEditing] = useState(false);
+  const [sortField, setSortField] = useState<string>('');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const router = useRouter();
+
+  useEffect(() => {
+    const refreshToken = localStorage.getItem("usertoken");
+    if (!refreshToken) {
+      router.replace('/');
+    }
+  }, []);
 
   const fetchGet = async () => {
     try {
@@ -68,8 +79,6 @@ const Coupons = () => {
     }
   };
   const handleStatusChange = async (id: number, currentStatus: number) => {
-    const token = localStorage.getItem("token");
-    const refreshtoken = localStorage.getItem("usertoken");
     const newStatus = currentStatus === 1 ? 0 : 1;
 
     const formData = new URLSearchParams();
@@ -77,7 +86,7 @@ const Coupons = () => {
     formData.append("status", String(newStatus));
 
     try {
-      const res = await commonPostApis("status_change4",formData);
+      const res = await commonPostApis("status_change4", formData);
 
       if (res.data) {
         toast.success("Status updated successfully");
@@ -142,7 +151,7 @@ const Coupons = () => {
     }
 
     try {
-      const res = await commonPostApis("add_coupon",formdata);
+      const res = await commonPostApis("add_coupon", formdata);
 
       if (res.data) {
         toast.success(isEditing ? "Coupon updated successfully!" : "Coupon added successfully!");
@@ -179,6 +188,53 @@ const Coupons = () => {
       toast.error("Something went wrong");
     }
   };
+  const setExportData = () => {
+    if (!users.length) {
+      toast.warning("No data to export");
+      return;
+    }
+
+    const headers = ["No", "Coupon_Name", "Min_Purchase", "Discount_Price", "Coupon_Code", "Date", "Status"];
+    const rows = users.map(item => [
+      item.No,
+      item.Coupon_Name,
+      item.Min_Purchase,
+      item.Discount_Price,
+      item.Coupon_Code,
+      item.Date,
+      item.Status === 1 ? "Active" : "Inactive"
+    ]);
+
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "brands_export.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleSortItems = (field: keyof Coupon) => {
+    const newOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+    const sortedData = orderBy([...users], [field], [newOrder]);
+    setUsers(sortedData);
+    setSortField(field);
+    setSortOrder(newOrder);
+    toast.info(`${newOrder.toLocaleUpperCase()}ENDING ORDER`, {
+      position: "top-center",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
+  };
 
   useEffect(() => {
     fetchGet();
@@ -194,14 +250,32 @@ const Coupons = () => {
           <h1 className='text-3xl font-bold'>Coupon Management</h1>
           <p className='text-gray-500 mt-2'><Link href={`/admin/dashboard`}>Dashboard</Link> <span className='ml-2.5'>{`>`}</span><span className='text-black ml-2.5'>Coupon Management</span> </p>
         </div>
-        <button onClick={handleAddSubmit} className='py-2 px-7 bg-amber-300 font-bold cursor-pointer'>Add Coupon</button>
+        <div>
+          <button onClick={handleAddSubmit} className='py-3 px-5 bg-amber-300 font-bold cursor-pointer'>Add Coupon</button>
+          <button
+            className="px-2 py-3 bg-green-700 ml-1 w-20 font-bold cursor-pointer"
+            onClick={() => setExportData()}
+          >
+            Export
+          </button>
+        </div>
       </div>
 
       <table className={`min-w-full bg-white shadow-md rounded-lg mt-5 ${submit ? "opacity-30" : "opacity-100"}`}>
         <thead>
           <tr>
-            <th className="py-3 px-4">No.</th>
-            <th className="py-3 px-4">Coupon Name</th>
+            <th className="py-3 px-7">
+              <div className="flex items-center">
+                No.
+                <Image src={assets.sort} alt="sort" height={13} width={13} className="ml-1" onClick={() => handleSortItems("No")} />
+              </div>
+            </th>
+            <th className="py-3 px-4">
+              <div className="flex items-center">
+                Coupon Name
+                <Image src={assets.sort} alt="sort" height={13} width={13} className="ml-1" onClick={() => handleSortItems("Coupon_Name")} />
+              </div>
+            </th>
             <th className="py-3 px-4">Min Purchase</th>
             <th className="py-3 px-4">Discount Price</th>
             <th className="py-3 px-4">Coupon Code</th>
@@ -213,12 +287,12 @@ const Coupons = () => {
         <tbody>
           {users.map(({ No, Coupon_Name, Min_Purchase, Discount_Price, Coupon_Code, Date, Status }) => (
             <tr key={No}>
-              <td className='px-4 py-4'>{No}</td>
-              <td className='px-4 py-4'>{Coupon_Name}</td>
-              <td className='px-4 py-4'>{Min_Purchase}</td>
-              <td className='px-4 py-4'>{Discount_Price}</td>
-              <td className='px-4 py-4'>{Coupon_Code}</td>
-              <td className='px-4 py-4'>{Date}</td>
+              <td className='px-7 py-6'>{No}</td>
+              <td className='px-6 py-6'>{Coupon_Name}</td>
+              <td className='px-4 py-6'>{Min_Purchase}</td>
+              <td className='px-4 py-6'>{Discount_Price}</td>
+              <td className='px-4 py-6'>{Coupon_Code}</td>
+              <td className='px-4 py-6'>{Date}</td>
               <td className='px-4 cursor-pointer py-4' onClick={() => handleStatusChange(No, Status)}>
                 <Image src={Status === 1 ? assets.scrollon : assets.scrolloff} alt='status' />
               </td>

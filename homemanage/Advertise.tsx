@@ -6,6 +6,8 @@ import { MdEdit } from "react-icons/md";
 import { Dialog, DialogActions } from '@mui/material';
 import { toast } from 'react-toastify';
 import commonGetApis, { commonPostApis, deleteApi } from '@/commonapi/Commonapi';
+import Zoom from 'react-medium-image-zoom'
+import 'react-medium-image-zoom/dist/styles.css'
 
 interface Advertise {
   image: string;
@@ -122,20 +124,22 @@ const Advertise: React.FC = () => {
                         className="cursor-pointer"
                       />
                     </button>
-                    <Image
-                      src={ad.image} 
-                      alt={`banner-${idx}`} 
-                      width={250}  
+                    <Zoom>
+                      <Image
+                      src={ad.image}
+                      alt={`banner-${idx}`}
+                      width={250}
                       height={140}
                       className="mb-5 h-[140px] w-[250px] border border-gray-300 object-cover rounded-md shadow-sm mt-6 hover:shadow-md transition-shadow duration-200"
-                      onClick={() => fetchGetById(ad.id)} 
-                    />
+                      onClick={() => fetchGetById(ad.id)}
+                      />
+                    </Zoom>
                   </div>
                 ))}
               </div>
             ))}
             <div className="flex justify-center items-center w-[250px] mb-5 h-[140px] border border-gray-300 mt-6 rounded-md">
-              <Image src={assets.add} alt="banner" onClick={handleToggleAdd} className='cursor-pointer'/>
+              <Image src={assets.add} alt="banner" onClick={handleToggleAdd} className='cursor-pointer' />
             </div>
           </div>
         </div>

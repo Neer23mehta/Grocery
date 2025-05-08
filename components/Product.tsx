@@ -11,6 +11,8 @@ import { toast } from 'react-toastify';
 import Link from 'next/link';
 import { IoSearchSharp } from "react-icons/io5";
 import orderBy from 'lodash/orderBy';
+import Zoom from 'react-medium-image-zoom'
+import 'react-medium-image-zoom/dist/styles.css'
 
 interface Product {
   Product_Name: string;
@@ -235,13 +237,15 @@ const Products = () => {
                   <tr key={index} className=''>
                     <td className='px-5 py-2'>
                       {curval.Image && (
-                        <Image
-                          src={curval.Image}
-                          alt={Product_Name}
-                          width={50}
-                          height={50}
-                          className="object-cover h-[50px] w-[70px]"
-                        />
+                        <Zoom>
+                          <Image
+                            src={curval.Image}
+                            alt={Product_Name}
+                            width={50}
+                            height={50}
+                            className="object-cover h-[50px] w-[70px]"
+                          />
+                        </Zoom>
                       )}
                     </td>
                     <td className='px-3 py-2'>{Product_Name}</td>

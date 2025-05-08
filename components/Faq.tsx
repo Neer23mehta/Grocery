@@ -1,13 +1,12 @@
-'use client'
-import React, { useEffect, useState } from 'react'
-import commonGetApis, { commonPostApis, deleteApi } from '@/commonapi/Commonapi'
-import { GoArrowRight } from "react-icons/go";
-import { RiDeleteBin6Line } from "react-icons/ri";
-import { toast } from 'react-toastify';
-import { Dialog, DialogContent, TextField } from '@mui/material';
+'use client';
+import React, { useEffect, useState } from 'react';
+import commonGetApis, { commonPostApis, deleteApi } from '@/commonapi/Commonapi';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Dialog, DialogContent, TextField, IconButton } from '@mui/material';
 import { useFormik } from 'formik';
-import * as Yup from 'yup'
-import Link from 'next/link';
+import * as Yup from 'yup';
+import { RiDeleteBin6Line } from 'react-icons/ri';
+import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 
 interface Faq {
@@ -19,152 +18,165 @@ interface Faq {
 const Faq = () => {
   const [faq, setFaq] = useState<Faq[]>([]);
   const [open, setOpen] = useState(false);
-
-  const route = useRouter();
+  const [expanded, setExpanded] = useState<number | null>(null);
+  const [newlyAddedId, setNewlyAddedId] = useState<number | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
-    const refreshToken = localStorage.getItem("usertoken");
-    if (!refreshToken) {
-      route.replace('/');
+    const token = localStorage.getItem('usertoken');
+    if (!token) {
+      router.replace('/');
     }
   }, []);
 
-  const initialValues = {
-    Question: "",
-    Answer: ""
-  }
-
-  const validationSchema = Yup.object({
-    Question: Yup.string().min(10, "Question should be at least 10 characters").max(999, "Question is too long").required("Question is Required"),
-    Answer: Yup.string().min(10, "Answer should be at least 10 characters").required("Answer is Required")
-  });
+  useEffect(() => {
+    fetchFaq();
+    document.title = 'Admin FAQ';
+  }, []);
 
   const fetchFaq = async () => {
     try {
-      const res = await commonGetApis("get_all_faqs")
-      setFaq(res?.data?.result)
+      const res = await commonGetApis('get_all_faqs');
+      setFaq(res?.data?.result || []);
     } catch (error) {
-      console.log(error)
-      toast.error("Failed to fetch FAQs")
+      console.error(error);
+      toast.error('Failed to fetch FAQs');
     }
-  }
+  };
 
-  const formik = useFormik({
-    initialValues: initialValues,
-    validationSchema: validationSchema,
-    onSubmit: (values) => {
-      addFaqs(values);
-    }
+  const initialValues = { Question: '', Answer: '' };
+
+  const validationSchema = Yup.object({
+    Question: Yup.string().min(10).required('Question is required'),
+    Answer: Yup.string().min(10).required('Answer is required'),
   });
 
-  const addFaqs = async (values: { Question: string, Answer: string }) => {
+  const formik = useFormik({
+    initialValues,
+    validationSchema,
+    onSubmit: async (values) => {
+      const formData = new URLSearchParams();
+      formData.append('question', values.Question);
+      formData.append('answer', values.Answer);
 
-    const formData = new URLSearchParams();
-    formData.append("question", values.Question);
-    formData.append("answer", values.Answer);
-    try {
-      const res = await commonPostApis("add_faqs", formData);
-      if (res.data) {
+      try {
+        const res = await commonPostApis('add_faqs', formData);
+        const newId = res.data?.id || Date.now(); 
+        setNewlyAddedId(newId);
         fetchFaq();
         setOpen(false);
-        toast.success("FAQ Added Successfully");
+        toast.success('FAQ Added Successfully');
+
+        setTimeout(() => setNewlyAddedId(null), 4000);
+      } catch (err) {
+        console.error(err);
+        toast.error('Failed to add FAQ');
       }
-    } catch (error) {
-      console.log(error);
-    }
-  }
+    },
+  });
 
-  const handleOpenModal = () => {
-    setOpen(!open);
-  }
-
-  const handleDeleteFaq = async (id: number) => {
+  const handleDelete = async (id: number) => {
     try {
-      const res = await deleteApi(`delete_faqs?id=${id}`)
-      if (res.data) {
-        setFaq((prev) => prev.filter(item => item.Faq_id !== id))
-        toast.success("Successfully Deleted");
-      }
-    } catch (error) {
-      console.log(error)
-      toast.error("Something went Wrong");
+      await deleteApi(`delete_faqs?id=${id}`);
+      setFaq((prev) => prev.filter((f) => f.Faq_id !== id));
+      toast.success('Deleted successfully');
+    } catch (err) {
+      toast.error('Delete failed');
     }
-  }
-
-  useEffect(() => {
-    fetchFaq();
-    document.title = "Admin faq"
-  }, [])
+  };
 
   return (
-    <div className='w-full'>
-      <div className="flex flex-row justify-between items-center">
-        <div className="flex flex-col px-2">
-          <h1 className="text-3xl font-bold">Faq</h1>
-          <p className='text-gray-500 mt-2'><Link href={`/admin/dashboard`}>Dashboard</Link> <span className='ml-2.5'>{`>`}</span><span className='text-black ml-2.5'>Faqs</span> </p>
-        </div>
-        <div>
-          <button onClick={handleOpenModal} className="px-2 py-2 bg-amber-300 ml-5 w-25 h-13 font-bold cursor-pointer">Add Faq</button>
-        </div>
+    <div className='w-full p-4'>
+      <div className='flex justify-between items-center mb-4'>
+        <h1 className='text-3xl font-bold'>FAQ Management</h1>
+        <button onClick={() => setOpen(true)} className='bg-amber-400 px-4 py-2 font-semibold rounded shadow'>
+          Add FAQ
+        </button>
       </div>
 
-      <div className='flex flex-col justify-center w-full px-4 py-3'>
-        <ul>
-          {faq.map((curVal, idx) => (
-            <li className='flex flex-col justify-center bg-white shadow-md space-x-5 mt-3 py-3 px-5' key={idx}>
-              <div className='flex flex-row justify-between items-center'>
-                <p className='text-2xl'><span className='mr-5'>({idx + 1})</span>{curVal.Question}</p>
-                <div className='flex flex-row justify-center items-center gap-2.5 cursor-pointer'>
-                  <RiDeleteBin6Line size={25} onClick={() => handleDeleteFaq(curVal.Faq_id)} />
-                </div>
+      <div className='space-y-3'>
+        <AnimatePresence>
+          {faq.map((item, idx) => (
+            <motion.div
+              key={item.Faq_id}
+              initial={item.Faq_id === newlyAddedId ? { scale: 0.9, opacity: 0, backgroundColor: '#d1fae5' } : { opacity: 0 }}
+              animate={{ scale: 1, opacity: 1, backgroundColor: '#ffffff' }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 5.0 }}
+              className='shadow-md rounded p-4 border cursor-pointer relative'
+              onClick={() => setExpanded(expanded === item.Faq_id ? null : item.Faq_id)}
+            >
+              <div className='flex justify-between items-center'>
+                <p className='text-xl font-medium'>
+                  {idx + 1}. {item.Question}
+                </p>
+                <IconButton
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(item.Faq_id);
+                  }}
+                  size="small"
+                  color="error"
+                >
+                  <RiDeleteBin6Line />
+                </IconButton>
               </div>
-              <div className='flex flex-row justify-start items-center mt-5'>
-                <GoArrowRight size={30} /> <p className='text-2xl ml-3'>{curVal.Answer}</p>
-              </div>
-            </li>
+
+              <AnimatePresence>
+                {expanded === item.Faq_id && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className='mt-2 text-gray-700'
+                  >
+                    👉  {item.Answer}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
           ))}
-        </ul>
+        </AnimatePresence>
       </div>
 
       <Dialog open={open} onClose={() => setOpen(false)}>
-        <div className='bg-white shadow-md flex flex-col justify-center items-center'>
-          <div className='flex justify-end'>
-            <button className='ml-120 mt-2 text-2xl hover:text-red-700' onClick={() => setOpen(false)}>X</button>
-          </div>
-          <h1 className='px-2 text-2xl font-bold'>Add Faq</h1>
+        <div className='bg-white p-5 rounded w-full'>
+          <h2 className='text-2xl font-bold mb-4 flex justify-center'>Add FAQ</h2>
           <DialogContent>
-            <form onSubmit={formik.handleSubmit}>
+            <form onSubmit={formik.handleSubmit} className='space-y-4'>
               <TextField
                 fullWidth
                 label="Question"
-                variant="outlined"
-                margin="normal"
                 name="Question"
                 value={formik.values.Question}
                 onChange={formik.handleChange}
                 error={formik.touched.Question && Boolean(formik.errors.Question)}
                 helperText={formik.touched.Question && formik.errors.Question}
               />
+              <div className='mt-5'>
               <TextField
                 fullWidth
                 label="Answer"
-                variant="outlined"
-                margin="normal"
                 name="Answer"
+                multiline
                 value={formik.values.Answer}
                 onChange={formik.handleChange}
                 error={formik.touched.Answer && Boolean(formik.errors.Answer)}
                 helperText={formik.touched.Answer && formik.errors.Answer}
               />
-              <div className='flex justify-center items-center mt-3 text-xl'>
-                <button className='px-5 py-2 bg-amber-400' type="submit">Add Faq</button>
+              </div>
+              <div className='flex justify-center pt-2'>
+                <button type="submit" className='bg-amber-300 text-black font-bold px-4 py-2 rounded'>
+                  Submit
+                </button>
               </div>
             </form>
           </DialogContent>
         </div>
       </Dialog>
     </div>
-  )
-}
+  );
+};
 
-export default Faq
+export default Faq;

@@ -6,6 +6,8 @@ import { MdEdit } from "react-icons/md";
 import { toast } from 'react-toastify';
 import commonGetApis, { commonPostApis, deleteApi } from '@/commonapi/Commonapi';
 import { Dialog, DialogActions } from '@mui/material';
+import Zoom from 'react-medium-image-zoom'
+import 'react-medium-image-zoom/dist/styles.css'
 
 interface Brands {
   Image: string;
@@ -116,7 +118,8 @@ const Shopbybrand = () => {
                         className="absolute top-6 right-0 z-10 cursor-pointer"
                       />
                     </button>
-                    <Image
+                   <Zoom>
+                   <Image
                       src={brandImage.image || '/placeholder.png'} 
                       alt={`brand-${brandImage.id}`}
                       width={110} 
@@ -125,6 +128,7 @@ const Shopbybrand = () => {
                       onClick={() => fetchGetById(brandImage.id)}
                       unoptimized 
                     />
+                   </Zoom>
                   </div>
                 ))}
               </div>

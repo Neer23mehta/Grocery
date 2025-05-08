@@ -14,6 +14,8 @@ import Logout from "@/components/Logout";
 import Newpassword from "@/components/Newpassword";
 import { Dialog, DialogContent, Popper, ClickAwayListener, Paper } from "@mui/material";
 import axios from "axios";
+import Zoom from 'react-medium-image-zoom'
+import 'react-medium-image-zoom/dist/styles.css'
 
 interface LayoutProps {
     children: ReactNode;
@@ -155,7 +157,9 @@ const Layout = ({ children }: LayoutProps) => {
                         }
                         </div>
                         <div className="flex justify-end items-center">
-                        <Image src={assets.admin} alt="Admin" className="mt-2" />
+                        <Zoom>
+                        <Image src={assets.admin} alt="Admin" className="mt-2 h-[80px] w-[80px]"/>
+                        </Zoom>
                         <button onClick={handleClick} ref={anchorRef} className={`mr-2 text-xl text-black cursor-pointer`}>Admin</button>
                         <SlArrowDown size={12} onClick={handleClick} className={`mr-5 text-black cursor-pointer`}/>
                         </div>

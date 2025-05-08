@@ -6,6 +6,8 @@ import commonGetApis, { commonPostApis, deleteApi } from '@/commonapi/Commonapi'
 import { toast } from 'react-toastify'
 import axios from 'axios'
 import { Dialog, DialogActions } from '@mui/material'
+import Zoom from 'react-medium-image-zoom'
+import 'react-medium-image-zoom/dist/styles.css'
 
 interface Banners {
   image: string,
@@ -101,13 +103,15 @@ const Banner = () => {
                     className='absolute top-6 right-0 z-10 cursor-pointer'
                   />
                 </button>
-                <Image
+              <Zoom>
+              <Image
                   src={curval.image} 
                   alt="banner"
                   width={250}  
                   height={100}
                   className="h-[170px] w-[310px] object-cover border border-gray-300 rounded-md shadow-sm hover:shadow-md transition-shadow duration-200"
                 />
+              </Zoom>
               </div>
             ))}
             <div

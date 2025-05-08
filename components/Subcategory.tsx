@@ -11,6 +11,8 @@ import Link from 'next/link';
 import { IoSearchSharp } from "react-icons/io5";
 import { useRouter } from 'next/navigation';
 import orderBy from 'lodash/orderBy';
+import Zoom from 'react-medium-image-zoom'
+import 'react-medium-image-zoom/dist/styles.css'
 
 interface Category {
   No: number;
@@ -313,14 +315,15 @@ const Subcategory = () => {
                 <tr key={No}>
                   <td className="px-7 py-2">{No}</td>
                   <td className='px-1 py-3'>
+                    <Zoom>
                     <Image
                       src={ImgUrl}
                       alt={Category_Name}
                       width={56}
                       height={52}
                       objectFit="cover"
-                      className="rounded h-[52px] w-[56px] cursor-zoom-in"
-                    />
+                      className="rounded h-[52px] w-[56px] cursor-zoom-in"/>
+                    </Zoom>
                   </td>
                   <td className='px-3'>{SubCategory_Name}</td>
                   <td className='px-3'>{Category_Name}</td>

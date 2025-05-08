@@ -12,6 +12,8 @@ import { AxiosError } from 'axios';
 import { IoSearchSharp } from "react-icons/io5";
 import { useRouter } from 'next/navigation';
 import orderBy from 'lodash/orderBy';
+import Zoom from 'react-medium-image-zoom'
+import 'react-medium-image-zoom/dist/styles.css'
 
 interface Category {
   No: number;
@@ -327,6 +329,7 @@ const Brand = () => {
                   <tr key={No}>
                     <td className="px-7 py-2">{No}</td>
                     <td className='px-1 py-2'>
+                      <Zoom>
                       <Image
                         src={img}
                         alt={Category_Name}
@@ -335,6 +338,7 @@ const Brand = () => {
                         className="object-cover w-14 h-13 rounded-md"
                         unoptimized
                       />
+                      </Zoom>
                     </td>
                     <td className="px-2 py-2">{Brand_Name}</td>
                     <td className="px-2 py-2">{Category_Name}</td>

@@ -5,6 +5,8 @@ import { assets } from '@/assests/assets'
 import commonGetApis, { commonPostApis, deleteApi } from '@/commonapi/Commonapi'
 import { toast } from 'react-toastify'
 import { Dialog, DialogActions } from '@mui/material'
+import Zoom from 'react-medium-image-zoom'
+import 'react-medium-image-zoom/dist/styles.css'
 
 type CategoryItem = {
   category_name: string;
@@ -136,6 +138,7 @@ const Shopbycategory = () => {
                       className="absolute top-6 right-0 z-10 cursor-pointer hover:text-red-700"
                     />
                   </button>
+                  <Zoom>
                   <Image
                     src={ad.image || "/placeholder.png"}
                     alt="banner"
@@ -144,6 +147,7 @@ const Shopbycategory = () => {
                     className="object-cover border w-[120px] h-[120px] border-gray-300 rounded-md shadow-sm hover:shadow-md transition-shadow duration-200"
                     unoptimized
                   />
+                  </Zoom>
                   <p className="text-sm mt-2">{ad.category_name}</p>
                   <p className="text-sm text-gray-500">{ad.offer}</p>
                 </div>

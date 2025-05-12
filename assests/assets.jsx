@@ -54,9 +54,10 @@ import backs from "../assests/back-icon/back-icon.png"
 import prepares from "../assests/Ellipse 56 (2)/Ellipse 56.png"
 import errors from "../assests/ers.png"
 import sort from "../assests/Group 1607 (1)/Group 1607@2x.png"
+import des from "../assests/ans1.jpeg"
 
 export const assets = {
-    bgimg,
+    bgimg,des,
     limg,
     left,
     logo,

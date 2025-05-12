@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from "react";
 import { SlArrowRightCircle, SlArrowLeftCircle } from "react-icons/sl";
 import Drawer from '@mui/material/Drawer';
+import { PiGitBranchThin } from "react-icons/pi";
 
 export const Sidebar = () => {
   const router = useRouter();
@@ -162,6 +163,11 @@ export const Sidebar = () => {
             <Link href="/admin/faq" className={`flex items-center gap-3 font-medium p-3 rounded-md transition-all ${isActive('/admin/faq') ? 'text-amber-300' : 'text-white'}`}>
               <Image src={assets.faq} alt="faq" />
               <p>FAQ</p>
+            </Link>
+
+            <Link href="/admin/design" className={`flex items-center gap-3 font-medium p-3 rounded-md transition-all mr-1 ${isActive('/admin/design') ? 'text-amber-300' : 'text-white'}`}>
+            <PiGitBranchThin size={20}/>
+            <p>Design</p>
             </Link>
           </nav>
         </div>

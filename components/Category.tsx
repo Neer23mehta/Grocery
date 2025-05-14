@@ -65,7 +65,7 @@ const Category = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formdata = new FormData();
-    formdata.append("category_name", inputs.category);
+    formdata.append("categoryName", inputs.category);
     formdata.append("status", inputs.status);
     if (image) formdata.append("image", image);
 
@@ -90,7 +90,7 @@ const Category = () => {
 
     const formdata = new FormData();
     formdata.append("id", String(id));
-    formdata.append("category_name", inputss.category);
+    formdata.append("categoryName", inputss.category);
     formdata.append("status", inputss.status);
     if (image) formdata.append("image", image);
 

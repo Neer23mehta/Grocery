@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="115" height="115" viewBox="0 0 115 115">
+  <defs>
+    <radialGradient id="radial-gradient" cx="0.5" cy="0.5" r="0.5" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#fff"/>
+      <stop offset="1" stop-color="#fcc827"/>
+    </radialGradient>
+  </defs>
+  <g id="Group_331" data-name="Group 331" transform="translate(-743 -215)">
+    <circle id="Ellipse_45" data-name="Ellipse 45" cx="57.5" cy="57.5" r="57.5" transform="translate(743 215)" opacity="0.15" fill="url(#radial-gradient)"/>
+    <g id="Group_328" data-name="Group 328" transform="translate(852.357 250)">
+      <path id="Path_416" data-name="Path 416" d="M-44.55,23.189l-6.551-6.56a1.671,1.671,0,0,0-2.372,0,1.694,1.694,0,0,0,0,2.387L-49.8,22.7H-72.679a1.683,1.683,0,0,0-1.678,1.687,1.683,1.683,0,0,0,1.678,1.687H-49.8l-3.673,3.679a1.693,1.693,0,0,0,0,2.386,1.662,1.662,0,0,0,1.188.5,1.671,1.671,0,0,0,1.184-.492l6.551-6.561a1.69,1.69,0,0,0,.494-1.2A1.69,1.69,0,0,0-44.55,23.189Z" transform="translate(0 -1.615)" fill="#fcc827"/>
+      <g id="Stroke-4" transform="translate(-64.269)">
+        <path id="Path_417" data-name="Path 417" d="M-45.805,45c-12.253,0-16.466-3.041-17.334-12.51a1.686,1.686,0,0,1,1.517-1.837A1.687,1.687,0,0,1-59.8,32.174c.6,6.569,2.108,9.447,13.991,9.447,14.21,0,14.21-3.294,14.21-19.123s0-19.123-14.21-19.123c-11.883,0-13.389,2.878-13.991,9.446a1.675,1.675,0,0,1-1.826,1.525,1.685,1.685,0,0,1-1.517-1.835C-62.271,3.04-58.059,0-45.805,0c17.567,0,17.567,7.05,17.567,22.5S-28.239,45-45.805,45Z" transform="translate(63.147)" fill="#202020"/>
+      </g>
+    </g>
+  </g>
+</svg>

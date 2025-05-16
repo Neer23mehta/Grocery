@@ -44,7 +44,7 @@ const Advertise: React.FC = () => {
   const handleNewAdvertise = async () => {
 
     const formdata = new FormData();
-    formdata.append("fk_section_id", "4");
+    formdata.append("fkSectionId", "4");
     if (image) formdata.append("image", image);
 
     try {

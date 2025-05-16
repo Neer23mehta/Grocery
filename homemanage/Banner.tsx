@@ -29,8 +29,6 @@ const Banner = () => {
     }
   }
 
-
-  console.log("ban11232", banner)
   useEffect(() => {
     fetchGetBanner()
   }, [])
@@ -39,12 +37,12 @@ const Banner = () => {
 
     const formdata = new FormData()
     if (image) formdata.append("image", image)
-    formdata.append("fk_section_id", "1")
+    formdata.append("fkSectionId", "1")
 
     try {
       const res = await commonPostApis("add_home_management", formdata)
       if (res.data) {
-        toast.success("Banner Added Successfully")
+        toast.success(res.data.message)
         fetchGetBanner()
         setImage(null)
         setBannerOpen(false)

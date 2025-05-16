@@ -4,17 +4,26 @@ import { IoCartOutline } from "react-icons/io5";
 import { useState } from "react";
 import Image from "next/image";
 import { Uassets } from "@/Uassets/uassets";
+import { useRouter } from "next/navigation";
 
 export const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedOption, setSelectedOption] = useState('');
-
+  const router = useRouter();
   const handleSearchChange = (e: any) => {
     setSearchQuery(e.target.value);
   };
 
   const handleSelectChange = (e: any) => {
-    setSelectedOption(e.target.value);
+    const value = e.target.value;
+    setSelectedOption(value);
+
+    if (value === 'category1') {
+      router.push("/user/grocery");
+    } else if (value === 'category2') {
+      router.push("/user/fashion");
+    }    
+
   };
 
   const handleSearchSubmit = (e: any) => {
@@ -52,7 +61,7 @@ export const Navbar = () => {
             className="h-10 p-2 bg-white border border-gray-300 rounded-md"
           >
             <option value="">Category</option>
-            <option value="category1">Category 1</option>
+            <option value="category1">Grocery</option>
             <option value="category2">Category 2</option>
             <option value="category3">Category 3</option>
           </select>

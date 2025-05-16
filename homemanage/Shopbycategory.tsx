@@ -91,8 +91,8 @@ const Shopbycategory = () => {
     e.preventDefault()
 
     const formdata = new FormData()
-    formdata.append("fk_section_id", "2")
-    formdata.append("fk_category_id", input.category)
+    formdata.append("fkSectionId", "2")
+    formdata.append("fkCategoryId", input.category)
     formdata.append("offer", input.offer)
     if (image) formdata.append("image", image)
 

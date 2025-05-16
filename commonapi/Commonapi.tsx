@@ -10,7 +10,7 @@ const commonGetApis = async (params: string) => {
   }
 
   try {
-    const res = await axios.get(`http://192.168.2.180:3000/admin/${params}`, {
+    const res = await axios.get(`http://192.168.2.163:3001/admin/${params}`, {
       headers: {
         Authorizations: token,
         language: "en",
@@ -30,7 +30,7 @@ export const deleteApi = async (params: string) => {
   const refreshtoken = typeof window !== "undefined" ? localStorage.getItem("usertoken") : null;
 
   try {
-    const res = await axios.delete(`http://192.168.2.180:3000/admin/${params}`, {
+    const res = await axios.delete(`http://192.168.2.163:3001/admin/${params}`, {
       headers: {
         Authorizations: token,
         language: "en",
@@ -49,7 +49,7 @@ export const commonPostApis = async (params: string, formdata: URLSearchParams|F
   const refreshtoken = typeof window !== "undefined" ? localStorage.getItem("usertoken") : null;
 
   try {
-    const res = await axios.post(`http://192.168.2.180:3000/admin/${params}`,formdata,{
+    const res = await axios.post(`http://192.168.2.163:3001/admin/${params}`,formdata,{
       headers: {
         Authorizations: token,
         language: "en",

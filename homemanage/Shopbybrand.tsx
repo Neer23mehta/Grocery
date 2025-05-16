@@ -60,7 +60,7 @@ const Shopbybrand = () => {
   const handleNewBrand = async () => {
     const formdata = new FormData();
 
-    formdata.append("fk_section_id", "3");
+    formdata.append("fkSectionId", "3");
     if (image) formdata.append("image", image);
 
     try {

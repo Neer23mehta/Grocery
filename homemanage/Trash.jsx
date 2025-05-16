@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { IoSearchSharp } from 'react-icons/io5';
-import { DndContext } from '@dnd-kit/core';
 import { Droppable } from '../homemanage/Droppable';
 import { Dialog, DialogActions, DialogContent } from '@mui/material';
 import { Draggable } from "../homemanage/Draggable";
@@ -10,21 +9,59 @@ import { MdEdit } from 'react-icons/md';
 import { RiDeleteBin5Fill } from 'react-icons/ri';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import {
+  DndContext,
+  useSensor,
+  useSensors,
+  PointerSensor,
+  DragEndEvent,
+  useDroppable,
+  useDraggable,
+} from "@dnd-kit/core";
 // import Moveable from 'react-moveable';
 
 const key = 'INPUTS';
 const Depth = 4;
 
-const Tree = ({ depth, branch, add, del, edit }) => {
+const Tree = ({ depth, branch, add, del, edit, swap }) => {
   const [inputOpen, setInputOpen] = useState(false);
-
+  // const { isOver, setNodeRef } = useDroppable({
+  //   id: branch.id,
+  // })
   const moveableRef = useRef(null);
   const targetRef = useRef(null);
+  const swapy = useRef(null)
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: branch.id,
+  });
+  // const containerRef = useRef(null);
 
+  const handleDragEnd = ({ active, over }) => {
+    if (!over || active.id === over.id) return; // If dropped on the same item, do nothing
+
+    const updatedData = swapNodes(datas, active.id, over.id); // Swap the nodes in the data
+
+    setDatas(updatedData); // Update the state with the new data structure
+  };
 
   const validationSchema = Yup.object().shape({
     inputValue: Yup.string().min(1).max(26).required('Name Must Require'),
   });
+
+  // useEffect(() => {
+  //   if (containerRef.current) {
+  //     const swapyInstance = createSwapy(containerRef.current);
+
+  //     swapyInstance.onSwap((event) => {
+  //       console.log('Swap event:', event);
+  //     });
+
+  //     return () => {
+  //       swapyInstance.destroy();
+  //     };
+  //   }
+  // }, []);
+
 
   const formik = useFormik({
     initialValues: { inputValue: '' },
@@ -35,11 +72,23 @@ const Tree = ({ depth, branch, add, del, edit }) => {
       setInputOpen(false);
     },
   });
+ 
 
+  const style = transform
+    ? {
+      transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+    }
+    : undefined;
   return (
-    <div className="mt-2.5">
-      <Draggable id={branch.id}>
-      <div ref={targetRef} className="flex flex-row justify-between border outline-none rounded-md px-2.5 py-2 accordion-item active tree">
+    <div className="mt-2.5" >
+      {/* <Draggable id={branch.id}> */}
+      <div
+        ref={setNodeRef} // Ensure setNodeRef is passed to the draggable node
+        {...listeners}
+        {...attributes}
+        style={style} // Apply transformations for dragging
+        className="flex flex-row w-fit justify-between border outline-none rounded-md px-2.5 py-2 accordion-item active tree"
+      >
         <span
           className="mr-2 px-2 py-0.5 border-2 rounded-md border-y"
           onClick={() => {
@@ -54,13 +103,19 @@ const Tree = ({ depth, branch, add, del, edit }) => {
           {depth < Depth && (
             <>
               <strong
-                onClick={() => setInputOpen(true)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setInputOpen(true);
+                }}
                 className="text-2xl border-2 text-green-700 px-2 rounded-md cursor-pointer"
               >
                 +
               </strong>
               <span
-                onClick={() => edit(branch.id, branch.value.trim())}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  edit(branch.id, branch.value.trim())
+                }}
                 className="text-xl text-blue-800 border-2 px-1 py-1.5 rounded-md cursor-pointer"
               >
                 <MdEdit />
@@ -68,14 +123,39 @@ const Tree = ({ depth, branch, add, del, edit }) => {
             </>
           )}
           <span
-            onClick={() => del(branch.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              del(branch.id)
+            }}
             className="text-xl text-red-800 border-2 px-1 py-1.5 rounded-md cursor-pointer"
           >
             <RiDeleteBin5Fill />
           </span>
+          {/* <Moveable
+          className='opacity-0'
+          target={targetRef.current}
+          ref={moveableRef}
+          draggable={true}
+          resizable={true}
+          keepRatio={false}
+          rotatable={true}
+          scalable={true}
+          onDrag={e => {
+            e.target.style.transform = e.transform;
+          }}
+          onResize={e => {
+            e.target.style.width = `${e.width}px`;
+            e.target.style.height = `${e.height}px`;
+          }}
+          onRotate={e => {
+            e.target.style.transform = e.transform;
+          }}
+          onScale={e => {
+            e.target.style.transform = e.transform;
+          }}
+        /> */}
         </div>
       </div>
-      </Draggable>
 
       {inputOpen && (
         <Dialog open={inputOpen} onClose={() => setInputOpen(false)}>
@@ -124,58 +204,11 @@ const Tree = ({ depth, branch, add, del, edit }) => {
           </li>
         ))}
       </ul>
-
-      {/* <Moveable
-        className="moveable opacity-0"
-        target={targetRef}
-        ref={moveableRef}
-        scalable={true}
-        keepRatio={true}
-        throttleScale={0}
-        hideChildMoveableDefaultLines={false}
-        throttleDragRotate={0}
-        startDragRotate={0}
-        edgeDraggable={false}
-        throttleDrag={1}
-        draggable={true}
-        renderDirections={["nw", "n", "ne", "w", "e", "sw", "s", "se"]}
-        rotatable={true}
-        throttleResize={1}
-        rotationPosition={"top"}
-        throttleRotate={0}
-        onScale={e => {
-          e.target.style.transform = e.drag.transform;
-        }}
-        onDrag={e => {
-          targetRef.current.style.transform = e.transform;
-        }}
-        onDragGroup={({ events }) => {
-          events.forEach(ev => {
-            ev.target.style.transform = ev.transform;
-          });
-        }}
-        onResizeGroupStart={({ setMin, setMax }) => {
-          setMin([0, 0]);
-          setMax([0, 0]);
-        }}
-        onResizeGroup={({ events }) => {
-          events.forEach(ev => {
-            ev.target.style.width = `${ev.width}px`;
-            ev.target.style.height = `${ev.height}px`;
-            ev.target.style.transform = ev.drag.transform;
-          });
-        }}
-        onRotateGroup={({ events }) => {
-          events.forEach(ev => {
-            ev.target.style.transform = ev.drag.transform;
-          });
-        }}
-      /> */}
     </div>
   );
 };
 
-const Trash = () => {
+const Trash = ({ id, children }) => {
   const [input, setInput] = useState('');
   const [datas, setDatas] = useState([]);
   const [search, setSearch] = useState('');
@@ -183,6 +216,7 @@ const Trash = () => {
   const [showDialog, setShowDialog] = useState(false);
   const [add, setAdd] = useState(false);
   const [parent, setParent] = useState(null);
+  const { setNodeRef } = useDroppable({ id });
 
   useEffect(() => {
     const getData = localStorage.getItem(key);
@@ -232,11 +266,70 @@ const Trash = () => {
     setShowDialog(true);
   };
 
-  const handleDragEnd = ({ active, over }) => {
-    if (over && over.id === 'droppable') {
-      handleDelete(active.id);
-    }
+  // const swapNodes = (data, fromId, toId) => {
+  //   const deepCopy = (obj) => JSON.parse(JSON.stringify(obj));
+
+  //   const findNodeById = (nodes, id) => {
+  //     for (let i = 0; i < nodes.length; i++) {
+  //       if (nodes[i].id === id) return { node: nodes[i], parent: nodes };
+  //       const result = findNodeById(nodes[i].children, id);
+  //       if (result) return result;
+  //     }
+  //     return null;
+  //   };
+
+  //   const { node: fromNode, parent: fromParent } = findNodeById(data, fromId);
+  //   const { node: toNode, parent: toParent } = findNodeById(data, toId);
+
+  //   if (!fromNode || !toNode) return data;
+
+  //   fromParent.children = fromParent.children.filter((child) => child.id !== fromId);
+  //   toParent.children = toParent.children.filter((child) => child.id !== toId);
+
+  //   fromParent.children.push(toNode);
+  //   toParent.children.push(fromNode);
+
+  //   return deepCopy(data);
+  // };
+
+
+ 
+
+  // Function to swap nodes
+  const swapNodes = (data, fromId, toId) => {
+    const deepCopy = (obj) => JSON.parse(JSON.stringify(obj)); // Deep copy to avoid mutation
+  
+    const findNodeById = (nodes, id) => {
+      for (let i = 0; i < nodes.length; i++) {
+        if (nodes[i].id === id) return { node: nodes[i], parent: nodes };
+        const result = findNodeById(nodes[i].children, id);
+        if (result) return result;
+      }
+      return null;
+    };
+  
+    const { node: fromNode, parent: fromParent } = findNodeById(data, fromId);
+    const { node: toNode, parent: toParent } = findNodeById(data, toId);
+  
+    if (!fromNode || !toNode) return data; // Return unchanged if nodes not found
+  
+    // Remove nodes from their parents
+    fromParent.children = fromParent.children.filter((child) => child.id !== fromId);
+    toParent.children = toParent.children.filter((child) => child.id !== toId);
+  
+    // Insert nodes into their new positions
+    fromParent.children.push(toNode);
+    toParent.children.push(fromNode);
+  
+    return deepCopy(data); // Return the updated data
   };
+  
+  const handleDragEnd = ({ active, over }) => {
+    if (!over || active.id === over.id) return;
+  
+    const updatedData = swapNodes(datas, active.id, over.id);
+    setDatas(updatedData); // Update the state with the new data structure
+  }; 
 
   const handleNew = () => {
     setAdd(!add);
@@ -259,18 +352,59 @@ const Trash = () => {
     },
   });
 
+  const handleSwap = (fromId, toId) => {
+    const deepCopy = (obj) => JSON.parse(JSON.stringify(obj));
+
+    const findAndSwap = (items) => {
+      let fromNode = null;
+      let toNode = null;
+
+      const removeNodes = (arr) => {
+        return arr.reduce((acc, item) => {
+          if (item.id === fromId) {
+            fromNode = item;
+            return acc;
+          } else if (item.id === toId) {
+            toNode = item;
+            return acc;
+          } else {
+            const children = removeNodes(item.children);
+            return [...acc, { ...item, children }];
+          }
+        }, []);
+      };
+
+      const insertSwapped = (arr) =>
+        arr.map((item) => {
+          if (item.id === fromId) return toNode;
+          if (item.id === toId) return fromNode;
+          return { ...item, children: insertSwapped(item.children) };
+        });
+
+      const copied = deepCopy(datas);
+      const removed = removeNodes(copied);
+
+      const swapped = insertSwapped(removed);
+
+      return swapped;
+    };
+
+    const updatedTree = findAndSwap(datas);
+    setDatas(updatedTree);
+  };
+
   return (
     <div className="">
       <DndContext onDragEnd={handleDragEnd}>
-        <div className="flex justify-end mr-5 mt-5">
-          <Droppable id="droppable">
-            <span
-              className="px-5 py-3 cursor-pointer border text-xl rounded-md font-bold bg-red-600 text-white text-center"
-              onClick={() => setDatas([])}
-            >
-              Delete
-            </span>
-          </Droppable>
+        <div className="flex justify-end mr-5 mt-5" ref={setNodeRef}>
+          {/* <Droppable id="droppable"> */}
+          <span
+            className="px-5 py-3 cursor-pointer border text-xl rounded-md font-bold bg-red-600 text-white text-center"
+            onClick={() => setDatas([])}
+          >
+            Delete
+          </span>
+          {/* </Droppable> */}
         </div>
 
         <div className="py-5 flex flex-col w-full justify-center items-center">
@@ -311,6 +445,7 @@ const Trash = () => {
                   add={handleData}
                   del={handleDelete}
                   edit={handleEdit}
+                  swap={handleSwap}
                 />
               ))}
           </div>

@@ -64,7 +64,7 @@ const Page = () => {
     const refreshToken = localStorage.getItem("usertoken");
     const formdata = new URLSearchParams();
     formdata.append("id", sectionId.toString());
-    formdata.append("fk_section_id", sectionId.toString());
+    formdata.append("fkSectionId", sectionId.toString());
 
     try {
       const res = await axios.post("http://192.168.2.181:3000/admin/add_section", formdata, {

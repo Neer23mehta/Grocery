@@ -78,7 +78,7 @@ export const Navbar = () => {
             <Link href="/contact">Contact</Link>
           </li>
           <li>
-            <Link href="/cart">
+            <Link href="/user/cart">
               <IoCartOutline className="text-2xl" />
             </Link>
           </li>

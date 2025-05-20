@@ -7,6 +7,15 @@ import { Uassets } from '@/Uassets/uassets';
 import { IoChevronBackOutline, IoChevronForwardOutline } from 'react-icons/io5';
 import { GiConverseShoe } from "react-icons/gi";
 import { GiClothes } from "react-icons/gi";
+import { BsSmartwatch } from "react-icons/bs";
+import { LuSofa } from "react-icons/lu";
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { FaTshirt } from "react-icons/fa";
+import { GiSchoolBag } from "react-icons/gi";
+import { GiGemChain } from "react-icons/gi";
+import { GiDelicatePerfume } from "react-icons/gi";
+import { ImMakeGroup } from "react-icons/im";
 
 const images = [
     'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=800&q=80',
@@ -23,8 +32,14 @@ const Homes = () => {
     const [loading, setLoading] = useState(true);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [open, setOpen] = useState(false)
+    const [openPro, setOpenPro] = useState(false)
+    const [openPros, setOpenPros] = useState(false)
+    const [openPross, setOpenPross] = useState(false)
     const anchorRef = useRef(null);
-
+    const anchorRefPro = useRef(null);
+    const anchorRefPros = useRef(null);
+    const anchorRefPross = useRef(null);
+    const route = useRouter();
     const handlePrev = () => {
         setCurrentIndex((prevIndex) =>
             prevIndex === 0 ? images.length - 1 : prevIndex - 1
@@ -36,6 +51,14 @@ const Homes = () => {
             prevIndex === images.length - 1 ? 0 : prevIndex + 1
         );
     };
+
+    const handleSofa = () => {
+        route.push('/user/sofas')
+    }
+
+    const handleWatch = () => {
+        route.push('/user/watches')
+    }
 
     useEffect(() => {
         const fetchData = async () => {
@@ -58,7 +81,7 @@ const Homes = () => {
         fetchData();
     }, []);
 
-    console.log("products",products)
+    console.log("products", products)
     return (
         <div className="p-5 bg-gray-100 min-h-screen">
             <h1 className="text-3xl font-bold mb-6 text-center">All Products Overview</h1>
@@ -99,43 +122,45 @@ const Homes = () => {
                         ? Array.from({ length: 5 }).map((_, index) => (
                             <Skeleton key={index} variant="rectangular" width={150} height={100} />
                         ))
-                        : category.slice(0,5).map((cat: any) => (
+                        : category.slice(0, 5).map((cat: any) => (
+                            <Link href={`/user/${cat.name.toLowerCase()}`} key={cat.id}>
                             <div key={cat.id} className="bg-white shadow-md p-3 rounded text-center">
                                 <img src={cat.image} alt={cat.name} className="w-full h-24 object-cover rounded mb-2" />
                                 <h3 className="text-md font-medium">{cat.name}</h3>
                             </div>
+                            </Link>
                         ))}
-                         <Popper open={open} anchorEl={anchorRef.current} placement="bottom-end" style={{ zIndex: 1300 }}>
-                            <ClickAwayListener onClickAway={() => setOpen(false)}>
-                                <Paper className="bg-white shadow-md space-y-2 w-45">
-                                    <button className="flex items-center text-xl space-x-2 hover:bg-amber-400 w-full p-2">
+                    <Popper open={open} anchorEl={anchorRef.current} placement="bottom-end" style={{ zIndex: 1300 }}>
+                        <ClickAwayListener onClickAway={() => setOpen(false)}>
+                            <Paper className="bg-white shadow-md space-y-2 w-45">
+                                <button className="flex items-center text-xl space-x-2 hover:bg-amber-400 w-full p-2">
                                     <GiClothes />
                                     <span>Clothing</span>
-                                    </button>
-                                    <button className="flex items-center text-xl space-x-2 hover:bg-amber-400 w-full p-2">
+                                </button>
+                                <button className="flex items-center text-xl space-x-2 hover:bg-amber-400 w-full p-2">
                                     <GiConverseShoe />
                                     <span>Shoes</span>
-                                    </button>
-                                    <button className="flex items-center text-xl space-x-2 hover:bg-amber-400 w-full p-2">
+                                </button>
+                                <button className="flex items-center text-xl space-x-2 hover:bg-amber-400 w-full p-2">
                                     <GiClothes />
                                     <span>Furniture</span>
-                                    </button>
-                                    <button className="flex items-center text-xl space-x-2 hover:bg-amber-400 w-full p-2">
+                                </button>
+                                <button className="flex items-center text-xl space-x-2 hover:bg-amber-400 w-full p-2">
                                     <GiClothes />
                                     <span>Mobile</span>
-                                    </button>
-                                    <button className="flex items-center text-xl space-x-2 hover:bg-amber-400 w-full p-2">
+                                </button>
+                                <button className="flex items-center text-xl space-x-2 hover:bg-amber-400 w-full p-2">
                                     <GiClothes />
                                     <span>Miscellaneous</span>
-                                    </button>
-                                </Paper>
-                            </ClickAwayListener>
-                        </Popper>
+                                </button>
+                            </Paper>
+                        </ClickAwayListener>
+                    </Popper>
                 </div>
             </section>
 
             <section className="mb-10">
-                <h2 className="text-2xl font-semibold mb-4">EscuelaJS Products</h2>
+                <button className="text-2xl font-semibold mb-4" onClick={() => setOpenPro(!openPro)} ref={anchorRefPro}>EscuelaJS Products</button>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {loading
                         ? Array.from({ length: 8 }).map((_, index) => (
@@ -147,18 +172,34 @@ const Homes = () => {
                             </div>
                         ))
                         : data.slice(0, 8).map((item: any) => (
+                            <Link key={item.id} href={`/user/home/${item.id}`}>
                             <div key={item.id} className="bg-white p-4 shadow-md rounded">
                                 <img src={item.images?.[0]} alt={item.title} className="h-48 w-full object-cover mb-3 rounded" />
                                 <h3 className="text-lg font-semibold">{item.title}</h3>
                                 <p className="text-sm text-gray-600 mb-2">{item.description.slice(0, 80)}...</p>
                                 <span className="font-bold text-green-600">${item.price}</span>
                             </div>
+                            </Link>
                         ))}
+                    <Popper open={openPro} anchorEl={anchorRefPro.current} placement="bottom-end" style={{ zIndex: 1300 }}>
+                        <ClickAwayListener onClickAway={() => setOpenPro(false)}>
+                            <Paper className="bg-white shadow-md space-y-2 w-45">
+                                <button className="flex items-center text-xl space-x-2 hover:bg-amber-400 w-full p-2" onClick={handleWatch}>
+                                    <BsSmartwatch />
+                                    <span>Watches</span>
+                                </button>
+                                <button className="flex items-center text-xl space-x-2 hover:bg-amber-400 w-full p-2" onClick={handleSofa}>
+                                    <LuSofa />
+                                    <span>Sofa-set</span>
+                                </button>
+                            </Paper>
+                        </ClickAwayListener>
+                    </Popper>
                 </div>
             </section>
 
             <section className="mb-10">
-                <h2 className="text-2xl font-semibold mb-4">EscuelaJS Products</h2>
+                <button className="text-2xl font-semibold mb-4" onClick={() => setOpenPros(!openPros)} ref={anchorRefPros}>EscuelaJS Products</button>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {loading
                         ? Array.from({ length: 8 }).map((_, index) => (
@@ -177,11 +218,29 @@ const Homes = () => {
                                 <span className="font-bold text-green-600">${item.price}</span>
                             </div>
                         ))}
+                    <Popper open={openPros} anchorEl={anchorRefPros.current} placement="bottom-end" style={{ zIndex: 1300 }}>
+                        <ClickAwayListener onClickAway={() => setOpenPros(false)}>
+                            <Paper className="bg-white shadow-md space-y-2 w-45">
+                                <Link href="/user/jwellery" className="flex items-center text-xl space-x-2 hover:bg-amber-400 w-full p-2">
+                                <GiGemChain />
+                                <span>Jwellery</span>
+                                </Link>
+                                <Link href="/user/mens" className="flex items-center text-xl space-x-2 hover:bg-amber-400 w-full p-2">
+                                <FaTshirt />
+                                <span>Men's Clothes</span>
+                                </Link>
+                                <Link href="/user/bagpack" className="flex items-center text-xl space-x-2 hover:bg-amber-400 w-full p-2">
+                                <GiSchoolBag />
+                                <span>Bag-packs</span>
+                                </Link>
+                            </Paper>
+                        </ClickAwayListener>
+                    </Popper>
                 </div>
             </section>
 
             <section>
-                <h2 className="text-2xl font-semibold mb-4">DummyJSON Products</h2>
+                <button className="text-2xl font-semibold mb-4" onClick={() => setOpenPross(!openPross)} ref={anchorRefPross}>DummyJSON Products</button>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {loading
                         ? Array.from({ length: 8 }).map((_, index) => (
@@ -203,6 +262,20 @@ const Homes = () => {
                                 </div>
                             </div>
                         ))}
+                    <Popper open={openPross} anchorEl={anchorRefPross.current} placement="bottom-end" style={{ zIndex: 1300 }}>
+                        <ClickAwayListener onClickAway={() => setOpenPross(false)}>
+                            <Paper className="bg-white shadow-md space-y-2 w-45">
+                                <Link href="/user/perfume" className="flex items-center text-xl space-x-2 hover:bg-amber-400 w-full p-2">
+                                <GiDelicatePerfume />
+                                <span>Perfumes</span>
+                                </Link>
+                                <Link href="/user/makeups" className="flex items-center text-xl space-x-2 hover:bg-amber-400 w-full p-2">
+                                <ImMakeGroup />
+                                <span>Makeups</span>
+                                </Link>
+                            </Paper>
+                        </ClickAwayListener>
+                    </Popper>
                 </div>
             </section>
         </div>

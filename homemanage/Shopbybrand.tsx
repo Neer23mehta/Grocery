@@ -28,7 +28,7 @@ const Shopbybrand = () => {
 
   const fetchGetBrands = async () => {
     try {
-      const res = await commonGetApis("get_all_home_management?fk_section_id=3");
+      const res = await commonGetApis("get_all_home_management?fkSectionId=3");
       setBrand(res?.data?.result || []);
     } catch (error) {
       console.log(error);
@@ -42,7 +42,7 @@ const Shopbybrand = () => {
 
   const handleDeleteBrand = async (id: number) => {
     try {
-      const res = await deleteApi(`delete_home_management?id=${id}&fk_section_id=3`);
+      const res = await deleteApi(`delete_home_management?id=${id}&fkSectionId=3`);
       if (res?.data) {
         toast.success("Deleted Successfully");
         fetchGetBrands();
@@ -79,7 +79,7 @@ const Shopbybrand = () => {
 
   const fetchGetById = async (id: number) => {
     try {
-      const res = await commonGetApis(`get_home_management_by_id?fk_section_id=3&id=${id}`);
+      const res = await commonGetApis(`get_home_management_by_id?fkSectionId=3&id=${id}`);
       if (res.data) {
       }
     } catch (error) {

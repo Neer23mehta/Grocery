@@ -211,12 +211,14 @@ const Homes = () => {
                             </div>
                         ))
                         : products.slice(0, 8).map((item: any) => (
+                            <Link key={item.id} href={`/user/home/${item.id}`}>
                             <div key={item.id} className="bg-white p-4 shadow-md rounded">
                                 <img src={item.image} alt={item.title} className="h-48 w-full object-contain mb-3 rounded" />
                                 <h3 className="text-lg font-semibold">{item.title}</h3>
                                 <p className="text-sm text-gray-600 mb-2">{item.description.slice(0, 80)}...</p>
                                 <span className="font-bold text-green-600">${item.price}</span>
                             </div>
+                            </Link>
                         ))}
                     <Popper open={openPros} anchorEl={anchorRefPros.current} placement="bottom-end" style={{ zIndex: 1300 }}>
                         <ClickAwayListener onClickAway={() => setOpenPros(false)}>

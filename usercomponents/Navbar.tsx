@@ -5,11 +5,13 @@ import { useState } from "react";
 import Image from "next/image";
 import { Uassets } from "@/Uassets/uassets";
 import { useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
 
 export const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedOption, setSelectedOption] = useState('');
   const router = useRouter();
+  const totalQuantity = useSelector((state:any) => state.cart.totalQuantity);
   const handleSearchChange = (e: any) => {
     setSearchQuery(e.target.value);
   };
@@ -30,7 +32,7 @@ export const Navbar = () => {
     e.preventDefault();
     console.log('Search for:', searchQuery, 'Category:', selectedOption);
   };
-
+  console.log("tq12",totalQuantity)
   return (
     <div className="bg-white text-black shadow-md ">
       <nav className="flex justify-between items-center py-5  px-10 mx-auto w-full">
@@ -77,7 +79,8 @@ export const Navbar = () => {
           <li>
             <Link href="/contact">Contact</Link>
           </li>
-          <li>
+          <li className="relative">
+            <span className="absolute ml-3 text-[12px] bottom-3.5 px-0.5 font-bold rounded-full bg-red-800 text-white">{totalQuantity}</span>
             <Link href="/user/cart">
               <IoCartOutline className="text-2xl" />
             </Link>
@@ -87,6 +90,9 @@ export const Navbar = () => {
           </li>
           <li>
             <Link href="/user/login">Log-in</Link>
+          </li>
+          <li>
+            <Link href="/admin">Admin</Link>
           </li>
         </ul>
       </nav>

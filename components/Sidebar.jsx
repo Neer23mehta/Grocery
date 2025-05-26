@@ -169,6 +169,11 @@ export const Sidebar = () => {
             <PiGitBranchThin size={20}/>
             <p>Design</p>
             </Link>
+
+            <Link href="/user" className={`flex items-center gap-3 font-medium p-3 rounded-md transition-all mr-1 ${isActive('/user') ? 'text-amber-300' : 'text-white'}`}>
+            <PiGitBranchThin size={20}/>
+            <p>User</p>
+            </Link>
           </nav>
         </div>
       </Drawer>

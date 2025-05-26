@@ -42,7 +42,7 @@ const Shopbycategory = () => {
 
   const fetchShopByCategory = async () => {
     try {
-      const res = await commonGetApis("get_all_home_management?fk_section_id=2")
+      const res = await commonGetApis("get_all_home_management?fkSectionId=2")
       setCategory(res?.data?.result || [])
     } catch (error) {
       console.error(error)
@@ -67,7 +67,7 @@ const Shopbycategory = () => {
 
   const handleRemoveCategory = async (id: number) => {
     try {
-      const res = await deleteApi(`delete_home_management?id=${id}&fk_section_id=2`)
+      const res = await deleteApi(`delete_home_management?id=${id}&fkSectionId=2`)
       if (res.data) {
         setCategory((prev) =>
           prev.map(item => ({

@@ -31,7 +31,7 @@ const Advertise: React.FC = () => {
 
   const fetchGetAdvertise = async () => {
     try {
-      const res = await commonGetApis("get_all_home_management?fk_section_id=4");
+      const res = await commonGetApis("get_all_home_management?fkSectionId=4");
       if (res.data) {
         setAds(res?.data?.result || []);
       }
@@ -64,7 +64,7 @@ const Advertise: React.FC = () => {
 
   const handleAdvertiseDelete = async (id: number) => {
     try {
-      const res = await deleteApi(`delete_home_management?id=${id}&fk_section_id=4`);
+      const res = await deleteApi(`delete_home_management?id=${id}&fkSectionId=4`);
 
       if (res.data) {
         setAds(prev => prev.map(item => ({
@@ -81,7 +81,7 @@ const Advertise: React.FC = () => {
 
   const fetchGetById = async (id: number) => {
     try {
-      const res = await commonGetApis(`get_home_management_by_id?fk_section_id=4&id=${id}`);
+      const res = await commonGetApis(`get_home_management_by_id?fkSectionId=4&id=${id}`);
       if (res.data) {
         toast.success("Get Successfully")
       }

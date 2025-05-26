@@ -4,6 +4,7 @@ import "./globals.css";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import { Poppins } from "next/font/google";
+import { Providers } from "./redux/providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,7 +38,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${poppins.variable} ${geistMono.variable} ${geistSans.variable} antialiased`}>
         <ToastContainer theme="dark" />
-        {children}
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );

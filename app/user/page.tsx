@@ -1,8 +1,9 @@
 import React from 'react'
+import Main from '@/usercomponents/Main'
 
 const Page = () => {
   return (
-    <div>page</div>
+    <div><Main/></div>
   )
 }
 

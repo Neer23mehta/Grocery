@@ -22,7 +22,7 @@ const Banner = () => {
 
   const fetchGetBanner = async () => {
     try {
-      const res = await commonGetApis("get_all_home_management?fk_section_id=1")
+      const res = await commonGetApis("get_all_home_management?fkSectionId=1")
       setBanner(res?.data?.result?.banner || []);
     } catch (error) {
       console.log("error", error);
@@ -58,7 +58,7 @@ const Banner = () => {
 
   const handleRemoveBanner = async (id: number) => {
     try {
-      const res = await deleteApi(`delete_home_management?id=${id}&fk_section_id=1`)
+      const res = await deleteApi(`delete_home_management?id=${id}&fkSectionId=1`)
       if (res.data) {
         toast.success("Deleted Successfully")
         fetchGetBanner()

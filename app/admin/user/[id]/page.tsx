@@ -1,6 +1,6 @@
 'use client'
 import React from 'react'
-import Userid from '@/Grocery/Userid'
+import Userid from '@/components/Userid'
 import { useParams } from 'next/navigation'
 
 

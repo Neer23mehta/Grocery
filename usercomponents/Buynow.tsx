@@ -1,5 +1,4 @@
 'use client';
-
 import { useEffect, useState } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
@@ -31,7 +30,7 @@ const BuyNowPage = () => {
 
   const [citySuggest, setCitySuggest] = useState<any[]>([]);
   const [pinInvalid, setPinInvalid] = useState(false);
-  const [isClient, setIsClient] = useState(false); // to ensure client-only rendering
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -41,15 +40,17 @@ const BuyNowPage = () => {
     try {
       const res = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
       const data = await res.json();
-      if (data[0].Status === 'Success') {
-        setCitySuggest(data[0].PostOffice);
+      if (data[0]?.Status === 'Success') {
+        setCitySuggest(data[0].PostOffice || []);
         setPinInvalid(false);
       } else {
         setCitySuggest([]);
         setPinInvalid(true);
       }
     } catch (err) {
-      console.error(err);
+      console.error('Error fetching pincode info:', err);
+      setCitySuggest([]);
+      setPinInvalid(true);
     }
   };
 
@@ -74,33 +75,38 @@ const BuyNowPage = () => {
   });
 
   const handlePayment = async (amount: number) => {
-    const res = await fetch('/api/order', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ amount }),
-    });
+    try {
+      const res = await fetch('/api/order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount }),
+      });
 
-    const { orderId } = await res.json();
+      const { orderId } = await res.json();
 
-    const options = {
-      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-      amount: amount * 100,
-      currency: 'INR',
-      name: 'NextShop',
-      description: 'Order Payment',
-      order_id: orderId,
-      handler: () => {
-        toast.success('Payment Successful!');
-        router.push('/user/home');
-      },
-      theme: { color: '#6366F1' },
-    };
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '',
+        amount: amount * 100,
+        currency: 'INR',
+        name: 'NextShop',
+        description: 'Order Payment',
+        order_id: orderId,
+        handler: () => {
+          toast.success('Payment Successful!');
+          router.push('/user/home');
+        },
+        theme: { color: '#6366F1' },
+      };
 
-    if (typeof window !== 'undefined' && window.Razorpay) {
-      const razor = new window.Razorpay(options);
-      razor.open();
-    } else {
-      toast.error('Payment gateway not loaded. Please try again.');
+      if (window.Razorpay) {
+        const razor = new window.Razorpay(options);
+        razor.open();
+      } else {
+        toast.error('Payment gateway not loaded. Please try again.');
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      toast.error('Something went wrong during payment.');
     }
   };
 
@@ -113,7 +119,7 @@ const BuyNowPage = () => {
     await handlePayment(totalPrice);
   };
 
-  if (!isClient) return null; // prevent hydration mismatch
+  if (!isClient) return null;
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white shadow-xl rounded-lg mt-10">
@@ -147,7 +153,7 @@ const BuyNowPage = () => {
       </div>
 
       <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
-        {({ handleChange }) => (
+        {({ handleChange, setFieldValue }) => (
           <Form className="space-y-5">
             <div>
               <Field name="fullname" placeholder="Full Name" className="w-full px-4 py-2 border rounded-md" />
@@ -166,8 +172,9 @@ const BuyNowPage = () => {
                 className="w-full px-4 py-2 border rounded-md"
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   handleChange(e);
-                  if (e.target.value.length === 6) {
-                    fetchCitySuggestions(e.target.value);
+                  const value = e.target.value;
+                  if (value.length === 6) {
+                    fetchCitySuggestions(value);
                   }
                 }}
               />
@@ -182,8 +189,8 @@ const BuyNowPage = () => {
                     key={index}
                     className="cursor-pointer hover:bg-indigo-100 p-1 rounded"
                     onClick={() => {
-                      handleChange({ target: { name: 'city', value: city.Name } } as any);
-                      handleChange({ target: { name: 'pincode', value: city.Pincode } } as any);
+                      setFieldValue('city', city.Name);
+                      setFieldValue('pincode', city.Pincode);
                       setCitySuggest([]);
                     }}
                   >

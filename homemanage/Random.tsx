@@ -4,15 +4,7 @@ import { CiEdit } from "react-icons/ci";
 import { RiDeleteBinLine } from "react-icons/ri";
 import Input from "../homemanage/Input";
 import { FiPlus } from "react-icons/fi";
-import {
-  DndContext,
-  useSensor,
-  useSensors,
-  PointerSensor,
-  DragEndEvent,
-  useDroppable,
-  useDraggable,
-} from "@dnd-kit/core";
+import { DndContext, useSensor, useSensors, PointerSensor, DragEndEvent, useDroppable, useDraggable, } from "@dnd-kit/core";
 import { TextField } from "@mui/material";
 import { Style } from "./Styles";
 
@@ -36,39 +28,26 @@ const renderNodes = (
 
     return (
       <div key={currentPath.join("-")} className="list-decimal">
-          {/* <hr className="left-0 w-4 h-0.5 bg-gray-200"></hr>  */}
-          <DraggableNode
-            node={node}
-            currentPath={currentPath}
-            level={level}
-            onAdd={onAdd}
-            onEdit={onEdit}
-            onDelete={onDelete}
-          />
+        <DraggableNode
+          node={node}
+          currentPath={currentPath}
+          level={level}
+          onAdd={onAdd}
+          onEdit={onEdit}
+          onDelete={onDelete}
+        />
       </div>
     );
   });
 };
 
-const DraggableNode = ({
-  node,
-  currentPath,
-  level,
-  onAdd,
-  onEdit,
-  onDelete,
-}) => {
+const DraggableNode = ({ node, currentPath, level, onAdd, onEdit, onDelete }: any) => {
   const id = currentPath.join("-");
-  const {
-    attributes,
-    listeners,
-    setNodeRef: setDragRef,
-    transform,
-  } = useDraggable({ id });
+  const { attributes, listeners, setNodeRef: setDragRef, transform, } = useDraggable({ id });
 
   const { setNodeRef: setDropRef, isOver } = useDroppable({ id });
 
-  const combinedRef = (el) => {
+  const combinedRef = (el: any) => {
     setDragRef(el);
     setDropRef(el);
   };
@@ -82,7 +61,6 @@ const DraggableNode = ({
 
   return (
     <div className="relative ml-4">
-      {/* Vertical line to parent */}
       {level > 1 && (
         <div
           className="absolute left-0 top-0 bottom-0 border-l-2 border-gray-500 list-decimal"
@@ -93,7 +71,6 @@ const DraggableNode = ({
         />
       )}
 
-      {/* Horizontal line to parent */}
       {level > 1 && (
         <div
           className="absolute top-4 left-0 border-t-2 border-gray-500 list-decimal"
@@ -157,8 +134,8 @@ const DropZone = () => {
     <div
       ref={setNodeRef}
       className={`fixed top-6 right-8 z-50 w-[100px] h-[45px] rounded-lg text-2xl font-bold flex items-center justify-center shadow transition-all duration-150 ${isOver
-          ? "bg-red-600 text-white scale-110"
-          : "bg-red-400 text-white hover:scale-105"
+        ? "bg-red-600 text-white scale-110"
+        : "bg-red-400 text-white hover:scale-105"
         }`}
     >
       <RiDeleteBinLine />
@@ -210,7 +187,8 @@ const Random = () => {
     if (currentPath.length === 0) {
       setInputs([...inputs, { name: value, children: [] }]);
     } else {
-      const isEdit = currentPath.at(-1) !== "new";
+      const lastSegment = currentPath.at(-1) ?? "";
+      const isEdit = lastSegment !== "new";
       if (isEdit) {
         setNodeByPath(currentPath, value);
       } else {

@@ -1,4 +1,3 @@
-'use client'
 import React from 'react'
 import MyEditor from '@/components/Myeditor'
 
@@ -14,3 +13,8 @@ const Page = () => {
 
 export default Page
 
+export function generateMetadata(){
+  return {
+      title:"Terms and Condition",
+  }
+}

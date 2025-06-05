@@ -1,4 +1,5 @@
-import { createSlice, nanoid } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, nanoid } from "@reduxjs/toolkit";
+import axios from "axios";
 
 const storedCart = typeof window !== 'undefined' && localStorage.getItem('cartItem');
 const parsedCart = storedCart ? JSON.parse(storedCart) : [];
@@ -8,6 +9,11 @@ const initialSlice = {
   totalPrice: parsedCart.reduce((total, item) => total + item.quantity * Number(item.Price), 0),
   totalQuantity: parsedCart.reduce((total, item) => total + item.quantity, 0),
 };
+
+// export const fetchData = createAsyncThunk("userData",async() => {
+//   const res = await axios.get("http://localhost:4000/posts")
+//   return res.data;
+// })
 
 const slice = createSlice({
   name: 'cart',

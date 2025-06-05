@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation';
 import orderBy from 'lodash/orderBy';
 import Zoom from 'react-medium-image-zoom'
 import 'react-medium-image-zoom/dist/styles.css'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 interface Category {
   No: number;
@@ -43,6 +44,7 @@ const Subcategory = () => {
   });
 
   const route = useRouter();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const refreshToken = localStorage.getItem("usertoken");
@@ -95,8 +97,8 @@ const Subcategory = () => {
     e.preventDefault();
 
     const formdata = new FormData();
-    formdata.append("subcategory_name", inputs.subcategory);
-    formdata.append("fk_category_id", inputs.category);
+    formdata.append("subcategoryName", inputs.subcategory);
+    formdata.append("fkCategoryId", inputs.category);
     formdata.append('status', inputs.status);
     if (image) {
       formdata.append("image", image);
@@ -121,8 +123,8 @@ const Subcategory = () => {
     e.preventDefault();
 
     const formdata = new FormData();
-    formdata.append("subcategory_name", inputs.subcategory);
-    formdata.append("fk_category_id", inputs.category);
+    formdata.append("subcategoryName", inputs.subcategory);
+    formdata.append("fkCategoryId", inputs.category);
     formdata.append("status", inputs.status);
     formdata.append("id", String(editSubcategory?.No));
 
@@ -235,6 +237,76 @@ const Subcategory = () => {
       theme: "light",
     });
   };
+
+  // const {data,isLoading,isError,refetch} = useQuery({
+  //   queryKey: ["subcategories", page, input],
+  //   queryFn: async () => {
+  //     const res = await commonGetApis(`get_subcategories?pageNumber=${page}&pageLimit=10&search=${input}`);
+  //     return res.data;
+  //   },
+  //   keepPreviousData: true,
+  //   staleTime: 10000,
+  // });
+
+  // useEffect(() => {
+  //   if (data?.result) {
+  //     setAdds(data.result);
+  //     setTotalCount(data.Total_Count);
+  //   }
+  // }, [data]);  
+
+  // const addSubcategoryMutation = useMutation({
+  //   mutationFn: async () => {
+  //     const formdata = new FormData();
+  //     formdata.append("subcategory_name", inputs.subcategory);
+  //     formdata.append("fk_category_id", inputs.category);
+  //     formdata.append('status', inputs.status);
+  //     if (image) formdata.append("image", image);
+  
+  //     const res = await commonPostApis("add_subCategory", formdata);
+  //     return res;
+  //   },
+  //   onSuccess: () => {
+  //     toast.success("Successfully Added");
+  //     setOpenModal(false);
+  //     queryClient.invalidateQueries({ queryKey: ["subcategories"] });
+  //   },
+  //   onError: () => toast.error("Failed To Add"),
+  // });  
+
+  // const deleteMutation = useMutation({
+  //   mutationFn: async (id) => {
+  //     const res = await deleteApi(`delete_subcategory/${id}`);
+  //     return res.data;
+  //   },
+  //   onSuccess:() => {
+  //     toast.success("Deleted Successfully");
+  //     queryClient.invalidateQueries({ queryKey: ["subcategories"] });
+  //   },
+  //   onError: () => {
+  //     toast.error("Something went Wrong")
+  //   }
+  // });
+
+  // const getByIdMutation = useMutation({
+  //   mutationFn: async (id) => {
+  //     const res = await commonGetApis(`get_subcategory/${id}`);
+  //     return res.data;
+  //   },
+  //   onSuccess: (data) => {
+  //     setEditSubcategory(data.DATA);
+  //     setInputs({
+  //       subcategory: data.DATA.SubCategory_Name,
+  //       category: String(data.DATA.fk_category_id),
+  //       status: String(data.DATA.Status),
+  //     });
+  //     setEditSub(true);
+  //   },
+  //   onError: (error) => {
+  //     console.error("Failed to fetch subcategory", error);
+  //     toast.error("Failed to fetch subcategory data");
+  //   }
+  // })
 
   useEffect(() => {
     fetchGetCategory();

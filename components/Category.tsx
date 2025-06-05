@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation';
 import orderBy from 'lodash/orderBy';
 import Zoom from 'react-medium-image-zoom'
 import 'react-medium-image-zoom/dist/styles.css'
+import { useQuery } from '@tanstack/react-query';
 
 interface Category {
   Category_Name: string;
@@ -60,7 +61,7 @@ const Category = () => {
     }
   };
 
-  const count = Math.ceil(totalCount / 10);
+  const count = Math.ceil(totalCount / 1);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -176,7 +177,16 @@ const Category = () => {
       item.Category_Name,
       item.Status === 1 ? "Active" : "Inactive"
     ]);
-
+    console.log("Rows", rows)
+    const rows1 = adds.map((item) => {
+      return [
+        item.No,
+        item.Category_Name,
+        item.Status === 1 ? "Active" : "Inactive"
+      ]
+    })
+    
+    console.log("Rows1",rows1)
     const csvContent =
       "data:text/csv;charset=utf-8," +
       [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
@@ -215,6 +225,13 @@ const Category = () => {
     return () => clearTimeout(delayDebounce);
   }, [input, page]);
 
+
+  // const {data,isError,error,isFetched,isLoading} = useQuery({
+  //   queryKey:['categories'],
+  //   queryFn:fetchCategories,
+  // })
+
+  // console.log("neers1212321",data)
   return (
     <div className="">
       <div className="flex flex-row justify-between items-center">

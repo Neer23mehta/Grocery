@@ -11,6 +11,7 @@ import commonGetApis, { commonPostApis, deleteApi } from '@/commonapi/Commonapi'
 import { toast } from 'react-toastify'
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import { useRouter } from 'next/navigation'
+import { useDeleteTandCMutation, useGetAllTandCQuery } from '@/app/redux/apiSlice'
 
 const extensions = [
   StarterKit.configure({
@@ -25,6 +26,8 @@ const extensions = [
 
 export default function MyEditor() {
   const [data, setData] = useState("")
+  const [deleteFn,deleteResult] = useDeleteTandCMutation();
+  
   const editor = useEditor({
     extensions,
     content: 'Write Here',
@@ -59,7 +62,26 @@ export default function MyEditor() {
     } catch (error) {
       console.log(error)
     }
+    // try {
+    //   await deleteFn({ id: terms_and_condition_id, language: "en" }).unwrap();
+    //   toast.success("Deleted successfully");
+    //   setData(prev => prev.filter(item => item.terms_and_condition_id !== id));
+    // } catch (err) {
+    //   toast.error("Failed to delete");
+    //   console.error(err);
+    // }    
   }
+
+  // const handleDelTanC = async (id) => {
+  //   console.log("Deleting ID:", id, "with language: en");
+  //   try {
+  //     await deleteFn({ id, language: "en" }).unwrap();
+  //     toast.success("Terms and Conditions deleted successfully");
+  //     setData(prev => prev.filter(item => item.terms_and_condition_id !== id));
+  //   } catch (error) {
+  //     console.error("Delete failed", error);
+  //   }
+  // }  
 
   useEffect(() => {
     fetchTandC();
@@ -71,6 +93,7 @@ export default function MyEditor() {
     const editorContent = editor.getHTML();
     formdata.append("text", editorContent);
     // formdata.append("id", "2"); 
+    formdata.append("language", "en"); 
 
     try {
       const res = await commonPostApis("terms_and_condition", formdata);

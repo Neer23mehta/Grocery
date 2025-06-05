@@ -190,11 +190,11 @@ const Productadd = ({ id }: ProductProp) => {
       formdata.append("id", String(productId));
     }
 
-    formdata.append("fk_category_id", values.category);
-    formdata.append("fk_subcategory_id", values.subcategory);
-    formdata.append("fk_brand_id", values.brand);
-    formdata.append("product_name", values.name);
-    formdata.append("stock_status", "1");
+    formdata.append("fkCategoryId", values.category);
+    formdata.append("fkSubcategoryId", values.subcategory);
+    formdata.append("fkBrandId", values.brand);
+    formdata.append("productName", values.name);
+    formdata.append("stockStatus", "1");
 
     if (image) {
       formdata.append("image", image);

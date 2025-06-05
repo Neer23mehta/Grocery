@@ -1,7 +1,7 @@
 'use client'
 import axios from 'axios';
 
-const commonGetApis = async (params: string) => {
+const commonGetApis = async (params: string,) => {
   const refreshtoken = typeof window !== "undefined" ? localStorage.getItem("usertoken") : null;
   const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 

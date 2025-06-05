@@ -78,6 +78,8 @@ const Coupons = () => {
       console.log("error", error);
     }
   };
+
+  // console.log("konijbbij",users)
   const handleStatusChange = async (id: number, currentStatus: number) => {
     const newStatus = currentStatus === 1 ? 0 : 1;
 
@@ -139,12 +141,12 @@ const Coupons = () => {
   const handleCouponSubmit = async () => {
 
     const formdata = new URLSearchParams();
-    formdata.append("coupon_name", formik.values.name);
-    formdata.append("minimum_purchase", formik.values.minpurchase);
-    formdata.append("discount_price", formik.values.disprice);
-    formdata.append("start_date", formik.values.start_date);
-    formdata.append("end_date", formik.values.end_date);
-    formdata.append("coupon_code", formik.values.code);
+    formdata.append("couponName", formik.values.name);
+    formdata.append("minimumPurchase", formik.values.minpurchase);
+    formdata.append("discountPrice", formik.values.disprice);
+    formdata.append("startDate", formik.values.start_date);
+    formdata.append("endDate", formik.values.end_date);
+    formdata.append("couponCode", formik.values.code);
 
     if (isEditing && coupon) {
       formdata.append("id", String(coupon.No));
@@ -241,7 +243,7 @@ const Coupons = () => {
     document.title = "Admin Coupon-Management";
   }, [page]);
 
-  const count = Math.ceil(Number(totalCount) / 10)
+  const count = Math.ceil(Number(totalCount) / 5)
 
   return (
     <div className='p-5'>

@@ -6,7 +6,6 @@ const api = axios.create({
   baseURL: 'http://192.168.2.163:3001/admin',
 });
 
-// Refresh access token
 const refreshAccessToken = async () => {
   const refreshToken = localStorage.getItem("usertoken");
 
@@ -23,7 +22,7 @@ const refreshAccessToken = async () => {
       null, 
       {
         headers: {
-          refresh_token: refreshToken, // Ensure this is correct
+          refresh_token: refreshToken, 
         }
       }
     );
@@ -46,19 +45,16 @@ const refreshAccessToken = async () => {
   }
 };
 
-// Request interceptor
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   const refreshToken = localStorage.getItem("usertoken");
 
-  if (token) config.headers['Authorization'] = `Bearer ${token}`; // Adding 'Bearer' before the token
+  if (token) config.headers['Authorization'] = `Bearer ${token}`; 
   if (refreshToken) config.headers['refresh_token'] = refreshToken;
-  config.headers['language'] = 'en'; // Optionally, set the language header
-
+  config.headers['language'] = 'en'; 
   return config;
 });
 
-// Response interceptor to handle expired token (403 errors)
 api.interceptors.response.use(
   response => response,
   async (error) => {

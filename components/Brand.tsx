@@ -109,9 +109,9 @@ const Brand = () => {
     e.preventDefault();
 
     const formdata = new FormData();
-    formdata.append('brand_name', inputs.brand);
-    formdata.append('fk_category_id', inputs.category);
-    formdata.append('fk_subcategory_id', inputs.subcategory);
+    formdata.append('brandName', inputs.brand);
+    formdata.append('fkCategoryId', inputs.category);
+    formdata.append('fkSubcategoryId', inputs.subcategory);
     formdata.append('status', inputs.status);
 
     if (image) formdata.append('image', image);
@@ -243,7 +243,6 @@ const Brand = () => {
     fetchCategories();
     fetchGetCategory();
     fetchSubCategories();
-    document.title = "Admin Brands"
   }, [input, page]);
 
   const count = Math.ceil(Number(totalCount) / 10)
@@ -619,3 +618,5 @@ const Brand = () => {
 };
 
 export default Brand;
+
+

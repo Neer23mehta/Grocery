@@ -1,10 +1,16 @@
-import Trash from '@/homemanage/Trash'
 import React from 'react'
+import Random from '@/homemanage/Random'
 
 const Page = () => {
   return (
-    <div><Trash/></div>
+    <div><Random/></div>
   )
 }
 
 export default Page
+
+export function generateMetadata(){
+  return {
+    title:"Design"
+  }
+}

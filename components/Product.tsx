@@ -13,6 +13,8 @@ import { IoSearchSharp } from "react-icons/io5";
 import orderBy from 'lodash/orderBy';
 import Zoom from 'react-medium-image-zoom'
 import 'react-medium-image-zoom/dist/styles.css'
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 
 interface Product {
   Product_Name: string;
@@ -38,6 +40,7 @@ const Products = () => {
   const [totalCount, setTotalCount] = useState("");
   const [sortField, setSortField] = useState<string>('');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [product, setProduct] = useState("")
   const route = useRouter();
 
   useEffect(() => {
@@ -49,13 +52,24 @@ const Products = () => {
 
   const fetchCategories = async () => {
     try {
-      const res = await commonGetApis(`get_products?pageNumber=${page}&pageLimit=10&search=${input}`);
+      const res = await commonGetApis(`get_products?pageNumber=${page}&pageLimit=10`);
       setTotalCount(res.data.Total_Count)
       setAdds(res?.data?.result || []);
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
   };
+
+  // const {} = useQuery({
+  //   queryKey: ['products',page],
+  //   queryFn: async () => {
+  //     const res = await commonGetApis(`get_products?pageNumber=${page}&pageLimit=10`)
+  //     return res.data;
+  //   },
+  //   // onSuccess: (data) => {
+  //   //   setAdds(data.result);
+  //   // }
+  // })
 
   const count = Math.ceil(Number(totalCount) / 10)
 
@@ -74,7 +88,7 @@ const Products = () => {
 
     const formData = new URLSearchParams();
     formData.append('id', String(id));
-    formData.append('stock_status', String(newStatus));
+    formData.append('stockStatus', String(newStatus));
 
     try {
       const res = await commonPostApis("status_change", formData);
@@ -102,7 +116,7 @@ const Products = () => {
       toast.error("Something went Wrong")
     }
   };
-  console.log("PrID", productIdData)
+  // console.log("PrID", productIdData)
   const handleIdDelete = async (id: number) => {
     try {
       const res = await deleteApi(`deleteproductvariation?id=${id}`)
@@ -114,6 +128,19 @@ const Products = () => {
       console.log(error)
     }
   }
+
+  // const {data} = useQuery({
+  //   queryKey: ["product", "page", "input"],
+  //   queryFn: async () => {
+  //     const res = await commonGetApis(`get_products?pageNumber=${page}&pageLimit=10&search=${input}`);
+  //     return res.data;
+  //   },
+  //   keepPreviousData: true,
+  //   staleTime: 100000,
+  // });
+
+  // console.log("neerdata123",data)
+
   const setExportData = () => {
     if (!adds.length) {
       toast.warning("No data to export");
@@ -164,7 +191,6 @@ const Products = () => {
 
   useEffect(() => {
     fetchCategories();
-    document.title = "Admin Products"
   }, [input, page]);
 
   return (

@@ -1,13 +1,12 @@
 'use client'
-
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { useParams } from 'next/navigation';
-
 const Productdetail = () => {
   const { id } = useParams();
   const [product, setProduct] = useState<any>(null);
   const [data, setData] = useState<any>(null);
+  
   const fetchDataID = async () => {
     try {
       const res = await axios.get(`https://api.escuelajs.co/api/v1/products/${id}`);

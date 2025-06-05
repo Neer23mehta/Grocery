@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import mockJewellery from '../Grocery/jwellery'
+import mockProducts from '@/Grocery/Product'
 
 interface Jwellerys {
       id: number
@@ -17,7 +17,8 @@ const Jwellery = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setJwellerys(mockJewellery)
+      const jwellery = mockProducts.filter(item => item.section == 6)
+      setJwellerys(jwellery)
     }, 500)
     return () => clearTimeout(timer)
   }, [])

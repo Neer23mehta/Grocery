@@ -7,7 +7,7 @@ import { FaEyeSlash } from "react-icons/fa";
 import Image from 'next/image';
 import { Uassets } from "../Uassets/uassets"
 
-const Login = () => {
+const Loginu = () => {
     const [step, setStep] = useState(0);
     const [formData, setFormData] = useState({
         username: '',
@@ -269,4 +269,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default Loginu;

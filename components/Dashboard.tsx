@@ -11,8 +11,8 @@ import { Skeleton } from '@mui/material'
 import { LineElement, PointElement, LineController } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import { useRouter } from 'next/navigation'
-// import { MapContainer, TileLayer } from 'react-leaflet'
-// import 'leaflet/dist/leaflet.css'
+import { MapContainer, TileLayer } from 'react-leaflet'
+import 'leaflet/dist/leaflet.css'
 
 ChartJS.register(
   CategoryScale,
@@ -74,7 +74,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchDashboard();
-    document.title = "Admin Dashboard";
+    // document.title = "Admin Dashboard";
   }, [])
 
   return (
@@ -218,10 +218,10 @@ const Dashboard = () => {
           />
         </div>
 
-        {/* <div className="w-full md:w-1/2 h-[400px] bg-white p-6 rounded-lg shadow-lg">
+         <div className="w-full md:w-1/2 h-[400px] bg-white p-6 rounded-lg shadow-lg">
           <h2 className="text-2xl font-bold mb-4 text-black">Map</h2>
-          <div className="h-[calc(100%-2rem)] w-full"> {/* 2rem = mb-4 for h2 */}
-        {/* <MapContainer
+          <div className="h-[calc(100%-2rem)] w-full">
+        <MapContainer
               center={[22.9734, 78.6569]}
               zoom={5}
               style={{ height: '100%', width: '100%' }}
@@ -233,7 +233,7 @@ const Dashboard = () => {
               />
             </MapContainer>
           </div>
-        </div> */}
+        </div>
       </div>
     </div>
   )

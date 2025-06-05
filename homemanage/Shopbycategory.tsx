@@ -154,7 +154,7 @@ const Shopbycategory = () => {
               ))
             )}
             <div
-              className="h-[120px] w-[120px] mb-5 border border-gray-300 rounded-md flex-shrink-0 flex items-center justify-center cursor-pointer hover:bg-gray-50 transition"
+              className="h-[120px] w-[120px] border border-gray-300 rounded-md flex-shrink-0 flex items-center justify-center cursor-pointer hover:bg-gray-50 transition"
               onClick={handleToggleCategory}
             >
               <div className="flex items-center justify-center rounded-lg">

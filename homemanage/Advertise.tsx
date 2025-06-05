@@ -24,7 +24,6 @@ const Advertise: React.FC = () => {
   const [add, setAdd] = useState(false);
   const [ads, setAds] = useState<Advertise[]>([]);
   const [image, setImage] = useState<File | null>(null);
-
   const handleToggleAdd = () => {
     setAdd(!add);
   };

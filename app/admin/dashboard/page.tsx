@@ -1,5 +1,5 @@
-import Dashboard from '@/components/Dashboard'
 import React from 'react'
+import Dashboard from '@/components/Dashboard'
 
 const Page = () => {
   return (
@@ -8,3 +8,9 @@ const Page = () => {
 }
 
 export default Page
+
+export function generateMetadata(){
+  return {
+      title:"Admin Dashboard",
+  }
+}

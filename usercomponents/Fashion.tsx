@@ -80,17 +80,14 @@ const Fashion = () => {
   const [open, setOpen] = useState(false);
   const anchorRef = useRef(null);
 
-  // ✅ New state for fashion products
   const [allFashionData, setAllFashionData] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'men' | 'women'>('all');
 
-  // ✅ Load clothing & footwear mock data on mount
   useEffect(() => {
     const combined = [...clothingData, ...footwearData];
     setAllFashionData(combined);
   }, []);
 
-  // ✅ Optional: Load external products (keeping original logic)
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -105,14 +102,13 @@ const Fashion = () => {
     fetchData();
   }, []);
 
-  // ✅ Filter data by men/women/all
   const filteredFashion = selectedCategory === 'all'
     ? allFashionData
     : allFashionData.filter(item => item.category === selectedCategory);
 
   return (
     <div className="p-5 bg-gray-100 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6 text-center">Product Showcase</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center">Fashion Showcase</h1>
 
       <section className="relative mb-10">
         <div className="h-[410px] overflow-hidden rounded-md">
@@ -181,7 +177,6 @@ const Fashion = () => {
         </Popper>
       </section>
 
-      {/* ✅ Filter Buttons */}
       <div className="flex gap-4 justify-center mb-6">
         <button
           onClick={() => setSelectedCategory('all')}
@@ -203,7 +198,6 @@ const Fashion = () => {
         </button>
       </div>
 
-      {/* ✅ Filtered Fashion Items */}
       <section className="mb-10">
         <h2 className="text-2xl font-semibold mb-4 text-center">Fashion - Clothing & Footwear</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -222,7 +216,6 @@ const Fashion = () => {
         </div>
       </section>
 
-      {/* ✅ Original API Products */}
       <section>
         <h2 className="text-2xl font-semibold mb-4">EscuelaJS Products</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

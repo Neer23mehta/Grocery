@@ -54,7 +54,7 @@ export const Navbar = () => {
   }, [isAuthenticated, user]);
 
   return (
-    <div className="bg-gray-100 text-black shadow-md ">
+    <div className="bg-gray-100 text-black shadow-md bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600">
       <nav className="flex justify-between items-center py-5  px-10 mx-auto w-full">
         <div>
           <button onClick={() => handleMenuBar()}>
@@ -75,7 +75,7 @@ export const Navbar = () => {
               value={searchQuery}
               onChange={handleSearchChange}
               placeholder="Search..."
-              className="h-10 px-4 w-full text-black rounded-l-md border border-gray-300"
+              className="h-10 px-4 w-full text-black rounded-l-md border border-gray-300 bg-amber-50"
             />
             <button
               type="submit"
@@ -97,13 +97,13 @@ export const Navbar = () => {
         </form>
 
         <ul className="flex space-x-6 items-center list-none ml-6">
-          <li className="font-bold">
+          <li className="font-bold text-amber-50">
             <Link href="/user/home">Home</Link>
           </li>
-          <li className="font-bold">
+          <li className="font-bold text-amber-50">
             <Link href="/about">About</Link>
           </li>
-          <li className="font-bold">
+          <li className="font-bold text-amber-50">
             <Link href="/contact">Contact</Link>
           </li>
           <li className="relative">
@@ -111,16 +111,16 @@ export const Navbar = () => {
               {totalQuantity}
             </span>
             <Link href="/user/cart">
-              <IoCartOutline className="text-2xl font-bold" />
+              <IoCartOutline className="text-2xl font-bold text-white" />
             </Link>
           </li>
-          <li className="font-bold">
+          <li className="font-bold text-amber-50">
             <Link href="/orders">Orders</Link>
           </li>
-          <li className="font-bold">
+          <li className="font-bold text-amber-50">
             <Link href="/admin">Admin</Link>
           </li>
-          <li className="font-bold">
+          <li className="font-bold text-amber-50">
             {isLoading ? (
               <span>Loading...</span>
             ) : isAuthenticated ? (

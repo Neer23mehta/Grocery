@@ -15,6 +15,26 @@ interface TreeNode {
   children?: TreeNode[];
 }
 
+// const handleDelTanC = async (id) => {
+  //   console.log("Deleting ID:", id, "with language: en");
+  //   try {
+  //     await deleteFn({ id, language: "en" }).unwrap();
+  //     toast.success("Terms and Conditions deleted successfully");
+  //     setData(prev => prev.filter(item => item.terms_and_condition_id !== id));
+  //   } catch (error) {
+  //     console.error("Delete failed", error);
+  //   }
+  // }  
+
+    // try {
+      //   await deleteFn({ id: terms_and_condition_id, language: "en" }).unwrap();
+      //   toast.success("Deleted successfully");
+      //   setData(prev => prev.filter(item => item.terms_and_condition_id !== id));
+      // } catch (err) {
+      //   toast.error("Failed to delete");
+      //   console.error(err);
+      // }   
+
 const renderNodes = (
   nodes: TreeNode[],
   path: number[] = [],

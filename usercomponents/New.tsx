@@ -46,7 +46,7 @@ const New = () => {
         <div className='lg:ml-24 lg:mt-20 md:mt-12 md:ml-16'>
             <div className='w-full bg-[#F8F9FF]'>
                 <div className='bg-[#F8F9FF] rounded-md'>
-                    <div className='flex flex-col lg:flex-row p-7 gap-4'>
+                    <div className='flex flex-col lg:flex-row p-2 md:p-7 gap-4'>
                         <div className={`bg-white rounded-md shadow-sm ${isSmallScreen ? 'w-full' : 'w-[250px]'}`}>
                             <nav className={`flex ${isSmallScreen ? 'flex-row overflow-x-auto justify-between' : 'flex-col'} w-full`}>
                                 {menuItems.map((item) => {
@@ -74,7 +74,7 @@ const New = () => {
                                 })}
                             </nav>
                         </div>
-                        <div className='flex-grow bg-white rounded-md p-4 lg:p-5 overflow-x-auto'>
+                        <div className='flex-grow bg-white rounded-md p-1 lg:p-5 overflow-x-auto'>
                             {renderComponent()}
                         </div>
                     </div>

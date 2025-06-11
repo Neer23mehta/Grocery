@@ -1,7 +1,9 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import mockProducts from '@/Grocery/Product'
-import { useQuery } from '@tanstack/react-query'
+import { addProduct } from '@/app/redux/slice'
+import { useDispatch } from 'react-redux'
+import { toast } from 'react-toastify'
 
 interface Makeup {
   id: number
@@ -16,14 +18,35 @@ interface Makeup {
 const Makeups = () => {
   const [makes, setMakes] = useState<Makeup[]>([])
   const [search, setSearch] = useState<string>('')
+  const dispatch = useDispatch()
   useEffect(() => {
     const timer = setTimeout(() => {
       const filtermake = mockProducts.filter(item => item?.section === 1)
-      setMakes(filtermake)
+      setMakes(filtermake as any)
     }, 500)
     return () => clearTimeout(timer)
   }, [])
-  console.log("makes123",makes)
+
+const handleAddToCart = (make: Makeup) => {
+    dispatch(
+      addProduct({
+        Product_Name: make.name,
+        Description: make.name,
+        Image: make.image,
+        // Price: make.,
+        Stock_Status: 1,
+        Variation: '',
+        // Category_Name: make.,
+        Id: make.id,
+        Product_var_id: make.id,
+        // Fragrance: perfume.fragrance ,
+        Type: make.type,
+        Brand: make.brand,
+        Shade: make.shade
+      })
+    );
+    toast.success(`${make.name} added to cart`);
+  }  
   const filteredMakeup = makes.filter(makeup => makeup.name.toLowerCase().includes(search.toLowerCase()) || makeup.brand.toLowerCase().includes(search.toLowerCase()) || makeup.type.toLowerCase().includes(search.toLowerCase()));
 
   return (
@@ -47,6 +70,12 @@ const Makeups = () => {
               <p className="text-gray-600 mb-1"><span className="font-medium">Brand:</span> {phone.brand}</p>
               <p className="text-gray-600 mb-1"><span className="font-medium">Type:</span> {phone.type}</p>
               <p className="text-gray-600 mb-1"><span className="font-medium">Shade:</span> {phone.shade}</p>
+              <button
+                onClick={() => handleAddToCart(item)}
+                className="mt-5 w-full bg-amber-500 text-white py-2 rounded hover:bg-amber-600 transition"
+              >
+                Add to Cart
+              </button>
             </div>
           </div>
         ))}

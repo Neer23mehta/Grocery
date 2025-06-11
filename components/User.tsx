@@ -37,13 +37,14 @@ const User = () => {
     const fetchGet = async () => {
         try {
             const res = await commonGetApis(`getusers?pageNumber=${page}&pageLimit=5&search=${input}`)
-            setTotalCount(res?.data?.Total_Count)
+            setTotalCount(res?.data?.totalCount)
             setUsers(res?.data?.result)
         } catch (error) {
             console.log("error", error)
         }
     }
 
+    console.log("count",totalCount)
     const handleStatusChange = async (id: number, currentStatus: number) => {
 
         const newStatus = currentStatus === 1 ? 0 : 1;
@@ -125,8 +126,8 @@ const User = () => {
                     <h1 className='text-3xl font-bold'>Users</h1>
                     <p className='text-gray-500 mt-2'><Link href={`/admin/dashboard`}>Dashboard</Link> <span className='ml-2.5'>{`>`}</span><span className='text-black ml-2.5'>Users</span> </p>
                 </div>
-                <div>
-                    <TextField
+                <div className='flex flex-row items-center'>
+                    {/* <TextField
                         id="outlined-basic"
                         label="Search User"
                         variant="outlined"
@@ -139,9 +140,13 @@ const User = () => {
                                 </InputAdornment>
                             ),
                         }}
-                    />
+                    /> */}
+                    <div className='flex flex-row px-2 py-3 text-md border border-gray-700 bg-white items-center'>
+                    <IoSearchSharp size={20} />
+                        <input type='text' placeholder=' Search User...' value={input.trim()} onChange={(e) => setInput(e.target.value)} className='outline-none px-2'/>
+                    </div>
                     <button
-                        className="px-4 py-4 bg-green-700 ml-5 w-20 font-bold text-md cursor-pointer"
+                        className="px-4 py-3 bg-green-700 ml-5 w-20 font-bold text-md cursor-pointer"
                         onClick={() => setExportData()}
                     >
                         Export
@@ -190,17 +195,19 @@ const User = () => {
                         }
                     </tbody>
                 </table>
-                <div className='flex justify-end bottom-0 mt-5 h-[20px] items-center'>
-                    <Stack spacing={0}>
-                        <Pagination page={page}
-                            onChange={(e, page) => setPage(page)}
-                            variant='outlined' shape='rounded'
-                            count={count}
-                            hideNextButton={!!input}
-                            hidePrevButton={!!input}
-                        />
+                 <div className="flex justify-center md:justify-end mt-5">
+                    <Stack spacing={2}>
+                      <Pagination
+                        variant='outlined'
+                        shape='rounded'
+                        count={count}
+                        page={page}
+                        onChange={(e, page) => setPage(page)}
+                        hidePrevButton={!!input}
+                        hideNextButton={!!input}
+                      />
                     </Stack>
-                </div>
+                  </div>
             </div>
         </div>
 

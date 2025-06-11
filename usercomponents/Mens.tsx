@@ -1,6 +1,9 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import clothingData from '../Grocery/Fashiondb'
+import { useDispatch } from 'react-redux'
+import { addProduct } from '@/app/redux/slice'
+import { toast } from 'react-toastify'
 
 interface Clothes {
   id: number
@@ -14,15 +17,34 @@ interface Clothes {
 const Mens = () => {
   const [mens, setMens] = useState<Clothes[]>([])
   const [search, setSearch] = useState<string>('')
+  const dispatch = useDispatch();
+
   useEffect(() => {
     const timer = setTimeout(() => {
       const menClothes = clothingData.filter((item) => item.category === 'men')
-      setMens(menClothes)
+      setMens(menClothes as any)
     }, 500)
     return () => clearTimeout(timer)
   }, [])
-
-  const filtered = mens.filter(item => item.title.toLowerCase().includes(search.toLowerCase())|| item.category.toLowerCase().includes(search.toLowerCase())||item.type.toLowerCase().includes(search.toLowerCase()))
+  const handleAddToCart = (mens: Clothes) => {
+    dispatch(
+      addProduct({
+        Product_Name: mens.title,
+        Description: mens.title,
+        Image: mens.image,
+        Price: mens.price,
+        Stock_Status: 1,
+        Variation: '',
+        Category_Name: mens.category,
+        Id: mens.id,
+        Product_var_id: mens.id,
+        // Fragrance: perfume.fragrance ,
+        Type: mens.type
+      })
+    );
+    toast.success(`${mens.title} added to cart`);
+  }
+  const filtered = mens.filter(item => item.title.toLowerCase().includes(search.toLowerCase()) || item.category.toLowerCase().includes(search.toLowerCase()) || item.type.toLowerCase().includes(search.toLowerCase()))
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
@@ -45,6 +67,12 @@ const Mens = () => {
               <p className="text-gray-600 mb-1"><span className="font-medium">Category:</span> {item.category}</p>
               <p className="text-gray-600 mb-1"><span className="font-medium">Type:</span> {item.type}</p>
               <p className="text-gray-600 mb-1"><span className="font-medium">Price:</span> ${item.price}</p>
+              <button
+                onClick={() => handleAddToCart(item)}
+                className="mt-5 w-full bg-amber-500 text-white py-2 rounded hover:bg-amber-600 transition"
+              >
+                Add to Cart
+              </button>
             </div>
           </div>
         ))}

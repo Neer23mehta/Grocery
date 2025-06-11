@@ -1,6 +1,5 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import mockSofas from "../Grocery/sofa"
 import { toast } from 'react-toastify'
 import { addProduct } from '@/app/redux/slice'
 import { useDispatch } from 'react-redux'
@@ -25,7 +24,7 @@ const Sofa = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       const filteredSofa = mockProducts.filter((item) => item.section == 3)
-      setSofa(filteredSofa)
+      setSofa(filteredSofa as Sofa[])
     }, 500)
     return () => clearTimeout(timer)
   }, [])

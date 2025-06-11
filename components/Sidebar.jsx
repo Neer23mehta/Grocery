@@ -13,6 +13,7 @@ export const Sidebar = () => {
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
+
   const pathname = usePathname();
 
   useEffect(() => {
@@ -84,96 +85,103 @@ export const Sidebar = () => {
         }}      >
 
         <div className="flex flex-col h-full">
-          <div className="py-4 mr-15 flex items-center justify-center">
-            <Image src={assets.nlogo} alt="logo" width={130} height={100} />
+          <div className="md:py-4 py-2 md:mr-15 flex items-center justify-center">
+            <Image src={assets.nlogo} alt="logo" width={130} height={100} className="mt-2 md:mt-0"/>
           </div>
 
-          <nav className="flex flex-col space-y-2 px-4">
-            <Link href="/admin/dashboard" className={`flex items-center gap-3 font-medium p-3 rounded-md transition-all ${isActive('/admin/dashboard') ? 'text-amber-300' : 'text-white'}`}>
-              <Image src={assets.dash} alt="dashboard" />
-              <p className="underline-offset-1">Dashboard</p>
+          <nav className="flex flex-col md:space-y-2 space-y-4 px-4">
+            <Link href="/admin/dashboard" className={`flex items-center md:gap-3 p-2 gap-2 font-medium md:p-3 rounded-md transition-all ${isActive('/admin/dashboard') ? 'text-amber-300' : 'text-white'}`}>
+              <Image src={isActive("/admin/dashboard") ? assets.dash1 : assets.dash} alt="dashboard" />
+              <p className="underline-offset-1 md:text-base text-sm">Dashboard</p>
             </Link>
 
-            <Link href="/admin/user" className={`flex items-center gap-3 font-medium p-3 rounded-md transition-all ${isActive('/admin/user') ? 'text-amber-300' : 'text-white'}`}>
+            <Link href="/admin/user" className={`flex items-center md:gap-3 font-medium md:p-3 p-2 gap-2 rounded-md transition-all ${isActive('/admin/user') ? 'text-amber-300' : 'text-white'}`}>
               <Image
-                src={assets.user}
+                src={isActive('/admin/user') ? assets.user1 : assets.user}
                 alt="user"
                 className={`${isActive('/admin/user') ? 'fill-amber-400' : 'fill-white'}`}
                 width={20}
                 height={20}
               />
-              <p>Users</p>
+              <p className="md:text-base text-sm">Users</p>
             </Link>
-            <Link href="/admin/products" className={`flex items-center gap-3 font-medium p-3 rounded-md transition-all ${isActive('/admin/products') ? 'text-amber-300' : 'text-white'}`}>
-              <Image src={assets.products} alt="products" />
-              <p>Products</p>
+            <Link
+              href="/admin/products"
+              className={`flex items-center md:gap-3 font-medium md:p-3 p-2 gap-2 rounded-md transition-all ${isActive('/admin/products') || isActive('/admin/addproduct') ? 'text-amber-300' : 'text-white'
+                }`}
+            >
+              <Image
+                src={isActive('/admin/products') || isActive('/admin/addproduct') ? assets.product1 : assets.products}
+                alt="products"
+              />
+              <p className="md:text-base text-sm">Products</p>
             </Link>
 
-            <Link href="/admin/orders" className={`flex items-center gap-3 font-medium p-3 rounded-md transition-all ${isActive('/admin/orders') ? 'text-amber-300' : 'text-white'}`}>
-              <Image src={assets.order} alt="orders" />
-              <p>Orders</p>
+            <Link href="/admin/orders" className={`flex items-center md:gap-3 font-medium md:p-3 p-2 gap-2 rounded-md transition-all  ${isActive('/admin/orders') ? 'text-amber-300' : 'text-white'}`}>
+              <Image src={isActive('/admin/orders') ? assets.order1 : assets.order} alt="orders" />
+              <p className="md:text-base text-sm">Orders</p>
             </Link>
 
             <div className="relative">
               <button
                 onClick={toggleCategoryDropdown}
-                className={`flex items-center gap-3 font-medium p-3 rounded-md ${isActive('/admin/category') ? 'text-amber-300' : 'text-white'}`}
+                className={`flex items-center md:gap-3 font-medium md:p-3 p-2 gap-2 rounded-md ${isActive('/admin/category') ? 'text-amber-300' : 'text-white'}`}
               >
-                <Image src={assets.category} alt="category" />
-                <p>Category</p>
+                <Image src={isActive('/admin/category') ? assets.category1 : assets.category} alt="category" />
+                <p className="md:text-base text-sm">Category</p>
               </button>
 
               {isCategoryOpen && (
-                <div className="mt-2 shadow-md rounded-md w-full z-10">
+                <div className="mt-2 rounded-md w-full z-10">
                   <button
                     onClick={() => handleCategoryChange({ target: { value: 'categories' } })}
-                    className={`w-full text-left px-4 py-2 text-white ml-5 ${isActive('/admin/category/categories') ? 'text-amber-300' : 'text-white'}`}
+                    className={`w-full text-left hover:cursor-pointer md:px-4 md:py-2 px-2 py-1 md:text-base text-sm ml-5 ${isActive('/admin/category/categories') ? 'text-amber-300' : 'text-white'}`}
                   >
                     Category
                   </button>
                   <button
                     onClick={() => handleCategoryChange({ target: { value: 'subcategories' } })}
-                    className={`w-full text-left px-4 py-2 text-white ml-5 ${isActive('/admin/category/subcategories') ? 'text-amber-300' : 'text-white'}`}
+                    className={`w-full text-left hover:cursor-pointer md:px-4 md:py-2 px-2 py-1 ml-5 md:text-base text-sm ${isActive('/admin/category/subcategories') ? 'text-amber-300' : 'text-white'}`}
                   >
                     Sub Category
                   </button>
                 </div>
               )}
             </div>
-            <Link href="/admin/brands" className={`flex items-center gap-3 font-medium p-3 rounded-md transition-all ${isActive('/admin/brands') ? 'text-amber-300' : 'text-white'}`}>
-              <Image src={assets.brands} alt="brands" />
-              <p>Brands</p>
+            <Link href="/admin/brands" className={`flex items-center md:gap-3 font-medium md:p-3 p-2 gap-2 rounded-md transition-all  ${isActive('/admin/brands') ? 'text-amber-300' : 'text-white'}`}>
+              <Image src={isActive('/admin/brands') ? assets.brands1 : assets.brands} alt="brands" />
+              <p className="md:text-base text-sm">Brands</p>
             </Link>
 
-            <Link href="/admin/couponmanage" className={`flex items-center gap-3 font-medium p-3 rounded-md transition-all ${isActive('/admin/couponmanage') ? 'text-amber-300' : 'text-white'}`}>
-              <Image src={assets.coupon} alt="coupon" />
-              <p>Coupon Management</p>
+            <Link href="/admin/couponmanage" className={`flex items-center md:gap-3 font-medium md:p-3 p-2 gap-2 rounded-md transition-all ${isActive('/admin/couponmanage') ? 'text-amber-300' : 'text-white'}`}>
+              <Image src={isActive('/admin/couponmanage') ? assets.coupon1 : assets.coupon} alt="coupon" />
+              <p className="md:text-base text-sm">{isSmallScreen ? "Coupon" : "Coupon Management"}</p>
             </Link>
 
-            <Link href="/admin/homemanage" className={`flex items-center gap-3 font-medium p-3 rounded-md transition-all ${isActive('/admin/homemanage') ? 'text-amber-300' : 'text-white'}`}>
-              <Image src={assets.hm} alt="home" />
-              <p>Home Management</p>
+            <Link href="/admin/homemanage" className={`flex items-center md:gap-3 font-medium md:p-3 p-2 gap-2 rounded-md transition-all  ${isActive('/admin/homemanage') ? 'text-amber-300' : 'text-white'}`}>
+              <Image src={isActive('/admin/homemanage') ? assets.hm1 : assets.hm} alt="home" />
+              <p className="md:text-base text-sm">{isSmallScreen ? "Home" : "Home Management"}</p>
             </Link>
 
-            <Link href="/admin/pages" className={`flex items-center gap-3 font-medium p-3 rounded-md transition-all ${isActive('/admin/pages') ? 'text-amber-300' : 'text-white'}`}>
-              <Image src={assets.page} alt="pages" />
-              <p>Pages</p>
+            <Link href="/admin/pages" className={`flex items-center md:gap-3 font-medium md:p-3 p-2 gap-2 rounded-md transition-all  ${isActive('/admin/pages') ? 'text-amber-300' : 'text-white'}`}>
+              <Image src={isActive('/admin/pages') ? assets.page1 : assets.page} alt="pages" />
+              <p className="md:text-base text-sm">Pages</p>
             </Link>
 
-            <Link href="/admin/faq" className={`flex items-center gap-3 font-medium p-3 rounded-md transition-all ${isActive('/admin/faq') ? 'text-amber-300' : 'text-white'}`}>
-              <Image src={assets.faq} alt="faq" />
-              <p>FAQ</p>
+            <Link href="/admin/faq" className={`flex items-center md:gap-3 font-medium md:p-3 p-2 gap-2 rounded-md transition-all  ${isActive('/admin/faq') ? 'text-amber-300' : 'text-white'}`}>
+              <Image src={isActive('/admin/faq') ? assets.faq1 : assets.faq} alt="faq" />
+              <p className="md:text-base text-sm">FAQ</p>
             </Link>
 
-            <Link href="/admin/design" className={`flex items-center gap-3 font-medium p-3 rounded-md transition-all mr-1 ${isActive('/admin/design') ? 'text-amber-300' : 'text-white'}`}>
+            {/* <Link href="/admin/design" className={`flex items-center md:gap-3 font-medium md:p-3 p-2 gap-2 rounded-md transition-all  mr-1 ${isActive('/admin/design') ? 'text-amber-300' : 'text-white'}`}>
             <PiGitBranchThin size={20}/>
-            <p>Design</p>
+            <p className="md:text-base text-sm">Design</p>
             </Link>
 
-            <Link href="/user" className={`flex items-center gap-3 font-medium p-3 rounded-md transition-all mr-1 ${isActive('/user') ? 'text-amber-300' : 'text-white'}`}>
+            <Link href="/user" className={`flex items-center md:gap-3 font-medium md:p-3 p-2 gap-2 rounded-md transition-all  mr-1 ${isActive('/user') ? 'text-amber-300' : 'text-white'}`}>
             <PiGitBranchThin size={20}/>
-            <p>User</p>
-            </Link>
+            <p className="md:text-base text-sm">User</p>
+            </Link> */}
           </nav>
         </div>
       </Drawer>

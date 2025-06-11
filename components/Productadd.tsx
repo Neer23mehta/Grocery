@@ -160,7 +160,21 @@ const Productadd = ({ id }: ProductProp) => {
     name: Yup.string().min(1).max(25).required("Name is required"),
     category: Yup.string().required("Category is required"),
     subcategory: Yup.string().required("Subcategory is required"),
-    brand: Yup.string().required("Brand is required")
+    brand: Yup.string().required("Brand is required"),
+    productFields: Yup.array().of(
+      Yup.object().shape({
+        variation: Yup.string().required("Variation is required"),
+        price: Yup.number().required("Price is required").positive("Price must be positive"),
+        discount: Yup.number().min(0).max(100),
+        discountprice: Yup.number().positive("Discount price must be positive")
+      })
+    ),
+    orderFields: Yup.array().of(
+      Yup.object().shape({
+        title: Yup.string().required("Title is required"),
+        description: Yup.string().required("Description is required")
+      })
+    )
   });
 
   const formik = useFormik<ProductFormValues>({
@@ -180,6 +194,22 @@ const Productadd = ({ id }: ProductProp) => {
   } = formik;
 
   const handlePostProducts = async () => {
+    const requiredFields = [
+      'name',
+      'category',
+      'subcategory',
+      'brand',
+      'productFields',
+      'orderFields'
+    ];
+
+    // for (const field of requiredFields) {
+    //   if (!values[field as keyof ProductFormValues] || !values[field as keyof ProductFormValues].length) {
+    //     toast.error(`${field} is required.`);
+    //     return;
+    //   }
+    // }
+
     if (!image && !product) {
       toast.error("Please select an image.");
       return;
@@ -207,7 +237,7 @@ const Productadd = ({ id }: ProductProp) => {
       formdata.append(`products[${index}][product_price]`, field.price);
 
       if (isEditMode && productId && productVarId) {
-        formdata.append(`products[${index}][fk_product_id]`, String(productId));
+        formdata.append(`products[${index}][fkProductId]`, String(productId));
         formdata.append(`products[${index}][id]`, String(productVarId));
       }
     });
@@ -230,6 +260,7 @@ const Productadd = ({ id }: ProductProp) => {
       toast.error("An error occurred.");
     }
   };
+
 
   const handleCancel = () => {
     resetForm();
@@ -276,12 +307,12 @@ const Productadd = ({ id }: ProductProp) => {
     fetchBrands();
     document.title = "Admin addproduct";
   }, []);
-
-  console.log("dts", datas)
   return (
-    <form onSubmit={handleSubmit} className='bg-white shadow-md p-5 flex flex-col space-y-4'>
+    <form
+      onSubmit={handleSubmit}
+      className="bg-white shadow-md p-5 h-[calc(100vh-100px)] overflow-y-auto flex flex-col space-y-4"
+    >
       <h1 className='font-bold text-xl'>Add Product</h1>
-
       <div className='flex flex-col md:flex-row md:flex-wrap gap-5'>
         {[
           { label: "Item Name", name: "name", type: "text", options: null },
@@ -415,8 +446,8 @@ const Productadd = ({ id }: ProductProp) => {
       </div>
 
       <div className='flex flex-col sm:flex-row justify-center items-center space-y-3 sm:space-y-0 sm:space-x-5'>
-        <button type='submit' className='cursor-pointer px-6 py-3 font-bold bg-amber-400 text-white rounded-md'>Save</button>
-        <button type='button' onClick={handleCancel} className='cursor-pointer px-6 py-3 font-bold border border-gray-300 bg-white rounded-md'>Cancel</button>
+        <button type='submit' className='cursor-pointer px-6 py-3 font-bold bg-amber-400 text-black'>Save</button>
+        <button type='button' onClick={handleCancel} className='cursor-pointer px-6 py-3 font-bold border border-gray-300 bg-white '>Cancel</button>
       </div>
     </form>
   )

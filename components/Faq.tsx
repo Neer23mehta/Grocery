@@ -7,50 +7,33 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import { toast } from 'react-toastify';
-import { useRouter } from 'next/navigation';
-
 interface Faq {
   Answer: string;
   Faq_id: number;
   Question: string;
 }
-
 const Faq = () => {
   const [faq, setFaq] = useState<Faq[]>([]);
   const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState<number | null>(null);
   const [newlyAddedId, setNewlyAddedId] = useState<number | null>(null);
-  const router = useRouter();
-
-  useEffect(() => {
-    const token = localStorage.getItem('usertoken');
-    if (!token) {
-      router.replace('/');
-    }
-  }, []);
-
   useEffect(() => {
     fetchFaq();
-    document.title = 'Admin FAQ';
   }, []);
-
   const fetchFaq = async () => {
     try {
       const res = await commonGetApis('get_all_faqs');
       setFaq(res?.data?.result || []);
     } catch (error) {
       console.error(error);
-      toast.error('Failed to fetch FAQs');
+      toast.error(`${error}`);
     }
   };
-
   const initialValues = { Question: '', Answer: '' };
-
   const validationSchema = Yup.object({
     Question: Yup.string().min(10).required('Question is required'),
     Answer: Yup.string().min(10).required('Answer is required'),
   });
-
   const formik = useFormik({
     initialValues,
     validationSchema,
@@ -58,15 +41,13 @@ const Faq = () => {
       const formData = new URLSearchParams();
       formData.append('question', values.Question);
       formData.append('answer', values.Answer);
-
       try {
         const res = await commonPostApis('add_faqs', formData);
         const newId = res.data?.id || Date.now(); 
         setNewlyAddedId(newId);
         fetchFaq();
         setOpen(false);
-        toast.success('FAQ Added Successfully');
-
+        toast.success(`${res.data.message}`);
         setTimeout(() => setNewlyAddedId(null), 4000);
       } catch (err) {
         console.error(err);
@@ -74,26 +55,23 @@ const Faq = () => {
       }
     },
   });
-
   const handleDelete = async (id: number) => {
     try {
-      await deleteApi(`delete_faqs?id=${id}`);
+      const res = await deleteApi(`delete_faqs?id=${id}`);
       setFaq((prev) => prev.filter((f) => f.Faq_id !== id));
-      toast.success('Deleted successfully');
+      toast.success(`${res.data.message}`);
     } catch (err) {
-      toast.error('Delete failed');
+      toast.error(`${err}`);
     }
   };
-
   return (
-    <div className='w-full p-4'>
+    <div className='w-full md:p-4 p-0 h-146 md:h-full overflow-y-auto'>
       <div className='flex justify-between items-center mb-4'>
-        <h1 className='text-3xl font-bold'>FAQ Management</h1>
+        <h1 className='md:text-3xl text-2xl font-bold'>FAQ Management</h1>
         <button onClick={() => setOpen(true)} className='bg-amber-400 px-4 py-2 font-semibold rounded shadow'>
           Add FAQ
         </button>
       </div>
-
       <div className='space-y-3'>
         <AnimatePresence>
           {faq.map((item, idx) => (
@@ -103,9 +81,8 @@ const Faq = () => {
               animate={{ scale: 1, opacity: 1, backgroundColor: '#ffffff' }}
               exit={{ opacity: 0, scale: 0.8 }}
               transition={{ duration: 5.0 }}
-              className='shadow-md rounded p-4 border cursor-pointer relative'
-              onClick={() => setExpanded(expanded === item.Faq_id ? null : item.Faq_id)}
-            >
+              className='shadow-md rounded p-3 md:p-4 border cursor-pointer relative'
+              onClick={() => setExpanded(expanded === item.Faq_id ? null : item.Faq_id)}>
               <div className='flex justify-between items-center'>
                 <p className='text-xl font-medium'>
                   {idx + 1}. {item.Question}
@@ -116,12 +93,10 @@ const Faq = () => {
                     handleDelete(item.Faq_id);
                   }}
                   size="small"
-                  color="error"
-                >
+                  color="error">
                   <RiDeleteBin6Line />
                 </IconButton>
               </div>
-
               <AnimatePresence>
                 {expanded === item.Faq_id && (
                   <motion.div
@@ -129,9 +104,8 @@ const Faq = () => {
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.3 }}
-                    className='mt-2 text-gray-700'
-                  >
-                    👉  {item.Answer}
+                    className='mt-2 text-gray-700'>
+                    👉{item.Answer}
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -139,7 +113,6 @@ const Faq = () => {
           ))}
         </AnimatePresence>
       </div>
-
       <Dialog open={open} onClose={() => setOpen(false)}>
         <div className='bg-white p-5 rounded w-full'>
           <h2 className='text-2xl font-bold mb-4 flex justify-center'>Add FAQ</h2>
@@ -152,8 +125,7 @@ const Faq = () => {
                 value={formik.values.Question}
                 onChange={formik.handleChange}
                 error={formik.touched.Question && Boolean(formik.errors.Question)}
-                helperText={formik.touched.Question && formik.errors.Question}
-              />
+                helperText={formik.touched.Question && formik.errors.Question}/>
               <div className='mt-5'>
               <TextField
                 fullWidth
@@ -163,8 +135,7 @@ const Faq = () => {
                 value={formik.values.Answer}
                 onChange={formik.handleChange}
                 error={formik.touched.Answer && Boolean(formik.errors.Answer)}
-                helperText={formik.touched.Answer && formik.errors.Answer}
-              />
+                helperText={formik.touched.Answer && formik.errors.Answer}/>
               </div>
               <div className='flex justify-center pt-2'>
                 <button type="submit" className='bg-amber-300 text-black font-bold px-4 py-2 rounded'>
@@ -178,5 +149,4 @@ const Faq = () => {
     </div>
   );
 };
-
 export default Faq;

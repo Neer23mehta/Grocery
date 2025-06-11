@@ -1,6 +1,9 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import mockProducts from '@/Grocery/Product'
+import { toast } from 'react-toastify'
+import { addProduct } from '@/app/redux/slice'
+import { useDispatch } from 'react-redux'
 
 interface Jwellerys {
       id: number
@@ -14,15 +17,36 @@ interface Jwellerys {
 
 const Jwellery = () => {
   const [jwellerys, setJwellerys] = useState<Jwellerys[]>([])
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const timer = setTimeout(() => {
       const jwellery = mockProducts.filter(item => item.section == 6)
-      setJwellerys(jwellery)
+      setJwellerys(jwellery as any)
     }, 500)
     return () => clearTimeout(timer)
   }, [])
 
+  const handleAddToCart = (jwellery: Jwellerys) => {
+    dispatch(
+      addProduct({
+        Product_Name: jwellery.name,
+        Description: jwellery.name,
+        Image: jwellery.image,
+        // Price: jwellery.,
+        Stock_Status: 1,
+        Variation: '',
+        // Category_Name: jwellery.,
+        Id: jwellery.id,
+        Product_var_id: jwellery.id,
+        // Fragrance: perfume.fragrance ,
+        Type: jwellery.type,
+        Stone: jwellery.stone,
+        Material: jwellery.material
+      })
+    );
+    toast.success(`${jwellery.name} added to cart`);
+  }
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">Jwellerys</h1>
@@ -36,6 +60,12 @@ const Jwellery = () => {
               <p className="text-gray-600 mb-1"><span className="font-medium">Type:</span> {phone.type}</p>
               <p className="text-gray-600 mb-1"><span className="font-medium">Material:</span> {phone.material}</p>
               <p className="text-gray-600 mb-1"><span className="font-medium">Stone:</span> {phone.stone}</p>
+              <button
+                onClick={() => handleAddToCart(phone)}
+                className="mt-5 w-full bg-amber-500 text-white py-2 rounded hover:bg-amber-600 transition"
+              >
+                Add to Cart
+              </button>
             </div>
           </div>
         ))}

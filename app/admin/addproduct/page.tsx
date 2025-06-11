@@ -15,8 +15,3 @@ const Page = () => {
 
 export default Page
 
-export function generateMetadata(){
-  return {
-    title:"Product-Add Grocery"
-  }
-}

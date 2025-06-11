@@ -101,15 +101,15 @@ export const Navbar = () => {
             <Link href="/user/home">Home</Link>
           </li>
           <li className="font-bold text-amber-50">
-            <Link href="/about">About</Link>
+            <Link href="/user/about">About</Link>
           </li>
           <li className="font-bold text-amber-50">
-            <Link href="/contact">Contact</Link>
+            <Link href="/user/contact">Contact</Link>
           </li>
           <li className="relative">
-            <span className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 text-xs font-bold rounded-full bg-red-700 text-white px-1.5 min-w-[20px] h-5 flex items-center justify-center">
+            {/* <span className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 text-xs font-bold rounded-full bg-red-700 text-white px-1.5 min-w-[20px] h-5 flex items-center justify-center">
               {totalQuantity}
-            </span>
+            </span> */}
             <Link href="/user/cart">
               <IoCartOutline className="text-2xl font-bold text-white" />
             </Link>

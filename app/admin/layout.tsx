@@ -16,11 +16,12 @@ import { Dialog, DialogContent, Popper, ClickAwayListener, Paper } from "@mui/ma
 import axios from "axios";
 import Zoom from 'react-medium-image-zoom'
 import 'react-medium-image-zoom/dist/styles.css'
-
+import { ThemeProvider } from '@mui/material/styles';
+import { createTheme } from '@mui/material/styles';
+const theme = createTheme();
 interface LayoutProps {
     children: ReactNode;
 }
-
 const Layout = ({ children }: LayoutProps) => {
     const [logout, setLogout] = useState(false);
     const [logoutPage, setLogoutPage] = useState(false);
@@ -34,64 +35,53 @@ const Layout = ({ children }: LayoutProps) => {
         charge: "",
         id: "1",
     })
-
     const route = useRouter();
     const anchorRef = useRef(null);
     const pathname = usePathname();
-
     const handleClick = () => {
         setLogout((prev) => !prev);
     };
-
     const handleLogout = () => {
         setLogout(false);
         setLogoutPage(true);
         setConfig(false);
         setPassword(false);
     };
-
     const handleChangePassword = () => {
         setLogout(false);
         setPassword(true);
         setConfig(false);
     };
-
     const handleConfiguration = () => {
         setLogout(false);
         setConfig(true);
         setPassword(false);
         setLogoutPage(false);
     };
-
     const handleManageDelivery = () => {
         setManageDelivery(true)
         setManageTax(false)
     }
-
     const handleManageTax = () => {
         setManageTax(true)
         setManageDelivery(false)
     }
-
     const handleCongigurationCancel = () => {
         setConfig(false);
     }
-
     const handleManageDeliverySubmit = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setInput({ ...input, [name]: value });
-      };      
-
+    };
     const handleManageDeliverys = async () => {
         const token = localStorage.getItem("token");
         const refreshToken = localStorage.getItem("usertoken");
-
         const formdata = new URLSearchParams();
         formdata.append("free_delivery_upto", input.deliveryupto);
         formdata.append("delivery_charge", input.charge);
         formdata.append("id", input.id);
         try {
-         const res =  await axios.post('http://192.168.2.181:3000/admin/manage_delivery', formdata, {
+            const res = await axios.post('http://192.168.2.181:3000/admin/manage_delivery', formdata, {
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded",
                     "Authorizations": token,
@@ -99,22 +89,19 @@ const Layout = ({ children }: LayoutProps) => {
                     "refresh_token": refreshToken,
                 },
             })
-            if(res.data){
+            if (res.data) {
                 toast.success("Successfully Updated")
             }
         } catch (error) {
             console.log(error)
         }
     }
-
     const handleBackClick = () => {
         route.push("/admin/products")
     }
-
     const handleManageTaxs = async () => {
         const token = localStorage.getItem("token");
         const refreshToken = localStorage.getItem("usertoken");
-
         const id = "1"
         const formdata = new URLSearchParams();
         formdata.append("tax", tax)
@@ -139,52 +126,49 @@ const Layout = ({ children }: LayoutProps) => {
             toast.error("Something went Wrong")
         }
     }
-
     return (
         <div className="flex min-h-screen bg-gray-100">
             <ToastContainer theme="dark" />
-
             <div className="sticky top-0 h-screen z-30 overflow-y-auto overflow-x-hidden  bg-[#202020]">
-            <Sidebar />
+                <Sidebar />
             </div>
-
             <div className="flex flex-col w-full">
                 <div className={`flex flex-col justify-end p-1 shadow-md border-b border-gray-300 sticky top-0 z-20 ${pathname === "/admin/dashboard" ? "bg-white" : "bg-white"} `}>
-                    <div className="flex flex-row items-center justify-between w-full relative">
+                    <div className="flex flex-row items-center justify-between w-full md:h-20 h-10 relative">
                         <div className="flex justify-start">
-                        {
-                           pathname == "/admin/addproduct" ? <button onClick={handleBackClick} className="ml-5"><Image src={assets.backs} alt="back" height={25} width={20} /></button> : null
-                        }
+                            {
+                                pathname == "/admin/addproduct" ? <button onClick={handleBackClick} className="ml-5"><Image src={assets.backs} alt="back" height={25} width={20} /></button> : null
+                            }
                         </div>
                         <div className="flex justify-end items-center">
-                        <Zoom>
-                        <Image src={assets.admin} alt="Admin" className="mt-2 h-[80px] w-[80px]"/>
-                        </Zoom>
-                        <button onClick={handleClick} ref={anchorRef} className={`mr-2 text-xl text-black cursor-pointer`}>Admin</button>
-                        <SlArrowDown size={12} onClick={handleClick} className={`mr-5 text-black cursor-pointer`}/>
+                            <Zoom>
+                                <Image src={assets.admin} alt="Admin" className="mt-2 md:h-[80px] md:w-[80px] h-16 w-16" />
+                            </Zoom>
+                            <button onClick={handleClick} ref={anchorRef} className={`mr-2 text-xl text-black cursor-pointer`}>Admin</button>
+                            <SlArrowDown size={12} onClick={handleClick} className={`mr-5 text-black cursor-pointer`} />
                         </div>
 
                         <Popper open={logout} anchorEl={anchorRef.current} placement="bottom-end" style={{ zIndex: 1300 }}>
                             <ClickAwayListener onClickAway={() => setLogout(false)}>
                                 <Paper className="bg-white shadow-md space-y-2 w-55">
-                                    <button onClick={handleConfiguration} className="flex items-center text-xl space-x-2 hover:bg-amber-300 w-full p-3">
-                                        <IoSettingsSharp /><span>Configuration</span>
+                                    <button onClick={handleConfiguration} className="flex items-center text-xl space-x-2 hover:bg-amber-300 w-full md:p-3 p-1">
+                                        <IoSettingsSharp /><span className="md:text-base text-sm">Configuration</span>
                                     </button>
-                                    <button onClick={handleChangePassword} className="flex items-center text-xl space-x-2 hover:bg-amber-300 w-full p-3">
-                                        <MdLock /><span>Change Password</span>
+                                    <button onClick={handleChangePassword} className="flex items-center text-xl space-x-2 hover:bg-amber-300 w-full md:p-3 p-1">
+                                        <MdLock /><span className="md:text-base text-sm">Change Password</span>
                                     </button>
-                                    <button onClick={handleLogout} className="flex items-center text-xl space-x-2 hover:bg-amber-300 w-full p-3">
-                                        <GrLogout /><span>Log-Out</span>
+                                    <button onClick={handleLogout} className="flex items-center text-xl space-x-2 hover:bg-amber-300 w-full md:p-3 p-1">
+                                        <GrLogout className="ml-1"/><span className="md:text-base text-sm">Log-Out</span>
                                     </button>
                                 </Paper>
                             </ClickAwayListener>
                         </Popper>
                     </div>
                 </div>
-
-                <div className={`p-9 flex-1 overflow-y-auto bg-gray-100`}>
-                {children}
-
+                <div className={`p-9 flex-1 overflow-y-hidden overflow-x-hidden bg-gray-100`}>
+                    <ThemeProvider theme={theme}>
+                        {children}
+                    </ThemeProvider>
                     <Dialog open={config} onClose={() => setConfig(false)}>
                         <div className='flex flex-col justify-center items-center'>
                             <DialogContent>
@@ -217,7 +201,7 @@ const Layout = ({ children }: LayoutProps) => {
                                             <>
                                                 <label className='text-gray-400'>Tax %</label>
                                                 <input type='text' value={tax} onChange={(e) => setTax(e.target.value)} required name='tax' placeholder='Tax %' className='font-bold border border-gray-200 mt-2 py-2 px-3 text-black' />
-                                                
+
                                                 <div className='flex justify-center mt-5'>
                                                     <button onClick={handleManageTaxs} className='px-28 py-2 bg-amber-400 font-bold mb-3'>Update</button>
                                                 </div>
@@ -228,15 +212,11 @@ const Layout = ({ children }: LayoutProps) => {
                             </DialogContent>
                         </div>
                     </Dialog>
-
                     <Dialog open={password} onClose={() => setPassword(false)}>
-                        <Newpassword />
+                        <Newpassword setPassword={setPassword}/>
                     </Dialog>
-
                     <Dialog open={logoutPage} onClose={() => setLogoutPage(false)}>
-                        <DialogContent>
-                            <Logout />
-                        </DialogContent>
+                            <Logout setLogoutPage={setLogoutPage}/>
                     </Dialog>
                 </div>
             </div>

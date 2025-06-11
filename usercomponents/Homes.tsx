@@ -107,7 +107,7 @@ const Homes = () => {
     return (
         <div className="p-5 bg-gray-100">
             <h1 className="text-3xl font-bold mb-6 text-center">All Products Overview</h1>
-            <section className="relative">
+            {/* <section className="relative">
                 <Slider {...settings}>
                     {images.map((src, idx) => (
                         <div key={idx} className="relative h-[410px] w-full">
@@ -121,7 +121,7 @@ const Homes = () => {
                         </div>
                     ))}
                 </Slider>
-            </section>
+            </section> */}
             <section className="mb-10">
                 <button onClick={() => setOpen(!open)} ref={anchorRef} className="text-2xl font-semibold mb-4 mt-2">Categories</button>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">

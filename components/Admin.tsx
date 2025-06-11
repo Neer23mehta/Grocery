@@ -4,17 +4,8 @@ import Link from 'next/link';
 import commonGetApis from '@/commonapi/Commonapi';
 import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
-
 const Admin = () => {
   const router = useRouter();
-
-  useEffect(() => {
-    const refreshToken = localStorage.getItem("usertoken");
-    // if (!refreshToken) {
-    //   router.replace('/'); 
-    // }
-  }, []);
-
   const {data} = useQuery({
     queryKey:["user"],
     queryFn: async () => {
@@ -25,7 +16,6 @@ const Admin = () => {
     refetchIntervalInBackground: true,
     refetchOnWindowFocus: false,
   })
-
   const adminLinks = [
     { label: 'Dashboard', href: '/admin/dashboard', color: 'bg-blue-500' },
     { label: 'Users', href: '/admin/user', color: 'bg-green-500' },
@@ -40,13 +30,11 @@ const Admin = () => {
     { label: 'FAQ', href: '/admin/faq', color: 'bg-lime-500' },
     { label: 'Login', href: '/', color: 'bg-pink-700' },
   ];
-
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen text-xl md:text-2xl bg-gray-100 md:p-6 p-1">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold text-gray-800 mb-6">Admin Dashboard</h1>
-        <p className="text-gray-600 mb-10">Manage everything from this control panel.</p>
-
+        <h1 className="md:text-4xl text-3xl font-bold text-gray-800 md:mb-6 mb-1">Admin Dashboard</h1>
+        <p className="text-gray-600 md:mb-10 mb-2 md:text-xl text-md">Manage everything from this control panel.</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
           <div className="bg-white rounded-xl p-5 shadow hover:shadow-lg transition">
             <h2 className="text-lg font-semibold text-gray-700">Users</h2>
@@ -65,7 +53,6 @@ const Admin = () => {
             <p className="text-2xl font-bold text-amber-500 mt-2">{"$ 1 Billion"}</p>
           </div>
         </div>
-
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {adminLinks.map((item, idx) => (
             <Link
@@ -81,5 +68,4 @@ const Admin = () => {
     </div>
   );
 };
-
 export default Admin;

@@ -9,8 +9,3 @@ const Page = () => {
 
 export default Page
 
-export function generateMetadata(){
-  return {
-      title:"Grocery Products",
-  }
-}

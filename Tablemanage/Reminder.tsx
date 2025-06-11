@@ -29,7 +29,7 @@ const Reminders = () => {
     };
 
     return (
-        <div className="w-full px-4 py-6">
+        <div className="w-full px-2 py-4">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-200 gap-4 pb-4">
                 <div className="flex flex-row items-center gap-4">
                     <Image
@@ -40,7 +40,7 @@ const Reminders = () => {
                         className="w-12 h-12 md:w-[55px] md:h-[55px]"
                     />
                     <h1 className="text-lg md:text-xl">
-                        Total Credits
+                        Total Reminders
                         <br />
                         <span className="text-xl md:text-2xl text-cyan-500 font-bold">1000</span>
                     </h1>
@@ -74,9 +74,9 @@ const Reminders = () => {
                     </button>
                 </div>
             </div>
-            <div className="mt-6">
+            <div className="mt-3">
                 <h1 className="text-xl font-bold">Credits Used</h1>
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-gray-50 mt-4 p-4 rounded-md gap-4">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-gray-50 mt-3 p-2 sm:p-4 rounded-md gap-3"> {/* Adjusted padding */}
                     <input
                         type="text"
                         placeholder="Search name, contact numbers..."
@@ -140,44 +140,66 @@ const Reminders = () => {
                 </div>
             </div>
 
-            <div className="mt-6 overflow-x-auto">
-                <table className="min-w-[800px] w-full bg-white text-sm md:text-base shadow-md rounded-md">
-                    <thead className="border-b border-gray-200 bg-gray-100">
-                        <tr>
-                            <th className="py-3 px-4 text-left font-semibold text-black">No</th>
-                            <th className="py-3 px-4 text-left font-semibold text-black">Patient's Name</th>
-                            <th className="py-3 px-4 text-left font-semibold text-black">Contact No.</th>
-                            <th className="py-3 px-4 text-left font-semibold text-black">
-                                <div className="flex items-center">
-                                    Status
-                                    <Image src={images.c1} alt="Sort icon" height={17} width={15} className="ml-1 mt-1" />
-                                </div>
-                            </th>
-                            <th className="py-3 px-4 text-left font-semibold text-black">Date</th>
-                            <th className="py-3 px-4 text-left font-semibold text-black">Used Points</th>
-                            <th className="py-3 px-4 text-left font-semibold text-black">Status Track</th>
-                            <th className="py-3 px-4 text-center font-semibold text-black">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {tableItems.map(({ no, label, contact, status, date, points, statustrack, action }) => (
-                            <tr key={no} className="border-b border-gray-200 hover:bg-gray-50">
-                                <td className="px-4 py-3">{no}</td>
-                                <td className="px-4 py-3 text-indigo-700">{label}</td>
-                                <td className="px-4 py-3">{contact}</td>
-                                <td className="px-4 py-3">
-                                    <span className={`px-2 py-1 rounded-md ${statusStyles[status] || ''}`}>{status}</span>
-                                </td>
-                                <td className="px-4 py-3">{date}</td>
-                                <td className="px-4 py-3">{points}</td>
-                                <td className={`px-4 py-3 ${trackStyles[statustrack] || ''}`}>{statustrack}</td>
-                                <td className="px-4 py-3 text-center">
-                                    <Image src={action} alt="View action" height={20} width={20} />
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+            <div className="w-full mt-4 p-1 sm:p-1">
+                <div className="hidden md:block">
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full bg-white text-sm md:text-base shadow-md rounded-md">
+                            <thead className="border-b border-gray-200 bg-gray-100">
+                                <tr>
+                                    <th className="py-3 px-4 text-left font-semibold text-black">No</th>
+                                    <th className="py-3 px-4 text-left font-semibold text-black">Patient's Name</th>
+                                    <th className="py-3 px-4 text-left font-semibold text-black">Contact No.</th>
+                                    <th className="py-3 px-4 text-left font-semibold text-black">
+                                        <div className="flex items-center">
+                                            Status
+                                            <Image src={images.c1} alt="Sort icon" height={17} width={15} className="ml-1 mt-1" />
+                                        </div>
+                                    </th>
+                                    <th className="py-3 px-4 text-left font-semibold text-black">Date</th>
+                                    <th className="py-3 px-4 text-left font-semibold text-black">Used Points</th>
+                                    <th className="py-3 px-4 text-left font-semibold text-black">Status Track</th>
+                                    <th className="py-3 px-4 text-center font-semibold text-black">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {tableItems.map(({ no, label, contact, status, date, points, statustrack, action }) => (
+                                    <tr key={no} className="border-b border-gray-200 hover:bg-gray-50">
+                                        <td className="px-4 py-3">{no}</td>
+                                        <td className="px-4 py-3 text-indigo-700">{label}</td>
+                                        <td className="px-4 py-3">{contact}</td>
+                                        <td className="px-4 py-3">
+                                            <span className={`px-2 py-1 rounded-md ${statusStyles[status] || ''}`}>{status}</span>
+                                        </td>
+                                        <td className="px-4 py-3">{date}</td>
+                                        <td className="px-4 py-3">{points}</td>
+                                        <td className={`px-4 py-3 ${trackStyles[statustrack] || ''}`}>{statustrack}</td>
+                                        <td className="px-4 py-3 text-center">
+                                            <Image src={action} alt="View action" height={20} width={20} />
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div className="md:hidden grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    {tableItems.map(({ no, label, contact, status, date, points, statustrack, action }) => (
+                        <div key={no} className="bg-white p-2 sm:p-2 border rounded-lg shadow-md">
+                            <div className="flex justify-between items-center">
+                                <span className="font-semibold text-xl sm:text-lg">{label}</span>
+                                <Image src={action} alt="View action" height={20} width={20} />
+                            </div>
+                            <p className="text-sm text-gray-500 mt-1">Contact: {contact}</p>
+                            <p className="text-xs text-gray-400 mt-1">Date: {date}</p>
+                            <p className="text-sm mt-1">Points: {points}</p>
+                            <p className={`text-sm mt-1 ${status === 'Completed' ? 'text-green-500' : status === 'Cancelled' ? 'text-red-500' : 'text-yellow-500'}`}>
+                                Status: {status}
+                            </p>
+                            <p className="text-xs text-gray-400 mt-1">Tracking: {statustrack}</p>
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     )

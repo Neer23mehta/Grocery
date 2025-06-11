@@ -18,7 +18,8 @@ import category from "../assests/Group 1464 (4)/Group 1464.png"
 import products from "../assests/Group 1464 (2)/Group 1464.png"
 import order from "../assests/Group 1464 (3)/Group 1464.png"
 import user from "../assests/Group 1464 (1)/Group 1464.png"
-import dash from "../assests/Group 1464/Group 1464.png"
+import dash from "../assests/Group 1464.svg"
+import dash1 from "../assests/dashyellow.svg"
 import nlogo from "../assests/Path 410 (1)/Path 410.png"
 import coupon from "../assests/Icons/Icons.png"
 import bimg from "../assests/back-icon (2)/back-icon.png"
@@ -32,7 +33,7 @@ import mobile from "../assests/Group 335 (3)/Group 335.png"
 import ud from "../assests/Group 1607/Group 1607.png"
 import dp from "../assests/Group 805 (1)/Group 805.png"
 import prepare from "../assests/Ellipse 56/Ellipse 56.png"
-import ordernew from "../assests/Group 835/Group 835.png"
+import ordernew from "../assests/order.svg"
 import ready from "../assests/Group 1494/Group 1494.png"
 import timer from "../assests/Group 1495/Group 1495.png"
 import done from "../assests/Group 1496/Group 1496.png"
@@ -55,16 +56,29 @@ import prepares from "../assests/Ellipse 56 (2)/Ellipse 56.png"
 import errors from "../assests/ers.png"
 import sort from "../assests/Group 1607 (1)/Group 1607@2x.png"
 import des from "../assests/ans1.jpeg"
+import user1 from "../assests/Group 1464(1).svg"
+import product1 from "../assests/Group 1464(2).svg"
+import order1 from "../assests/Group 1464(3).svg"
+import category1 from "../assests/Group 1464(4).svg"
+import brands1 from "../assests/Group 1464(5).svg"
+import coupon1 from "../assests/Icons.svg"
+import hm1 from "../assests/Group 1464(6).svg"
+import page1 from "../assests/Group 1464(7).svg"
+import faq1 from "../assests/Group 1685.svg"
+import ready1 from "../assests/Group 1494.svg"
+import ordernew1 from "../assests/Group 835.svg"
+import timer1 from "../assests/Group 1495(1).svg"
+import done1 from "../assests/Group 1496 (1).svg"
 
 export const assets = {
-    bgimg,des,
-    limg,
-    left,
-    logo,
-    nlogo,
-    sym,
-    lock,
-    mail,
+    bgimg,des,order1,timer1,done1,
+    limg,user1,product1,
+    left,category1,
+    logo,brands1,
+    nlogo,coupon1,hm1,
+    sym,page1,faq1,
+    lock,ready1,
+    mail,ordernew1,
     rimg,
     eye,
     pass,
@@ -72,7 +86,7 @@ export const assets = {
     faq,
     page,
     hm,
-    brands,
+    brands,dash1,
     category,products,order,user,dash,coupon,bimg,eyeClosed,use,mails,location,mobile,ud,dp,prepare,ordernew,ready,timer,
     done,upload,upimg,basket,scrolloff,scrollon,del,banner,imj,edit,cancel,newimg,add,simg,ad,can,admin,backs,prepares,errors,sort
 };

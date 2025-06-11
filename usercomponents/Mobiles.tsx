@@ -24,7 +24,7 @@ const Mobiles = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       const mobiles = mockProducts.filter((product) => product.section == 5)
-      setMobiles(mobiles)
+      setMobiles(mobiles as any)
     }, 500)
     return () => clearTimeout(timer)
   }, [])

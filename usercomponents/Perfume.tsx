@@ -1,6 +1,5 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import mockPerfume from '../Grocery/perfume'
 import mockProducts from '@/Grocery/Product'
 import { toast } from 'react-toastify'
 import { useDispatch } from 'react-redux'
@@ -22,7 +21,7 @@ const Perfumes = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       const perfume = mockProducts.filter(item => item.section == 2)
-      setPerfumes(perfume)
+      setPerfumes(perfume as any)
     }, 500)
     return () => clearTimeout(timer)
   }, [])

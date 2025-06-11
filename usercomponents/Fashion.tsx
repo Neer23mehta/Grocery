@@ -74,18 +74,27 @@ const settings = {
   nextArrow: <SampleNextArrow />,
 };
 
+type FashionItem = {
+  id: number;
+  name: string;
+  category: string;
+  price: number;
+  image: string;
+  title: string;
+};
+
 const Fashion = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const anchorRef = useRef(null);
 
-  const [allFashionData, setAllFashionData] = useState([]);
+  const [allFashionData, setAllFashionData] = useState<FashionItem[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'men' | 'women'>('all');
 
   useEffect(() => {
     const combined = [...clothingData, ...footwearData];
-    setAllFashionData(combined);
+    setAllFashionData(combined as any);
   }, []);
 
   useEffect(() => {

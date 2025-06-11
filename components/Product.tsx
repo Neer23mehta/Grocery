@@ -53,7 +53,7 @@ const Products = () => {
   const fetchCategories = async () => {
     try {
       const res = await commonGetApis(`get_products?pageNumber=${page}&pageLimit=10`);
-      setTotalCount(res.data.Total_Count)
+      setTotalCount(res.data.totalCount)
       setAdds(res?.data?.result || []);
     } catch (error) {
       console.error("Error fetching categories:", error);
@@ -195,38 +195,33 @@ const Products = () => {
 
   return (
     <div className="">
-      <div className="flex flex-row justify-between items-center">
+      <div className="flex flex-col md:flex-row justify-between items-start">
         <div className="flex flex-col px-2">
-          <h1 className="text-3xl font-bold">Products</h1>
+          <h1 className="md:text-3xl text-xl font-bold">Products</h1>
           <p className='text-gray-500 mt-2'><Link href={`/admin/dashboard`}>Dashboard</Link> <span className='ml-2.5'>{`>`}</span><span className='text-black ml-2.5'>Products</span> </p>
         </div>
-        <div>
-          <TextField
-            id="outlined-basic"
-            label="Search Product"
-            variant="outlined"
-            value={input}
-            onChange={(e) => setInput(e.target.value.trim())}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <IoSearchSharp size={20} />
-                </InputAdornment>
-              ),
-            }}
-          />
-          <button className="px-3 font-bold py-2 bg-amber-300 ml-5 w-auto h-13 cursor-pointer" onClick={handleAddProduct}>Add Product</button>
-          <button
-            className="px-2 py-3 bg-green-700 ml-1 w-20 font-bold cursor-pointer"
-            onClick={() => setExportData()}
-          >
-            Export
-          </button>
+        <div className="flex md:flex-row flex-col space-y-2 justify-between items-center ml-2 md:ml-0">
+          <div className='flex flex-row px-2 py-3.5 mt-2 text-md border border-gray-300 bg-white'>
+            <IoSearchSharp size={20} />
+            <input type='text' placeholder=' Search Products...' value={input} onChange={(e) => setInput(e.target.value.trim())} className='outline-none px-2' />
+          </div>
+          <div className="flex flex-col md:flex-row justify-between gap-3 px-4">
+            <button
+              className="px-3 py-2 bg-amber-300 font-bold w-72 md:w-auto md:h-13 cursor-pointer"
+              onClick={handleAddProduct}>
+              Add Product
+            </button>
+            <button
+              className="px-3 py-2 bg-green-700 text-white font-bold w-72 md:w-24 cursor-pointer"
+              onClick={() => setExportData()}>
+              Export
+            </button>
+          </div>
         </div>
       </div>
 
-      <div>
-        <table className="min-w-full bg-white shadow-md overflow-hidden mt-5">
+      <div className='overflow-x-auto w-full overflow-y-hidden'>
+        <table className="min-w-full bg-white shadow-md overflow-hidden mt-5 overflow-y-auto">
           <thead>
             <tr>
               <th className="py-4 px-7 text-left text-md font-semibold text-black">Image</th>

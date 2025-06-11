@@ -42,7 +42,7 @@ const Homepage = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setProducts(mockProducts)
+      setProducts(mockProducts as any)
     }, 500)
 
     return () => clearTimeout(timer)

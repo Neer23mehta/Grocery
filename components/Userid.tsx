@@ -33,9 +33,14 @@ interface UserDetails {
     order: Order[];
 }
 
+interface Status {
+    is_active:number
+}
+
 const Userid = ({ id }: Userprop) => {
     const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
     const [orders, setOrders] = useState<Order[]>([]);
+    const [status, setStatus] = useState<Status[]>([])
 
     const fetchUser = async () => {
         try {
@@ -43,6 +48,7 @@ const Userid = ({ id }: Userprop) => {
             if (res?.data) {
                 setUserDetails(res?.data?.result[0]);
                 setOrders(res?.data?.result[0]?.order || []);
+                setStatus(res?.data?.result)
             }
         } catch (error) {
             console.log(error);
@@ -80,8 +86,9 @@ const Userid = ({ id }: Userprop) => {
                         ))}</p>
                     </div>
                 </div>
-                <div className='flex flex-row mr-15 ml-25 mb-20'>
-                    <p className='text-gray-400 '>Total Order: {orders?.length}</p>
+                <div className='flex flex-row mr-15 mb-20'>
+                    <p className='text-gray-400 '>Total Order: <span className='text-black font-bold'>{orders?.length}</span></p>
+                    <p className='text-gray-400 ml-5'>Status: <span className='text-black font-bold'>{status.is_active == 1 ? "Active" : "Inactive"}</span></p>
                 </div>
             </div>
             <div>

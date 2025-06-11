@@ -23,7 +23,7 @@ const Watch = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       const watches = mockProducts.filter(item => item.section == 4)
-      setWatch(watches)
+      setWatch(watches as Watch[])
     }, 500)
     return () => clearTimeout(timer)
   }, [])

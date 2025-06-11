@@ -14,6 +14,8 @@ import orderBy from 'lodash/orderBy';
 import Zoom from 'react-medium-image-zoom'
 import 'react-medium-image-zoom/dist/styles.css'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
 interface Category {
   No: number;
@@ -37,6 +39,7 @@ const Subcategory = () => {
   const [sortField, setSortField] = useState<string>('');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [totalCount, setTotalCount] = useState(0)
+  const [deletes, setDeletes] = useState("");
   const [inputs, setInputs] = useState({
     subcategory: "",
     category: "",
@@ -57,7 +60,7 @@ const Subcategory = () => {
 
     try {
       const res = await commonGetApis(`get_subcategories?pageNumber=${page}&pageLimit=10&search=${input}`);
-      setTotalCount(res?.data?.Total_Count);
+      setTotalCount(res?.data?.totalCount);
       setAdds(res?.data?.result || []);
     } catch (error) {
       console.error("Error fetching subcategories:", error);
@@ -69,7 +72,7 @@ const Subcategory = () => {
       const res = await deleteApi(`delete_subcategory?id=${id}`);
       setAdds(prev => prev.filter(items => items.No !== id));
       if (res.data) {
-        toast.success("Deleted Successfully")
+        toast.success(`${res.data.message}`)
       }
     } catch (error) {
       console.error("Error deleting subcategory:", error);
@@ -175,21 +178,24 @@ const Subcategory = () => {
   };
 
   const handleEditButton = async (No: number) => {
+    setEditSub(true);
     try {
       const res = await commonGetApis(`get_subcategory?id=${No}`);
-      setEditSubcategory(res.data.DATA);
+      setEditSubcategory(res.data.data);
       setInputs({
         subcategory: res.data.DATA.SubCategory_Name,
         category: String(res.data.DATA.fk_category_id),
         status: String(res.data.DATA.Status),
       });
       if (res.data) {
-        setEditSub(true);
+        // setEditSub(true);
       }
     } catch (error) {
       console.log(error);
     }
   };
+
+  // console.log(editSubcategory)
   const toggleStatus = () => {
     setStatus(!status)
   }
@@ -262,7 +268,7 @@ const Subcategory = () => {
   //     formdata.append("fk_category_id", inputs.category);
   //     formdata.append('status', inputs.status);
   //     if (image) formdata.append("image", image);
-  
+
   //     const res = await commonPostApis("add_subCategory", formdata);
   //     return res;
   //   },
@@ -308,6 +314,53 @@ const Subcategory = () => {
   //   }
   // })
 
+  // const {} = useFormik({
+  //   initialValues:
+  // })
+
+
+
+  // Validation Schema
+  const formik = useFormik({
+    initialValues: {
+      subcategory: '',
+      category: '',
+      status: '1',
+      image: null,
+    },
+    validationSchema: Yup.object({
+      subcategory: Yup.string().required('Sub Category is required'),
+      category: Yup.string().required('Category is required'),
+      image: Yup.mixed().required('Thumbnail image is required'),
+    }),
+    onSubmit: async (values, { setSubmitting, resetForm }) => {
+      const formdata = new FormData();
+      formdata.append("subcategoryName", values.subcategory);
+      formdata.append("fkCategoryId", values.category);
+      formdata.append("status", values.status);
+      if (values.image) {
+        formdata.append("image", values.image);
+      }
+
+      try {
+        const res = await commonPostApis("add_subCategory", formdata);
+        if (res.data) {
+          toast.success(`${res.data.message}`);
+          resetForm();
+          setOpenModal(false);
+          fetchCategories();
+        } else {
+          toast.error("Failed To Add");
+        }
+      } catch (error) {
+        console.error("Error submitting subcategory:", error);
+        toast.error("Something went wrong");
+      } finally {
+        setSubmitting(false);
+      }
+    },
+  });
+
   useEffect(() => {
     fetchGetCategory();
     fetchCategories();
@@ -322,22 +375,12 @@ const Subcategory = () => {
           <h1 className="text-3xl font-bold">Sub Category</h1>
           <p className='text-gray-500 mt-2'><Link href={`/admin/dashboard`}>Dashboard</Link> <span className='ml-2.5'>{`>`}</span><span className='text-black ml-2.5'>Sub Category</span> </p>
         </div>
-        <div>
-          <TextField
-            id="outlined-basic"
-            label="Search Sub-Category"
-            variant="outlined"
-            value={input}
-            onChange={(e) => setInput(e.target.value.trim())}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <IoSearchSharp size={20} />
-                </InputAdornment>
-              ),
-            }}
-          />
-          <button className="px-2 py-2 bg-amber-300 ml-5 w-40 h-13 cursor-pointer" onClick={() => setOpenModal(true)}>Add Sub Category</button>
+        <div className="flex flex-row justify-between items-center">
+          <div className='flex flex-row px-2 py-3 text-md border border-gray-300 bg-white items-center'>
+            <IoSearchSharp size={20} />
+            <input type='text' placeholder=' Search Sub Category...' value={input} onChange={(e) => setInput(e.target.value.trim())} className='outline-none px-2' />
+          </div>
+          <button className="px-2 py-2 bg-amber-300 font-bold ml-5 w-40 h-12 cursor-pointer" onClick={() => setOpenModal(true)}>Add Sub Category</button>
           <button
             className="px-2 py-2 bg-green-700 ml-1 w-20 h-12 font-bold cursor-pointer"
             onClick={() => setExportData()}
@@ -388,13 +431,13 @@ const Subcategory = () => {
                   <td className="px-7 py-2">{No}</td>
                   <td className='px-1 py-3'>
                     <Zoom>
-                    <Image
-                      src={ImgUrl}
-                      alt={Category_Name}
-                      width={56}
-                      height={52}
-                      objectFit="cover"
-                      className="rounded h-[52px] w-[56px] cursor-zoom-in"/>
+                      <Image
+                        src={ImgUrl}
+                        alt={Category_Name}
+                        width={56}
+                        height={52}
+                        objectFit="cover"
+                        className="rounded h-[52px] w-[56px] cursor-zoom-in" />
                     </Zoom>
                   </td>
                   <td className='px-3'>{SubCategory_Name}</td>
@@ -418,75 +461,94 @@ const Subcategory = () => {
         </tbody>
       </table>
       <Dialog open={openModal} onClose={() => setOpenModal(false)}>
-        <DialogContent>
-          <form onSubmit={handleSubCategorySubmit} className="flex flex-col items-center justify-center px-5">
-            <h1 className="text-2xl font-bold mb-3">Add Sub Category</h1>
-            <div className='flex flex-col justify-start items-start mt-6 w-full'>
-              <p className='mb-2 text-gray-400'>Sub Category</p>
-              <input type='text' name='subcategory' value={inputs.subcategory} placeholder='Sub Category' onChange={(e) => handleSubCategoryChange(e)} className='text-gray-400 border border-gray-200 py-2 w-full px-2' />
-            </div>
-            <div className="flex flex-col mt-5 justify-start items-start w-full">
-              <label className="text-gray-400">Category</label>
-              <select
-                name="category"
-                value={inputs.category}
-                onChange={(e) => handleSubCategoryChange(e)}
-                className="border border-gray-200 mt-1 py-2.5 px-2.5 w-full"
-              >
-                <option value="">Select</option>
-                {brand.map((curval) => (
-                  <option key={curval.No} value={curval.No}>
-                    {curval.Category_Name}
-                  </option>
-                ))}
-              </select>
-            </div>
+        <form onSubmit={formik.handleSubmit} className="flex flex-col items-center justify-center px-5">
+          <div className='flex flex-col justify-center items-center'>
+            <button className='ml-72 text-2xl' onClick={() => setOpenModal(false)}>
+              X
+            </button>
+            <h1 className='font-bold mt-3 text-2xl' >Add Sub Category</h1>
+          </div>
+          <div className='flex flex-col justify-start items-start mt-6 w-full'>
+            <p className='mb-2 text-gray-400'>Sub Category</p>
+            <input
+              type='text'
+              name='subcategory'
+              placeholder='Sub Category'
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.subcategory}
+              className='text-gray-400 border border-gray-200 py-2 w-full px-2'
+            />
+            {formik.touched.subcategory && formik.errors.subcategory && (
+              <div className="text-red-500 text-sm">{formik.errors.subcategory}</div>
+            )}
+          </div>
 
-            <div className="flex flex-row mt-7">
-              <label htmlFor="thumbnail" className="cursor-pointer">
-                <div className="h-[125px] w-[325px] flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-300 hover:border-gray-500 hover:shadow-lg">
-                  <Image
-                    src={image ? URL.createObjectURL(image) : assets.upimg}
-                    alt="Upload Thumbnail"
-                    className="object-cover rounded-lg"
-                    width={100}
-                    height={50}
-                  />
-                </div>
-              </label>
-              <input
-                type="file"
-                id="thumbnail"
-                className="hidden"
-                onChange={(e) => setImage(e.target.files?.[0] || null)}
-              />
-            </div>
+          <div className="flex flex-col mt-5 justify-start items-start w-full">
+            <label className="text-gray-400">Category</label>
+            <select
+              name="category"
+              value={formik.values.category}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className="border border-gray-200 mt-1 py-2.5 px-2.5 w-full"
+            >
+              <option value="">Select</option>
+              {brand.map((curval) => (
+                <option key={curval.No} value={curval.No}>
+                  {curval.Category_Name}
+                </option>
+              ))}
+            </select>
+            {formik.touched.category && formik.errors.category && (
+              <div className="text-red-500 text-sm">{formik.errors.category}</div>
+            )}
+          </div>
 
-            <div className="flex flex-row justify-between space-x-55 items-center mt-5">
-              <label className="text-gray-400">Status</label>
-              <div
-                className="cursor-pointer w-fit"
-                onClick={() =>
-                  setInputs((prev) => ({
-                    ...prev,
-                    status: prev.status === "1" ? "0" : "1",
-                  }))
-                }
-              >
+          <div className="flex flex-row mt-7">
+            <label htmlFor="thumbnail" className="cursor-pointer">
+              <div className="h-[125px] w-[325px] flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-300 hover:border-gray-500 hover:shadow-lg">
                 <Image
-                  src={inputs.status === "1" ? assets.scrollon : assets.scrolloff}
-                  alt="Status"
-                  width={42}
-                  height={52}
+                  src={formik.values.image ? URL.createObjectURL(formik.values.image) : assets.upimg}
+                  alt="Upload Thumbnail"
+                  className="object-cover rounded-lg"
+                  width={210}
+                  height={155}
                 />
               </div>
-            </div>
+            </label>
+            <input
+              type="file"
+              id="thumbnail"
+              className="hidden"
+              onChange={(e) => formik.setFieldValue('image', e.currentTarget.files?.[0] || null)}
+            />
+          </div>
+          {formik.touched.image && formik.errors.image && (
+            <div className="text-red-500 text-sm mt-1">{formik.errors.image}</div>
+          )}
 
-            <DialogActions>
-              <button type="submit" className="bg-amber-300 px-4 py-2">Submit</button>
-            </DialogActions>
-          </form>
-        </DialogContent>
+          <div className="flex flex-row justify-between space-x-55 items-center mt-5">
+            <label className="text-gray-400">Status</label>
+            <div
+              className="cursor-pointer w-fit"
+              onClick={() =>
+                formik.setFieldValue('status', formik.values.status === '1' ? '0' : '1')
+              }
+            >
+              <Image
+                src={formik.values.status === '1' ? assets.scrollon : assets.scrolloff}
+                alt="Status"
+                width={42}
+                height={52}
+              />
+            </div>
+          </div>
+
+          {/* <DialogActions> */}
+          <button type='submit' className='bg-amber-300 w-full h-12 mb-4 mt-4 font-bold text-xl'>Submit</button>
+          {/* </DialogActions> */}
+        </form>
       </Dialog>
 
       <Dialog open={editSub} onClose={() => setEditSub(false)}>
@@ -494,7 +556,10 @@ const Subcategory = () => {
           {editSubcategory && (
             <form onSubmit={handleSubCategoryUpdate}>
               <div className="flex flex-col items-center">
-                <h1 className="text-2xl font-bold mb-3">Subcategory Details</h1>
+                <button className='ml-72 text-2xl' onClick={() => setEditSub(false)}>
+                  X
+                </button>
+                <h1 className="text-2xl font-bold mt-3">Subcategory Details</h1>
                 <div className="flex flex-row mt-7">
                   <label htmlFor="thumbnail" className="cursor-pointer">
                     <div className="h-[125px] w-[325px] flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-300 hover:border-gray-500 hover:shadow-lg">

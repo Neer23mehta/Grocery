@@ -117,7 +117,7 @@ const Page = () => {
 
   return (
     <div>
-      <div className="flex flex-row justify-between items-center">
+      <div className="flex flex-col md:flex-row justify-between items-center">
         <div className="flex flex-col px-2">
           <h1 className='text-3xl font-bold'>Home Management</h1>
           <p className='text-gray-500 mt-2'>

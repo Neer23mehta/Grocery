@@ -1,12 +1,14 @@
-import React from 'react'
-import Forget from '../../components/Forget'
+import ForgetWrapper from '@/components/Forgotwrapper';
+import React from 'react';
 
 const Page = () => {
-  return (
-    <div>
-        <Forget/>
-    </div>
-  )
-}
+  return <ForgetWrapper />;
+};
 
-export default Page
+export default Page;
+
+export function generateMetadata() {
+  return {
+    title: 'Forgot Password | Grocery App',
+  };
+}

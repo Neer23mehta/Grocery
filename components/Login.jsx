@@ -9,6 +9,7 @@ import { TextField } from '@mui/material';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const route = useRouter();
@@ -50,6 +51,8 @@ const Login = () => {
           toast.success("Login Successfully");
           localStorage.setItem("usertoken", res.data.data.refresh_token);
           localStorage.setItem("token", res.data.data.token);
+          Cookies.set("token", res.data.data.token, { expires: 1 }); 
+          Cookies.set("refresh_token", res.data.data.refresh_token, { expires: 7 });
           route.push("/admin");
         } else {
           toast.error(res.data.message);

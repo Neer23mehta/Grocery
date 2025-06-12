@@ -1,16 +1,16 @@
+"use client"
 import React from 'react'
 import Admin from '@/components/Admin'
+import withAuth from '@/utils/withAuth'
 
 const Page = () => {
-  return (
-    <div><Admin/></div>
-  )
-}
+  return <Admin />;
+};
 
-export default Page
+export default withAuth(Page);
 
-export function generateMetadata(){
-  return {
-    title:"Grocery Admin"
-  }
-}
+// export function generateMetadata() {
+//   return {
+//     title: "Grocery Admin"
+//   };
+// }

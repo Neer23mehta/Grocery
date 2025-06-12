@@ -394,7 +394,7 @@ const Brand = () => {
         <DialogContent>
           <form
             onSubmit={formik.handleSubmit}
-            className="bg-white z-[1] flex flex-col px-5 w-full max-w-md mx-auto">
+            className="bg-white z-[1] flex flex-col md:h-full h-96 px-5 w-full max-w-md mx-auto">
             <button
               type="button"
               className="text-gray-500 text-2xl flex justify-end hover:text-red-700 self-end"

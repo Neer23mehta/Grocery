@@ -3,23 +3,26 @@ import React, { useState } from 'react'
 import { assets } from '@/assests/assets'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
-const Logout = ({setLogoutPage}:any) => {
+const Logout = ({ setLogoutPage }: any) => {
   const route = useRouter();
   const handleLogout = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault(); 
+    e.preventDefault();
     localStorage.removeItem('token');
     localStorage.removeItem('usertoken');
     localStorage.removeItem('renderedSections');
+    Cookies.remove("token");
+    Cookies.remove("refresh_token");
     route.push("/");
-  }  
- 
+  }
+
   return (
     <div>
       <div className='flex flex-col justify-center items-center'>
         <form className='flex flex-col bg-white mt-1 py-1 px-4 lg:w-[450px] md:w-auto sm:w-auto justify-center items-center' >
           <div className='flex justify-end items-end '>
-            <Image onClick={() => {setLogoutPage(false)}} src={assets.can} alt='remove' className='md:ml-95 ml-72 md:h-5 h-4 w-4 md:w-5' />
+            <Image onClick={() => { setLogoutPage(false) }} src={assets.can} alt='remove' className='md:ml-95 ml-72 md:h-5 h-4 w-4 md:w-5' />
           </div>
           <h1 className='text-2xl font-bold mb-1  '>Logout</h1>
           <div className='flex flex-col justify-start mt-10 space-y-5'>
